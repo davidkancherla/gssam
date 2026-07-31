@@ -71,9 +71,9 @@ export default function About() {
             </span>
             <div>
               <p className="text-gold font-semibold tracking-[0.2em] uppercase text-xs">Our Pastor</p>
-              <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold">Pastor Edward Kuntam</h2>
+              <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold">Ps. Anand Darla</h2>
               <p className="mt-3 text-amber-50/85 leading-relaxed text-sm sm:text-base">
-                Pastor Edward shepherds our congregation with a heart for South Asian families —
+                Pastor Anand shepherds our congregation with a heart for South Asian families —
                 preaching the Word, administering the Sacraments, and leading worship in the
                 languages of our people. He and his family would love to welcome you this Sunday.
               </p>
