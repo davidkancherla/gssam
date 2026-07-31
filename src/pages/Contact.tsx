@@ -18,7 +18,7 @@ export default function Contact() {
       <PageHeader
         title="Contact & Visit"
         subtitle="We'd love to meet you — this Sunday, or anytime."
-        image="/images/hero-worship.png"
+        image="/images/real-communion-line.jpg"
       />
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid lg:grid-cols-2 gap-10">

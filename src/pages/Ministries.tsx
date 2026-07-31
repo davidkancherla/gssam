@@ -8,7 +8,7 @@ export default function Ministries({ navigate }: { navigate: (p: string) => void
       <PageHeader
         title="Ministries"
         subtitle="Every member has a gift — find your place to grow, serve, and belong."
-        image="/images/youth.png"
+        image="/images/real-kids-singing.jpg"
       />
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14">

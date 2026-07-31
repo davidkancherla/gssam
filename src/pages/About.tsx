@@ -1,6 +1,6 @@
 import PageHeader from '@/components/PageHeader';
 import { CHURCH } from '@/data/site';
-import { Cross, Globe2, Music4, Users } from 'lucide-react';
+import { Cross, Globe2, Music4, Users, Church } from 'lucide-react';
 
 export default function About() {
   return (
@@ -8,7 +8,7 @@ export default function About() {
       <PageHeader
         title="About Us"
         subtitle="Rooted in Lutheran tradition, blossoming in South Asian heritage — one family in Christ since 1988."
-        image="/images/hero-worship.png"
+        image="/images/real-communion-wide.jpg"
       />
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-14">
@@ -58,6 +58,27 @@ export default function About() {
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Leadership */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-14">
+        <div className="rounded-2xl bg-maroon-deep text-amber-50 p-8 sm:p-10 shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 pattern-dots opacity-40" aria-hidden="true" />
+          <div className="relative flex flex-col sm:flex-row items-center gap-6 sm:gap-8 text-center sm:text-left">
+            <span className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-saffron/20 ring-2 ring-gold shrink-0">
+              <Church className="w-9 h-9 text-gold" />
+            </span>
+            <div>
+              <p className="text-gold font-semibold tracking-[0.2em] uppercase text-xs">Our Pastor</p>
+              <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold">Pastor Edward Kuntam</h2>
+              <p className="mt-3 text-amber-50/85 leading-relaxed text-sm sm:text-base">
+                Pastor Edward shepherds our congregation with a heart for South Asian families —
+                preaching the Word, administering the Sacraments, and leading worship in the
+                languages of our people. He and his family would love to welcome you this Sunday.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

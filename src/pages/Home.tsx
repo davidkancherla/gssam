@@ -47,8 +47,8 @@ export default function Home({ navigate }: { navigate: (p: string) => void }) {
             </button>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <img src="/images/baptism.png" alt="Baptism celebration at GSSAM" className="rounded-xl object-cover h-48 w-full shadow-md" loading="lazy" />
-            <img src="/images/celebration.png" alt="South Asian cultural celebration" className="rounded-xl object-cover h-48 w-full shadow-md mt-8" loading="lazy" />
+            <img src="/images/real-congregation.jpg" alt="GSSAM congregation on Palm Sunday" className="rounded-xl object-cover h-48 w-full shadow-md" loading="lazy" />
+            <img src="/images/real-elders.jpg" alt="GSSAM elders honored with flower garlands" className="rounded-xl object-cover h-48 w-full shadow-md mt-8" loading="lazy" />
           </div>
         </div>
 

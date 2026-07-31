@@ -68,7 +68,7 @@ export default function Events() {
       <PageHeader
         title="Events"
         subtitle="Worship, study, fellowship, and celebration — there's always something happening at GSSAM."
-        image="/images/fellowship-meal.png"
+        image="/images/real-palm-sunday.jpg"
       />
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">

@@ -1,5 +1,5 @@
-import { MapPin, Phone, Mail, Youtube, Clock, Heart } from 'lucide-react';
-import { CHURCH, YOUTUBE, WORSHIP } from '@/data/site';
+import { MapPin, Phone, Mail, Youtube, Clock, Heart, Facebook } from 'lucide-react';
+import { CHURCH, YOUTUBE, FACEBOOK, WORSHIP } from '@/data/site';
 import { NAV_ITEMS } from './Navbar';
 
 export default function Footer({ navigate }: { navigate: (p: string) => void }) {
@@ -14,14 +14,24 @@ export default function Footer({ navigate }: { navigate: (p: string) => void }) 
             traditional Lutheran hymns in {CHURCH.languages.join(', ')}. All are welcome at
             the table of the Good Shepherd.
           </p>
-          <a
-            href={YOUTUBE.subscribeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md transition-colors"
-          >
-            <Youtube className="w-4 h-4" /> Subscribe on YouTube
-          </a>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a
+              href={YOUTUBE.subscribeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md transition-colors"
+            >
+              <Youtube className="w-4 h-4" /> Subscribe on YouTube
+            </a>
+            <a
+              href={FACEBOOK.pageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#1877F2] hover:bg-[#0f66d6] text-white text-sm font-semibold px-4 py-2.5 rounded-md transition-colors"
+            >
+              <Facebook className="w-4 h-4" /> Follow on Facebook
+            </a>
+          </div>
         </div>
 
         <div>

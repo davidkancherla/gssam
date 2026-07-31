@@ -33,7 +33,7 @@ export default function Sermons() {
       <PageHeader
         title="Sermons & Services"
         subtitle={`Every service from ${YOUTUBE.handle} — worship with us anytime, anywhere.`}
-        image="/images/prayer.png"
+        image="/images/real-altar-candles.jpg"
       />
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">

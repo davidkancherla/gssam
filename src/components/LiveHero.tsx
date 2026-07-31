@@ -25,7 +25,7 @@ export default function LiveHero({ navigate }: { navigate: (p: string) => void }
       {/* background image + overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-25"
-        style={{ backgroundImage: "url('/images/hero-worship.png')" }}
+        style={{ backgroundImage: "url('/images/real-bishop-visit.jpg')" }}
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-maroon-deep/60 via-maroon-deep/80 to-maroon-deep" aria-hidden="true" />

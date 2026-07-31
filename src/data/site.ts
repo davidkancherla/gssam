@@ -32,6 +32,11 @@ export const YOUTUBE = {
   thumbnail: (videoId: string) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
 };
 
+export const FACEBOOK = {
+  pageUrl: 'https://www.facebook.com/gssam.fremontca/',
+  photosUrl: 'https://www.facebook.com/gssam.fremontca/photos',
+};
+
 /** Sunday worship window in Pacific Time (24h) */
 export const WORSHIP = {
   dayOfWeek: 0, // Sunday
@@ -108,7 +113,7 @@ export const EVENTS: ChurchEvent[] = [
     location: 'GSSAM Sanctuary · 4211 Carol Ave',
     description:
       'Traditional Lutheran worship with hymns in Telugu, Hindi, Tamil, and English, followed by fellowship. Also streamed live on our YouTube channel.',
-    image: '/images/hero-worship.png',
+    image: '/images/real-bishop-visit.jpg',
   },
   {
     id: 'prayer-meeting',
@@ -120,7 +125,7 @@ export const EVENTS: ChurchEvent[] = [
     location: 'GSSAM Fellowship Hall',
     description:
       'A quiet hour of intercessory prayer, scripture meditation, and hymns. Bring your prayer requests — we pray for one another and our community.',
-    image: '/images/prayer.png',
+    image: '/images/real-altar-candles.jpg',
   },
   {
     id: 'bible-study',
@@ -132,7 +137,7 @@ export const EVENTS: ChurchEvent[] = [
     location: 'GSSAM Fellowship Hall',
     description:
       'Verse-by-verse study of Scripture in a discussion format. All are welcome, whether you are new to the Bible or have studied for years.',
-    image: '/images/youth.png',
+    image: '/images/real-communion-line.jpg',
   },
   {
     id: 'youth-fellowship',
@@ -144,7 +149,7 @@ export const EVENTS: ChurchEvent[] = [
     location: 'GSSAM Fellowship Hall',
     description:
       'Worship songs, games, and real conversations about faith and life for middle school through college age. Snacks provided!',
-    image: '/images/youth.png',
+    image: '/images/real-kids-singing.jpg',
   },
   {
     id: 'community-outreach',
@@ -168,7 +173,7 @@ export const EVENTS: ChurchEvent[] = [
     location: 'GSSAM Fellowship Hall',
     description:
       'Our monthly congregational potluck after worship. Bring a dish to share and stay for food, laughter, and community.',
-    image: '/images/fellowship-meal.png',
+    image: '/images/real-congregation.jpg',
   },
   {
     id: 'christmas-carol',
@@ -180,7 +185,7 @@ export const EVENTS: ChurchEvent[] = [
     location: 'GSSAM Sanctuary',
     description:
       'Carols in Telugu, Hindi, Tamil, and English, candle-lighting, and the Christmas story — followed by dinner. A highlight of our year.',
-    image: '/images/celebration.png',
+    image: '/images/real-palm-sunday.jpg',
   },
 ];
 
@@ -196,13 +201,13 @@ export const MINISTRIES: Ministry[] = [
     name: 'Worship & Music',
     description:
       'Our worship team leads traditional Lutheran hymns in Telugu, Hindi, Tamil, and English — accompanied by harmonium, keyboard, and congregational singing. New singers and musicians are always welcome.',
-    image: '/images/hero-worship.png',
+    image: '/images/real-kids-singing.jpg',
   },
   {
     name: 'Youth Fellowship',
     description:
       'A space for the next generation to grow in faith together — worship, games, honest conversations, and mentoring for middle schoolers through college students.',
-    image: '/images/youth.png',
+    image: '/images/real-palm-sunday.jpg',
   },
   {
     name: 'Outreach & Service',
@@ -214,29 +219,30 @@ export const MINISTRIES: Ministry[] = [
     name: "Women's Fellowship",
     description:
       'Sisters in Christ gathering for Bible study, prayer, and mutual encouragement — supporting one another through every season of life.',
-    image: '/images/prayer.png',
+    image: '/images/real-communion-line.jpg',
   },
   {
     name: "Men's Fellowship",
     description:
       'Men of the congregation meeting for fellowship, scripture, and service projects that support the church and the wider community.',
-    image: '/images/fellowship-meal.png',
+    image: '/images/real-elders.jpg',
   },
   {
     name: 'Cultural Celebrations',
     description:
       'From Christmas carols to harvest thanksgiving, we celebrate our South Asian heritage within the Lutheran tradition — with music, dance, food, and joy.',
-    image: '/images/celebration.png',
+    image: '/images/real-bishop-visit.jpg',
   },
 ];
 
 /* ----------------------------------- Gallery ----------------------------------- */
 export const GALLERY = [
-  { src: '/images/hero-worship.png', caption: 'Sunday worship in the sanctuary' },
-  { src: '/images/baptism.png', caption: 'Baptism celebration' },
-  { src: '/images/fellowship-meal.png', caption: 'Fellowship potluck' },
-  { src: '/images/celebration.png', caption: 'Cultural celebration' },
-  { src: '/images/youth.png', caption: 'Youth fellowship' },
-  { src: '/images/outreach.png', caption: 'Community outreach' },
-  { src: '/images/prayer.png', caption: 'Prayer meeting' },
+  { src: '/images/real-bishop-visit.jpg', caption: "Bishop's visit — worship with our clergy" },
+  { src: '/images/real-congregation.jpg', caption: 'Our Palm Sunday family' },
+  { src: '/images/real-kids-singing.jpg', caption: 'Children leading worship in song' },
+  { src: '/images/real-communion-wide.jpg', caption: 'Invitation to Holy Communion' },
+  { src: '/images/real-elders.jpg', caption: 'Honoring our elders' },
+  { src: '/images/real-communion-line.jpg', caption: 'Communion Sunday' },
+  { src: '/images/real-palm-sunday.jpg', caption: 'Palm Sunday celebration' },
+  { src: '/images/real-altar-candles.jpg', caption: 'Preparing the altar for worship' },
 ];
