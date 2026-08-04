@@ -94,7 +94,7 @@ export interface ChurchEvent {
 }
 
 export const CATEGORY_COLORS: Record<EventCategory, string> = {
-  Worship: 'bg-[hsl(349,68%,25%)] text-white',
+  Worship: 'bg-[hsl(351,72%,36%)] text-white',
   'Bible Study': 'bg-[hsl(38,70%,45%)] text-white',
   Youth: 'bg-[hsl(200,55%,35%)] text-white',
   Outreach: 'bg-[hsl(140,40%,35%)] text-white',

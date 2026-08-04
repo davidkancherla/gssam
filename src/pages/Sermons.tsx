@@ -117,7 +117,7 @@ export default function Sermons() {
         {/* Subscribe CTA */}
         <div className="mt-14 rounded-2xl bg-maroon-deep text-white p-8 sm:p-10 text-center shadow-lg">
           <h2 className="font-display text-2xl sm:text-3xl font-bold">
-            150+ services on <span className="text-gold">YouTube</span>
+            150+ services on <span className="text-amber-300">YouTube</span>
           </h2>
           <p className="mt-3 text-amber-100/85 max-w-xl mx-auto text-sm sm:text-base">
             The full archive — every Sunday worship, festival service, and celebration — lives on

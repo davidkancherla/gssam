@@ -67,10 +67,10 @@ export default function About() {
           <div className="absolute inset-0 pattern-dots opacity-40" aria-hidden="true" />
           <div className="relative flex flex-col sm:flex-row items-center gap-6 sm:gap-8 text-center sm:text-left">
             <span className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-saffron/20 ring-2 ring-gold shrink-0">
-              <Church className="w-9 h-9 text-gold" />
+              <Church className="w-9 h-9 text-amber-300" />
             </span>
             <div>
-              <p className="text-gold font-semibold tracking-[0.2em] uppercase text-xs">Our Pastor</p>
+              <p className="text-amber-300 font-semibold tracking-[0.2em] uppercase text-xs">Our Pastor</p>
               <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold">Ps. Anand Darla</h2>
               <p className="mt-3 text-amber-50/85 leading-relaxed text-sm sm:text-base">
                 Pastor Anand shepherds our congregation with a heart for South Asian families —
@@ -103,11 +103,11 @@ export default function About() {
               </li>
             ))}
           </ul>
-          <div className="mt-8 rounded-xl bg-maroon text-amber-50 p-6 sm:p-8 text-center shadow-md">
+          <div className="mt-8 rounded-2xl bg-maroon-deep text-amber-50 p-6 sm:p-8 text-center shadow-md">
             <p className="font-display italic text-lg sm:text-xl leading-relaxed">
               "I am the good shepherd. The good shepherd lays down his life for the sheep."
             </p>
-            <p className="mt-2 text-sm text-gold font-semibold tracking-wide">— John 10:11</p>
+            <p className="mt-2 text-sm text-amber-300 font-semibold tracking-wide">— John 10:11</p>
           </div>
         </div>
       </section>

@@ -12,12 +12,12 @@ export default function Give() {
       />
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-14">
-        <div className="rounded-xl bg-maroon text-amber-50 p-6 sm:p-8 text-center shadow-md">
+        <div className="rounded-2xl bg-maroon-deep text-amber-50 p-6 sm:p-8 text-center shadow-md">
           <p className="font-display italic text-lg sm:text-xl leading-relaxed">
             "Each of you should give what you have decided in your heart to give, not reluctantly
             or under compulsion, for God loves a cheerful giver."
           </p>
-          <p className="mt-2 text-sm text-gold font-semibold tracking-wide">— 2 Corinthians 9:7</p>
+          <p className="mt-2 text-sm text-amber-300 font-semibold tracking-wide">— 2 Corinthians 9:7</p>
         </div>
 
         <div className="mt-10 grid sm:grid-cols-2 gap-5">

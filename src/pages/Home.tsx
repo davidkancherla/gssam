@@ -136,7 +136,7 @@ export default function Home({ navigate }: { navigate: (p: string) => void }) {
       <section className="bg-maroon-deep py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center text-white">
-            <p className="text-gold font-semibold tracking-[0.2em] uppercase text-xs">Life Together</p>
+            <p className="text-amber-300 font-semibold tracking-[0.2em] uppercase text-xs">Life Together</p>
             <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold">Our Community in Pictures</h2>
           </div>
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">

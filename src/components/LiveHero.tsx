@@ -24,20 +24,20 @@ export default function LiveHero({ navigate }: { navigate: (p: string) => void }
     <section className="relative bg-maroon-deep text-white overflow-hidden">
       {/* background image + overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-25"
+        className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/images/real-bishop-visit.jpg')" }}
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-maroon-deep/60 via-maroon-deep/80 to-maroon-deep" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/85" aria-hidden="true" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24 grid lg:grid-cols-2 gap-10 items-center">
         <div>
-          <p className="text-gold font-semibold tracking-[0.22em] uppercase text-xs sm:text-sm">
+          <p className="text-amber-300 font-semibold tracking-[0.22em] uppercase text-xs sm:text-sm">
             {CHURCH.name}
           </p>
-          <h1 className="mt-3 font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+          <h1 className="mt-3 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
             One Shepherd.<br />
-            <span className="text-gold">Many Languages.</span><br />
+            <span className="text-amber-300">Many Languages.</span><br />
             One Family.
           </h1>
           <p className="mt-5 text-amber-50/85 text-base sm:text-lg leading-relaxed max-w-xl">
@@ -57,21 +57,21 @@ export default function LiveHero({ navigate }: { navigate: (p: string) => void }
             </a>
             <button
               onClick={() => navigate('contact')}
-              className="inline-flex items-center gap-2 border border-gold text-gold hover:bg-saffron hover:text-maroon-deep font-semibold px-5 py-3 rounded-md transition-colors"
+              className="inline-flex items-center gap-2 border border-white/50 text-white hover:bg-white hover:text-black font-semibold px-5 py-3 rounded-md transition-colors"
             >
               <MapPin className="w-5 h-5" /> Plan Your Visit
             </button>
           </div>
 
           <p className="mt-5 text-sm text-amber-50/70 flex items-center gap-2">
-            <CalendarClock className="w-4 h-4 text-gold" /> {WORSHIP.label} · {CHURCH.address}
+            <CalendarClock className="w-4 h-4 text-amber-300" /> {WORSHIP.label} · {CHURCH.address}
           </p>
         </div>
 
         {/* Live player / countdown card */}
         <div className="w-full">
           {live ? (
-            <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-gold/50 bg-black">
+            <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/20 bg-black">
               <div className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-semibold">
                 <Radio className="w-4 h-4 animate-pulse" /> LIVE NOW — Sunday Worship
               </div>
@@ -87,8 +87,8 @@ export default function LiveHero({ navigate }: { navigate: (p: string) => void }
               </div>
             </div>
           ) : (
-            <div className="rounded-xl bg-white/5 backdrop-blur ring-1 ring-gold/40 p-7 sm:p-9 text-center shadow-2xl">
-              <p className="text-gold font-semibold tracking-[0.2em] uppercase text-xs">Join Us Next Sunday</p>
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md ring-1 ring-white/20 p-7 sm:p-9 text-center shadow-2xl">
+              <p className="text-amber-300 font-semibold tracking-[0.2em] uppercase text-xs">Join Us Next Sunday</p>
               <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold">Worship begins in</h2>
               <div className="mt-6 grid grid-cols-4 gap-2 sm:gap-3 max-w-md mx-auto" role="timer" aria-label="Countdown to next Sunday worship">
                 {[
@@ -97,8 +97,8 @@ export default function LiveHero({ navigate }: { navigate: (p: string) => void }
                   { v: cd.minutes, l: 'Minutes' },
                   { v: cd.seconds, l: 'Seconds' },
                 ].map(({ v, l }) => (
-                  <div key={l} className="rounded-lg bg-maroon-deep/80 ring-1 ring-white/10 py-3">
-                    <div className="font-display text-2xl sm:text-4xl font-bold text-gold tabular-nums">
+                  <div key={l} className="rounded-xl bg-black/30 ring-1 ring-white/10 py-3">
+                    <div className="font-display text-2xl sm:text-4xl font-bold text-amber-300 tabular-nums">
                       {String(v).padStart(2, '0')}
                     </div>
                     <div className="text-[10px] sm:text-xs uppercase tracking-wider text-amber-50/60 mt-1">{l}</div>

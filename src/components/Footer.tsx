@@ -8,7 +8,7 @@ export default function Footer({ navigate }: { navigate: (p: string) => void }) 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-2">
           <h3 className="font-display text-2xl font-bold text-white">{CHURCH.name}</h3>
-          <p className="mt-1 text-sm text-gold font-medium tracking-wide">{CHURCH.tagline}</p>
+          <p className="mt-1 text-sm text-amber-300 font-medium tracking-wide">{CHURCH.tagline}</p>
           <p className="mt-4 text-sm leading-relaxed max-w-md">
             A {CHURCH.denomination} congregation worshipping the Lord Jesus Christ through
             traditional Lutheran hymns in {CHURCH.languages.join(', ')}. All are welcome at
@@ -38,11 +38,11 @@ export default function Footer({ navigate }: { navigate: (p: string) => void }) 
           <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Visit Us</h4>
           <ul className="space-y-3 text-sm">
             <li className="flex gap-2.5">
-              <Clock className="w-4 h-4 mt-0.5 shrink-0 text-gold" />
+              <Clock className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
               <span>Sunday Worship<br />{WORSHIP.label}</span>
             </li>
             <li className="flex gap-2.5">
-              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-gold" />
+              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${CHURCH.addressMapsQuery}`}
                 target="_blank"
@@ -53,11 +53,11 @@ export default function Footer({ navigate }: { navigate: (p: string) => void }) 
               </a>
             </li>
             <li className="flex gap-2.5">
-              <Phone className="w-4 h-4 mt-0.5 shrink-0 text-gold" />
+              <Phone className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
               <a href={CHURCH.phoneHref} className="hover:text-white">{CHURCH.phone}</a>
             </li>
             <li className="flex gap-2.5">
-              <Mail className="w-4 h-4 mt-0.5 shrink-0 text-gold" />
+              <Mail className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
               <a href={`mailto:${CHURCH.email}`} className="hover:text-white break-all">{CHURCH.email}</a>
             </li>
           </ul>
@@ -81,7 +81,7 @@ export default function Footer({ navigate }: { navigate: (p: string) => void }) 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-amber-50/60">
           <p>© {new Date().getFullYear()} {CHURCH.name} · {CHURCH.city}, CA</p>
           <p className="flex items-center gap-1.5">
-            Soli Deo Gloria <Heart className="w-3 h-3 text-gold" />
+            Soli Deo Gloria <Heart className="w-3 h-3 text-amber-300" />
           </p>
         </div>
       </div>
