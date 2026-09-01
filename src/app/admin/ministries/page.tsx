@@ -1,6 +1,7 @@
-import { deleteMinistry, saveMinistry } from "@/app/actions/content";
+import { deleteMinistry } from "@/app/actions/content";
+import { MinistryForm } from "@/app/admin/ministries/ministry-form";
 import { DeleteButton } from "@/components/DeleteButton";
-import { Field, SavedNotice } from "@/components/ui";
+import { SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
 
 export const metadata = { title: "Ministries CMS" };
@@ -33,19 +34,7 @@ export default async function AdminMinistries({
             </div>
           ))}
         </div>
-        <form action={saveMinistry} className="card space-y-4 p-6">
-          <h2 className="font-display text-2xl">{current ? "Edit ministry" : "Add ministry"}</h2>
-          {current ? <input type="hidden" name="id" value={current.id} /> : null}
-          <Field label="Name" name="name" defaultValue={current?.name} required />
-          <Field label="URL slug" name="slug" defaultValue={current?.slug} />
-          <Field label="Summary" name="summary" defaultValue={current?.summary} />
-          <Field label="Image path or uploaded URL" name="imageUrl" defaultValue={current?.imageUrl} />
-          <Field label="Sort order" name="sortOrder" type="number" defaultValue={current?.sortOrder ?? 0} />
-          <Field label="Full description" name="body" type="textarea" defaultValue={current?.body} />
-          <button className="btn btn-dark" type="submit">
-            Save ministry
-          </button>
-        </form>
+        <MinistryForm key={current?.id || "new"} current={current} />
       </div>
     </div>
   );

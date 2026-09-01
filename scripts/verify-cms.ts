@@ -85,6 +85,66 @@ async function main() {
     })(),
   });
 
+  const contact = await db.page.findUnique({ where: { slug: "contact" } });
+  if (!contact) throw new Error("Contact page is missing");
+  const contactSave = await json("/api/admin/pages", {
+    method: "POST",
+    headers: { cookie: cookieHeader(adminToken) },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "contact");
+      data.set("title", contact.title);
+      data.set("excerpt", contact.excerpt);
+      data.set("body", contact.body);
+      return data;
+    })(),
+  });
+  if ((contactSave.body as { slug?: string }).slug !== "contact") {
+    throw new Error(`Contact save dropped the slug: ${contactSave.text}`);
+  }
+  const aboutAfterContact = await db.page.findUnique({ where: { slug: "about" } });
+  if (aboutAfterContact?.body !== original.body) {
+    throw new Error("Saving Contact overwrote the About page");
+  }
+
+  const aboutPhoto = new FormData();
+  aboutPhoto.set("slug", "about");
+  aboutPhoto.set("title", original.title);
+  aboutPhoto.set("excerpt", original.excerpt);
+  aboutPhoto.set("body", original.body);
+  aboutPhoto.set("file", new File([PNG], "qa-about.png", { type: "image/png" }));
+  const photoSave = await json("/api/admin/pages", {
+    method: "POST",
+    headers: { cookie: cookieHeader(adminToken) },
+    body: aboutPhoto,
+  });
+  if ((photoSave.body as { ok?: boolean })?.ok !== true) {
+    throw new Error(`About photo save failed: ${photoSave.text}`);
+  }
+  const aboutWithPhoto = await db.page.findUnique({ where: { slug: "about" } });
+  if (!aboutWithPhoto?.imageUrl.startsWith("/uploads/")) {
+    throw new Error("About photo was not stored on the page");
+  }
+  const homeHtml = await (await fetch(`${BASE}/`)).text();
+  if (!homeHtml.includes(aboutWithPhoto.imageUrl) || !homeHtml.includes(original.excerpt.slice(0, 40))) {
+    throw new Error("Homepage did not use the About excerpt and photo");
+  }
+  await json("/api/admin/pages", {
+    method: "POST",
+    headers: { cookie: cookieHeader(adminToken) },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "about");
+      data.set("title", original.title);
+      data.set("excerpt", original.excerpt);
+      data.set("body", original.body);
+      data.set("galleryUrl", "/images/about.jpg");
+      return data;
+    })(),
+  });
+  const leftover = join(process.cwd(), "public", aboutWithPhoto.imageUrl);
+  if (existsSync(leftover)) unlinkSync(leftover);
+
   const uploadData = new FormData();
   uploadData.set("file", new File([PNG], "qa-upload.png", { type: "image/png" }));
   uploadData.set("title", "QA upload photo");
@@ -109,6 +169,35 @@ async function main() {
   }
   await db.galleryImage.deleteMany({ where: { url: uploaded.url } });
   unlinkSync(filePath);
+
+  const ministry = await db.ministry.findFirst({ orderBy: { sortOrder: "asc" } });
+  if (!ministry) throw new Error("No ministry to update");
+  const ministryData = new FormData();
+  ministryData.set("id", ministry.id);
+  ministryData.set("name", ministry.name);
+  ministryData.set("slug", ministry.slug);
+  ministryData.set("summary", ministry.summary);
+  ministryData.set("body", ministry.body);
+  ministryData.set("sortOrder", String(ministry.sortOrder));
+  ministryData.set("file", new File([PNG], "qa-ministry.png", { type: "image/png" }));
+  const ministrySave = await json("/api/admin/ministries", {
+    method: "POST",
+    headers: { cookie: cookieHeader(adminToken) },
+    body: ministryData,
+  });
+  if ((ministrySave.body as { ok?: boolean; id?: string }).id !== ministry.id) {
+    throw new Error(`Ministry save failed: ${ministrySave.text}`);
+  }
+  const updatedMinistry = await db.ministry.findUnique({ where: { id: ministry.id } });
+  if (!updatedMinistry?.imageUrl.startsWith("/uploads/")) {
+    throw new Error("Ministry photo was not stored");
+  }
+  const ministryFile = join(process.cwd(), "public", updatedMinistry.imageUrl);
+  if (existsSync(ministryFile)) unlinkSync(ministryFile);
+  await db.ministry.update({
+    where: { id: ministry.id },
+    data: { imageUrl: ministry.imageUrl },
+  });
 
   const memberSession = await json("/api/session", {
     headers: { cookie: cookieHeader(memberToken) },

@@ -31,6 +31,7 @@ async function main() {
     "Telugu",
     "11:30",
     "Fremont",
+    "join this community of faith",
   ]);
   await mustContain("/about", ["Triune God", "Lutheran"]);
   await mustContain("/contact", ["4211 Carol Ave", "gssam2005@gmail.com"]);

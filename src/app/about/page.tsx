@@ -35,7 +35,7 @@ export default async function AboutPage() {
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/real-congregation.jpg"
+            src={page.imageUrl || "/images/real-congregation.jpg"}
             alt="GSSAM congregation"
             className="mt-6 w-full rounded-xl object-cover"
           />

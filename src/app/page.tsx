@@ -6,8 +6,9 @@ import { db } from "@/lib/db";
 import Link from "next/link";
 
 export default async function HomePage() {
-  const [page, ministries, events, sermons, heroPhoto, photos, user] = await Promise.all([
+  const [page, about, ministries, events, sermons, heroPhoto, photos, user] = await Promise.all([
     db.page.findUnique({ where: { slug: "home" } }),
+    db.page.findUnique({ where: { slug: "about" } }),
     db.ministry.findMany({ orderBy: { sortOrder: "asc" }, take: 4 }),
     db.churchEvent.findMany({
       where: { published: true, startsAt: { gte: new Date() } },
@@ -46,7 +47,7 @@ export default async function HomePage() {
         <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={heroPhoto?.url || "/images/real-congregation.jpg"}
+            src={page?.imageUrl || heroPhoto?.url || "/images/real-congregation.jpg"}
             alt={heroPhoto?.title || "GSSAM congregation gathered for worship"}
             className="h-full w-full object-cover opacity-40"
           />
@@ -87,7 +88,7 @@ export default async function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-2 lg:items-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/about.jpg"
+          src={about?.imageUrl || "/images/about.jpg"}
           alt="GSSAM congregation"
           className="w-full rounded-3xl object-cover"
         />
@@ -97,11 +98,7 @@ export default async function HomePage() {
             A South Asian Lutheran family in Fremont
           </h2>
           <p className="mt-5 text-lg leading-8 text-ink/80">
-            {page?.body.split("\n\n")[0]}
-          </p>
-          <p className="mt-4 text-lg leading-8 text-ink/80">
-            We believe in the Triune God, gather around Word and sacrament, and
-            sing traditional Lutheran hymns in Telugu, Hindi, Tamil, and English.
+            {about?.excerpt || page?.excerpt}
           </p>
           <Link href="/about" className="btn btn-dark mt-6">
             Read more

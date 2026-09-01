@@ -1,18 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Field } from "@/components/ui";
 
+const PHOTO_PAGES = new Set(["home", "about"]);
+
 export function PageEditor({
   page,
+  gallery,
 }: {
-  page: { slug: string; title: string; excerpt: string; body: string };
+  page: { slug: string; title: string; excerpt: string; body: string; imageUrl: string };
+  gallery: { id: string; url: string; title: string }[];
 }) {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
+  const showPhoto = PHOTO_PAGES.has(page.slug);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,11 +39,9 @@ export function PageEditor({
       }
       setSaved(true);
       const slug = payload.slug || page.slug;
-      router.replace(`/admin/pages?slug=${encodeURIComponent(slug)}&saved=1`);
-      router.refresh();
+      window.location.assign(`/admin/pages?slug=${encodeURIComponent(slug)}&saved=1`);
     } catch {
       setError("Could not save this page. Please try again.");
-    } finally {
       setPending(false);
     }
   }
@@ -63,6 +64,44 @@ export function PageEditor({
         type="textarea"
         defaultValue={page.excerpt}
       />
+      {showPhoto ? (
+        <div className="space-y-3">
+          {page.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={page.imageUrl}
+              alt=""
+              className="h-40 w-full rounded-xl object-cover"
+            />
+          ) : null}
+          <Field
+            label={page.slug === "home" ? "Homepage photo" : "About photo"}
+            name="file"
+          >
+            <input className="input" name="file" type="file" accept="image/*" />
+          </Field>
+          {gallery.length ? (
+            <label className="block text-sm">
+              <span className="mb-1 block font-medium text-shepherd">
+                Or use a gallery photo
+              </span>
+              <select className="input" name="galleryUrl" defaultValue="">
+                <option value="">Keep the current photo</option>
+                {gallery.map((photo) => (
+                  <option key={photo.id} value={photo.url}>
+                    {photo.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <p className="text-xs text-muted">
+            {page.slug === "home"
+              ? "This is the large picture behind the welcome heading."
+              : "This picture appears on the About page and in the About section of the homepage."}
+          </p>
+        </div>
+      ) : null}
       <Field label="Page content" name="body">
         <textarea className="input min-h-64" name="body" defaultValue={page.body} />
       </Field>

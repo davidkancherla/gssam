@@ -24,6 +24,7 @@ model Page {
   title     String
   excerpt   String   @default("")
   body      String   @default("")
+  imageUrl  String   @default("")
   updatedAt DateTime @updatedAt
 }
 

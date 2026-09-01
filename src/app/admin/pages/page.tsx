@@ -11,8 +11,14 @@ export default async function AdminPages({
   searchParams: Promise<{ saved?: string; slug?: string }>;
 }) {
   const params = await searchParams;
-  const pages = await db.page.findMany({ orderBy: { title: "asc" } });
-  const current = pages.find((page) => page.slug === params.slug) ?? pages[0];
+  const [pages, gallery] = await Promise.all([
+    db.page.findMany({ orderBy: { title: "asc" } }),
+    db.galleryImage.findMany({ orderBy: { createdAt: "desc" } }),
+  ]);
+  const current =
+    pages.find((page) => page.slug === params.slug) ??
+    pages.find((page) => page.slug === "home") ??
+    pages[0];
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -31,7 +37,17 @@ export default async function AdminPages({
           </Link>
         ))}
       </div>
-      {current ? <PageEditor key={current.slug} page={current} /> : null}
+      {current ? (
+        <PageEditor
+          key={current.slug}
+          page={current}
+          gallery={gallery.map((photo) => ({
+            id: photo.id,
+            url: photo.url,
+            title: photo.title,
+          }))}
+        />
+      ) : null}
     </div>
   );
 }

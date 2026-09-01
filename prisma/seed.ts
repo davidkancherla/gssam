@@ -53,6 +53,7 @@ async function main() {
       {
         slug: "home",
         title: "Welcome to GSSAM",
+        imageUrl: "/images/real-congregation.jpg",
         excerpt:
           "Please come and join our vibrant, welcoming and engaging community at our worship service on Sundays and/or join our ministries.",
         body: `Good Shepherd South Asian Ministry in Fremont, CA welcomes you to join this community of faith. If you’re unfamiliar with our church, some of what you learn may surprise you.
@@ -64,6 +65,7 @@ Sunday School and worship are together each Sunday from 11:30 AM to 1:00 PM at 4
       {
         slug: "about",
         title: "About GSSAM",
+        imageUrl: "/images/about.jpg",
         excerpt:
           "Good Shepherd South Asian Ministry in Fremont, CA welcomes you to join this community of faith.",
         body: `Welcome to GSSAM

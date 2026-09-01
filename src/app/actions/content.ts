@@ -75,7 +75,7 @@ export async function saveMinistry(formData: FormData) {
   }
   revalidatePath("/ministries");
   revalidatePath("/");
-  redirect("/admin/ministries?saved=1");
+  redirect(id ? `/admin/ministries?saved=1&id=${id}` : "/admin/ministries?saved=1");
 }
 
 export async function deleteMinistry(id: string) {
