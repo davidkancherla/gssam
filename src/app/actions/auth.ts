@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { SESSION_COOKIE, signSession, type Role } from "@/lib/session";
+import { sessionCookieOptions } from "@/lib/session-cookie";
 
 function safeNextPath(next: string, role: Role) {
   const fallback = role === "ADMIN" ? "/admin" : "/member";
@@ -46,13 +47,7 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
   });
 
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 14,
-    secure: process.env.NODE_ENV === "production",
-  });
+  jar.set(SESSION_COOKIE, token, sessionCookieOptions());
 
   redirect(safeNextPath(next, role));
 }

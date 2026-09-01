@@ -1,9 +1,10 @@
-import { savePage } from "@/app/actions/content";
 import { requireAdmin } from "@/lib/auth";
-import { Field, SavedNotice } from "@/components/ui";
+import { SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { PageForm } from "./page-form";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Edit pages" };
 
 export default async function AdminPages({
@@ -34,19 +35,13 @@ export default async function AdminPages({
         ))}
       </div>
       {current ? (
-        <form action={savePage} className="card space-y-4 p-6">
-          <input type="hidden" name="slug" value={current.slug} />
-          <Field label="Title" name="title" defaultValue={current.title} required />
-          <Field label="Short introduction" name="excerpt" type="textarea" defaultValue={current.excerpt} />
-          <Field label="Page content" name="body" type="textarea" defaultValue={current.body} />
-          <p className="text-xs text-muted">
-            Separate paragraphs with a blank line. A short line without a period
-            is shown as a heading on the public site.
-          </p>
-          <button className="btn btn-dark" type="submit">
-            Save {current.title}
-          </button>
-        </form>
+        <PageForm
+          key={`${current.slug}-${current.updatedAt.toISOString()}`}
+          slug={current.slug}
+          title={current.title}
+          excerpt={current.excerpt}
+          body={current.body}
+        />
       ) : null}
     </div>
   );

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { persistSession } from "./session-cookie";
 import { userFromToken } from "./current-user";
 import { SESSION_COOKIE, type Role, type SessionUser } from "./session";
 
@@ -21,9 +22,23 @@ export async function requireAdmin() {
   return requireUser("ADMIN");
 }
 
+/** Admin Server Actions: keep the session cookie on the redirect response. */
+export async function requireAdminAction() {
+  const user = await requireAdmin();
+  await persistSession(user);
+  return user;
+}
+
 export async function requireMemberArea() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
   if (user.role !== "MEMBER" && user.role !== "ADMIN") redirect("/login");
+  return user;
+}
+
+/** Member Server Actions: keep the session cookie on the action response. */
+export async function requireMemberAction() {
+  const user = await requireMemberArea();
+  await persistSession(user);
   return user;
 }

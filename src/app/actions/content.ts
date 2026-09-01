@@ -5,8 +5,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAction } from "@/lib/auth";
+import { persistSession } from "@/lib/session-cookie";
 import { db } from "@/lib/db";
+import type { SessionUser } from "@/lib/session";
 import {
   UPLOAD_DIR,
   extensionForImage,
@@ -33,9 +35,20 @@ function slugify(value: string) {
     .slice(0, 80);
 }
 
-export async function savePage(formData: FormData) {
-  await requireAdmin();
+export type PageFormState = { error?: string; saved?: boolean } | null;
+
+async function redirectKeepingSession(user: SessionUser, path: string): Promise<never> {
+  await persistSession(user);
+  redirect(path);
+}
+
+export async function savePage(
+  _prev: PageFormState,
+  formData: FormData,
+): Promise<Exclude<PageFormState, null>> {
+  const user = await requireAdminAction();
   const slug = text(formData, "slug");
+  if (!slug) return { error: "Choose a page to save." };
   await db.page.update({
     where: { slug },
     data: {
@@ -50,11 +63,13 @@ export async function savePage(formData: FormData) {
   revalidatePath("/contact");
   revalidatePath("/donate");
   revalidatePath("/privacy");
-  redirect("/admin/pages?saved=1");
+  revalidatePath("/admin/pages");
+  await persistSession(user);
+  return { saved: true };
 }
 
 export async function saveMinistry(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdminAction();
   const id = text(formData, "id");
   const name = text(formData, "name");
   const data = {
@@ -72,18 +87,18 @@ export async function saveMinistry(formData: FormData) {
   }
   revalidatePath("/ministries");
   revalidatePath("/");
-  redirect("/admin/ministries?saved=1");
+  await redirectKeepingSession(user, "/admin/ministries?saved=1");
 }
 
 export async function deleteMinistry(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.ministry.delete({ where: { id } });
   revalidatePath("/ministries");
   revalidatePath("/");
 }
 
 export async function saveEvent(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdminAction();
   const id = text(formData, "id");
   const title = text(formData, "title");
   const data = {
@@ -104,18 +119,18 @@ export async function saveEvent(formData: FormData) {
   }
   revalidatePath("/events");
   revalidatePath("/");
-  redirect("/admin/events?saved=1");
+  await redirectKeepingSession(user, "/admin/events?saved=1");
 }
 
 export async function deleteEvent(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.churchEvent.delete({ where: { id } });
   revalidatePath("/events");
   revalidatePath("/");
 }
 
 export async function saveSermon(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdminAction();
   const id = text(formData, "id");
   const data = {
     title: text(formData, "title"),
@@ -133,18 +148,18 @@ export async function saveSermon(formData: FormData) {
   }
   revalidatePath("/messages");
   revalidatePath("/");
-  redirect("/admin/messages?saved=1");
+  await redirectKeepingSession(user, "/admin/messages?saved=1");
 }
 
 export async function deleteSermon(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.sermon.delete({ where: { id } });
   revalidatePath("/messages");
   revalidatePath("/");
 }
 
 export async function saveGalleryMeta(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdminAction();
   const id = text(formData, "id");
   await db.galleryImage.update({
     where: { id },
@@ -155,11 +170,11 @@ export async function saveGalleryMeta(formData: FormData) {
     },
   });
   revalidatePath("/gallery");
-  redirect("/admin/gallery?saved=1");
+  await redirectKeepingSession(user, "/admin/gallery?saved=1");
 }
 
 export async function uploadGalleryImage(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdminAction();
   const file = uploadedBlob(formData.get("file"));
   if (!file) {
     throw new Error("Please choose a photo to upload.");
@@ -195,18 +210,18 @@ export async function uploadGalleryImage(formData: FormData) {
 
   revalidatePath("/gallery");
   revalidatePath("/");
-  redirect("/admin/gallery?saved=1");
+  await redirectKeepingSession(user, "/admin/gallery?saved=1");
 }
 
 export async function deleteGalleryImage(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.galleryImage.delete({ where: { id } });
   revalidatePath("/gallery");
   revalidatePath("/");
 }
 
 export async function saveWeekly(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdminAction();
   const id = text(formData, "id");
   const data = {
     weekOf: new Date(text(formData, "weekOf")),
@@ -223,11 +238,11 @@ export async function saveWeekly(formData: FormData) {
     await db.weeklyBulletin.create({ data });
   }
   revalidatePath("/member/weekly");
-  redirect("/admin/weekly?saved=1");
+  await redirectKeepingSession(user, "/admin/weekly?saved=1");
 }
 
 export async function deleteWeekly(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.weeklyBulletin.delete({ where: { id } });
   revalidatePath("/member/weekly");
 }

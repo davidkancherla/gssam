@@ -3,9 +3,10 @@ import { requireAdmin } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
 import { DemoBanner, Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
-import { isChurchScoped } from "@/lib/finance";
+import { churchWideCardTotals } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Church finance" };
 
 export default async function AdminFinance({
@@ -27,13 +28,7 @@ export default async function AdminFinance({
     }),
   ]);
 
-  const churchEntries = entries.filter(isChurchScoped);
-  const income = churchEntries
-    .filter((entry) => entry.kind !== "EXPENSE")
-    .reduce((sum, entry) => sum + entry.amountCents, 0);
-  const expenses = churchEntries
-    .filter((entry) => entry.kind === "EXPENSE")
-    .reduce((sum, entry) => sum + entry.amountCents, 0);
+  const { income, expenses } = churchWideCardTotals(entries);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -41,22 +36,34 @@ export default async function AdminFinance({
       <DemoBanner />
       <SavedNotice searchParams={params} />
       <p className="text-sm text-ink/80">
-        The cards count <strong>church-wide</strong> (unnamed) rows only.
-        Household income and personal expenses stay on each member’s portal and
-        are not added into these totals.
+        The cards count unnamed <strong>church-wide</strong> rows only. Member
+        household INCOME and personal EXPENSE rows are listed below for the
+        office but are never added into these totals.
       </p>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="card p-5">
           <p className="text-sm text-muted">Church-wide income & offerings</p>
-          <p className="mt-2 font-display text-3xl text-shepherd">{formatMoney(income)}</p>
+          <p
+            className="mt-2 font-display text-3xl text-shepherd"
+            data-church-wide="income"
+          >
+            {formatMoney(income)}
+          </p>
         </div>
         <div className="card p-5">
           <p className="text-sm text-muted">Church-wide expenses</p>
-          <p className="mt-2 font-display text-3xl text-burgundy">{formatMoney(expenses)}</p>
+          <p
+            className="mt-2 font-display text-3xl text-burgundy"
+            data-church-wide="expenses"
+          >
+            {formatMoney(expenses)}
+          </p>
         </div>
         <div className="card p-5">
           <p className="text-sm text-muted">Net (church-wide sample)</p>
-          <p className="mt-2 font-display text-3xl">{formatMoney(income - expenses)}</p>
+          <p className="mt-2 font-display text-3xl" data-church-wide="net">
+            {formatMoney(income - expenses)}
+          </p>
         </div>
       </div>
       <form action={addFinanceEntry} className="card grid gap-4 p-6 sm:grid-cols-2">

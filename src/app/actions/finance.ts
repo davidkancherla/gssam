@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin, requireMemberArea } from "@/lib/auth";
+import { persistSession } from "@/lib/session-cookie";
+import { requireAdmin, requireMemberAction } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { canAccessFinanceEntry } from "@/lib/finance";
 import type { SessionUser } from "@/lib/session";
@@ -26,7 +27,7 @@ function revalidateFinance() {
   revalidatePath("/admin/finance");
 }
 
-function redirectAfterSave(user: SessionUser, formData: FormData, kind: string) {
+function redirectAfterSave(user: SessionUser, formData: FormData, kind: string): never {
   const returnTo = text(formData, "returnTo");
   const returnPaths =
     user.role === "ADMIN"
@@ -42,7 +43,7 @@ function redirectAfterSave(user: SessionUser, formData: FormData, kind: string) 
 }
 
 export async function addFinanceEntry(formData: FormData) {
-  const user = await requireMemberArea();
+  const user = await requireMemberAction();
   const kind = text(formData, "kind").toUpperCase();
   const allowed = ["TITHE", "OFFERING", "INCOME", "EXPENSE"];
   if (!allowed.includes(kind)) {
@@ -77,6 +78,7 @@ export async function addFinanceEntry(formData: FormData) {
   });
 
   revalidateFinance();
+  await persistSession(user);
   redirectAfterSave(user, formData, kind);
 }
 
@@ -85,7 +87,7 @@ export async function addIncomeEntry(
   _prev: IncomeFormState,
   formData: FormData,
 ): Promise<Exclude<IncomeFormState, null>> {
-  const user = await requireMemberArea();
+  const user = await requireMemberAction();
   const amountCents = parseAmountCents(formData);
   if (amountCents === null) {
     return { error: "Please enter an amount greater than zero." };
@@ -107,11 +109,12 @@ export async function addIncomeEntry(
   revalidatePath("/member/finance");
   revalidatePath("/member");
   revalidatePath("/admin/finance");
+  await persistSession(user);
   return { saved: true };
 }
 
 export async function deleteFinanceEntry(id: string) {
-  const user = await requireMemberArea();
+  const user = await requireMemberAction();
 
   const entry = await db.financeEntry.findUnique({ where: { id } });
   if (!entry) return;

@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { userFromToken } from "@/lib/current-user";
-import { SESSION_COOKIE } from "@/lib/session";
+import { SESSION_COOKIE, verifySession } from "@/lib/session";
 
 export async function proxy(request: NextRequest) {
-  // Server Actions POST to the page URL. Do not run proxy (or Prisma) on those
-  // requests — cloning the body here surfaces "An unexpected response was
-  // received from the server". Layouts and the actions still enforce auth.
+  // Server Actions POST to the page URL. Skip proxy so the body is not cloned.
+  // Layouts and the actions still enforce auth.
   if (request.headers.get("next-action")) {
     return NextResponse.next();
   }
+
   const { pathname } = request.nextUrl;
-  const user = await userFromToken(request.cookies.get(SESSION_COOKIE)?.value);
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
+  const user = token ? await verifySession(token) : null;
 
   if (pathname.startsWith("/admin")) {
     if (!user) {

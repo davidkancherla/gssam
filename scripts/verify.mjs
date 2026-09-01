@@ -96,6 +96,39 @@ function assertRedirect(result, path, needle) {
   }
 }
 
+function formatMoney(cents) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(cents / 100);
+}
+
+function churchWideCardTotals(entries) {
+  let income = 0;
+  let expenses = 0;
+  for (const entry of entries) {
+    const householdIncomeOrExpense =
+      (entry.kind === "INCOME" || entry.kind === "EXPENSE") &&
+      (entry.scope === "MEMBER" || entry.memberId != null);
+    if (householdIncomeOrExpense) continue;
+    if (entry.memberId != null) continue;
+    if (entry.scope !== "CHURCH") continue;
+    if (entry.kind === "EXPENSE") expenses += entry.amountCents;
+    else income += entry.amountCents;
+  }
+  return { income, expenses };
+}
+
+function churchWideAttr(html, name) {
+  const match = html.match(
+    new RegExp(`data-church-wide="${name}"[\\s\\S]*?>\\s*([^<]+)`),
+  );
+  if (!match) {
+    throw new Error(`/admin/finance is missing data-church-wide="${name}"`);
+  }
+  return match[1].replace(/&amp;/g, "&").trim();
+}
+
 const TINY_PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   "base64",
@@ -187,17 +220,75 @@ async function main() {
       [
         "Church-wide finance",
         "Church-wide income",
-        "$1,845.00",
-        "$605.00",
         "Priya Sharma",
         "Arun Reddy",
         "Demo sample data",
         "church-wide",
+        "household INCOME",
       ],
       adminToken,
     );
+    const ledger = await db.financeEntry.findMany();
+    const churchTotals = churchWideCardTotals(ledger);
+    const mixedIncome = ledger
+      .filter((entry) => entry.kind !== "EXPENSE")
+      .reduce((sum, entry) => sum + entry.amountCents, 0);
+    const mixedExpenses = ledger
+      .filter((entry) => entry.kind === "EXPENSE")
+      .reduce((sum, entry) => sum + entry.amountCents, 0);
     const adminFinance = await fetchText("/admin/finance", adminToken);
-    mustNotContain("/admin/finance totals", adminFinance.text, ["$5,545.00", "$630.00"]);
+    const shownIncome = churchWideAttr(adminFinance.text, "income");
+    const shownExpenses = churchWideAttr(adminFinance.text, "expenses");
+    if (shownIncome !== formatMoney(churchTotals.income)) {
+      throw new Error(
+        `/admin/finance income card is ${shownIncome}, expected ${formatMoney(churchTotals.income)}`,
+      );
+    }
+    if (shownExpenses !== formatMoney(churchTotals.expenses)) {
+      throw new Error(
+        `/admin/finance expense card is ${shownExpenses}, expected ${formatMoney(churchTotals.expenses)}`,
+      );
+    }
+    const householdIncome = ledger
+      .filter(
+        (entry) =>
+          entry.kind === "INCOME" &&
+          (entry.scope === "MEMBER" || entry.memberId != null),
+      )
+      .reduce((sum, entry) => sum + entry.amountCents, 0);
+    const householdExpenses = ledger
+      .filter(
+        (entry) =>
+          entry.kind === "EXPENSE" &&
+          (entry.scope === "MEMBER" || entry.memberId != null),
+      )
+      .reduce((sum, entry) => sum + entry.amountCents, 0);
+    if (householdIncome > 0 && mixedIncome === churchTotals.income) {
+      throw new Error("Church-wide income still includes household INCOME rows.");
+    }
+    if (householdExpenses > 0 && mixedExpenses === churchTotals.expenses) {
+      throw new Error("Church-wide expenses still include personal EXPENSE rows.");
+    }
+    const mixedForbidden = [
+      "$5,545.00",
+      "$5,557.34",
+      "$5,668.00",
+      "$630.00",
+    ];
+    if (mixedIncome !== churchTotals.income) mixedForbidden.push(formatMoney(mixedIncome));
+    if (mixedExpenses !== churchTotals.expenses) mixedForbidden.push(formatMoney(mixedExpenses));
+    mustNotContain(
+      "/admin/finance totals",
+      adminFinance.text,
+      [...new Set(mixedForbidden)].filter(
+        (amount) =>
+          amount !== formatMoney(churchTotals.income) &&
+          amount !== formatMoney(churchTotals.expenses) &&
+          amount !== formatMoney(churchTotals.income - churchTotals.expenses),
+      ),
+    );
+
+    await mustContain("/admin/pages", ["Edit public pages", "Save"], adminToken);
 
     const memberFinance = await fetchText("/member/finance", memberToken);
     if (memberFinance.status !== 200) {
