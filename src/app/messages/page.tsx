@@ -2,6 +2,7 @@ import { PublicShell } from "@/components/PublicShell";
 import { PageHero } from "@/components/ui";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/site";
+import { youtubeEmbedUrl, youtubeThumbUrl, youtubeWatchUrl } from "@/lib/youtube";
 
 export const metadata = { title: "Messages" };
 
@@ -25,20 +26,20 @@ export default async function MessagesPage() {
               {index === 0 ? (
                 <iframe
                   className="aspect-video w-full"
-                  src={`https://www.youtube.com/embed/${sermon.youtubeId}`}
+                  src={youtubeEmbedUrl(sermon.youtubeId)}
                   title={sermon.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
               ) : (
                 <a
-                  href={`https://www.youtube.com/watch?v=${sermon.youtubeId}`}
+                  href={youtubeWatchUrl(sermon.youtubeId)}
                   target="_blank"
                   rel="noreferrer"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`https://i.ytimg.com/vi/${sermon.youtubeId}/hqdefault.jpg`}
+                    src={youtubeThumbUrl(sermon.youtubeId)}
                     alt=""
                     className="aspect-video w-full object-cover"
                   />

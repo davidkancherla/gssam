@@ -38,8 +38,9 @@ export default async function AdminPages({
           <Field label="Short introduction" name="excerpt" type="textarea" defaultValue={current.excerpt} />
           <Field label="Page content" name="body" type="textarea" defaultValue={current.body} />
           <p className="text-xs text-muted">
-            Separate paragraphs with a blank line. A short line without a period
-            is shown as a heading on the public site.
+            On Home, the title is the hero heading and the short introduction is
+            the hero paragraph. On other pages, title and introduction appear in
+            the page header. Separate body paragraphs with a blank line.
           </p>
           <button className="btn btn-dark" type="submit">
             Save {current.title}

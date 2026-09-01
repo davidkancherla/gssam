@@ -11,9 +11,11 @@ export type SessionUser = {
   role: Role;
 };
 
+const EXAMPLE_AUTH_SECRET =
+  "change-this-to-a-long-random-string-before-production";
+
 function secretKey() {
-  const secret =
-    process.env.AUTH_SECRET || "gssam-local-dev-secret-not-for-production";
+  const secret = process.env.AUTH_SECRET || EXAMPLE_AUTH_SECRET;
   return new TextEncoder().encode(secret);
 }
 

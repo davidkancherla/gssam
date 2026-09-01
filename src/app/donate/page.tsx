@@ -17,21 +17,24 @@ export default async function DonatePage() {
         <Prose text={page.body} />
         <aside className="space-y-4">
           <div className="card p-6">
-            <h2 className="font-display text-2xl text-shepherd">Give online</h2>
+            <h2 className="font-display text-2xl text-shepherd">How to give</h2>
+            <p className="mt-2 text-sm leading-7 text-muted">
+              GSSAM does not process card payments on this website. Use one of
+              the church’s existing methods below.
+            </p>
             <ul className="mt-4 space-y-3 text-sm leading-7">
               <li>
-                <strong>PayPal</strong> — {site.paypalEmail}
-                <br />
-                Reminder: use Donation / gift to friend.
+                <strong>Zelle.</strong> Send to {site.zelleEmail}
               </li>
               <li>
-                <strong>Zelle</strong> — {site.zelleEmail}
+                <strong>PayPal.</strong> Send to {site.paypalEmail} and choose
+                Donation / gift to friend (there is no PayPal checkout button here).
               </li>
               <li>
-                <strong>Checks</strong> mailed or bill-pay to {site.address}
+                <strong>Check or bill pay.</strong> Mail to {site.address}
               </li>
             </ul>
-            <a className="btn btn-gold mt-6" href={`mailto:${site.paypalEmail}`}>
+            <a className="btn btn-outline mt-6" href={`mailto:${site.email}`}>
               Email the church office
             </a>
           </div>

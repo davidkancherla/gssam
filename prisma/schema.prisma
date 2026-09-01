@@ -63,12 +63,13 @@ model Sermon {
 }
 
 model GalleryImage {
-  id        String   @id @default(cuid())
-  title     String
-  caption   String   @default("")
-  url       String
-  album     String   @default("Congregation")
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  title      String
+  caption    String   @default("")
+  url        String
+  album      String   @default("Congregation")
+  placement  String   @default("gallery")
+  createdAt  DateTime @default(now())
 }
 
 model Inquiry {

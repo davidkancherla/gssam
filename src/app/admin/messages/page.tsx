@@ -24,8 +24,8 @@ export default async function AdminMessages({
     <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="font-display text-4xl text-shepherd">Messages</h1>
       <p className="text-ink/80">
-        Paste a YouTube video ID or watch URL. Titles from GSSAM Fremont’s
-        channel are already seeded.
+        Paste a YouTube video ID, watch URL, youtu.be link, or /embed/ URL.
+        Those are saved as a video ID so the public player works.
       </p>
       <SavedNotice searchParams={params} />
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">

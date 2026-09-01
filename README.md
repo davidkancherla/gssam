@@ -52,7 +52,7 @@ All money rows are tagged in the UI as **demo sample data**. They are fictional.
 ## What a reviewer should try
 
 1. **Public site** — Home, About, Contact, Giving, Gallery, Messages, Events, Ministries. Copy is GSSAM-specific (no lorem ipsum, no “Hello world” posts). Messages embed real GSSAM Fremont YouTube worship recordings.
-2. **Admin** — Sign in as `admin@gssam.demo`. Edit a page (for example About) and confirm the public page updates. Upload a photo under Gallery and confirm it appears on `/gallery`.
+2. **Admin** — Sign in as `admin@gssam.demo`. Edit Home title/introduction and confirm `/` updates. Upload a photo under Gallery, set it to Homepage hero or Homepage gallery, and confirm it appears on `/`. Delete an upload and confirm the file is gone from `public/uploads/`.
 3. **Member** — Sign in as `member@gssam.demo`. Open Finance, Weekly, and Income. Confirm the banner says the figures are sample data. Sign in as `member2@gssam.demo` and confirm you do **not** see Priya Sharma’s rows.
 4. **Privacy** — Visit `/admin` while signed in as a member; you should be sent to the member portal. Visit `/member` while logged out; you should land on sign-in.
 
@@ -91,12 +91,12 @@ Members see only their own financial rows. Admins see congregation totals and ev
 
 This is a standard Next.js app. For production:
 
-1. Change `AUTH_SECRET` to a long random value.
+1. Set `AUTH_SECRET` to a long random value. If it is still the example string from `.env.example` (`change-this-to-a-long-random-string-before-production`), change it before deploy. Local demo only uses that placeholder when the env var is missing.
 2. Replace SQLite with Postgres (update `prisma/schema.prisma` `datasource` and `DATABASE_URL`).
 3. Put uploads on object storage instead of `public/uploads` if you run multiple servers.
 4. Remove or replace the demo users before a real congregation uses the portal.
 
-Giving on the public site still points to the church’s existing PayPal and Zelle address (`gssam2005@gmail.com`) and mailed checks to 4211 Carol Ave.
+Giving on the public site lists the church’s Zelle and PayPal **email** (`gssam2005@gmail.com`) and mailed checks to 4211 Carol Ave. There is no card checkout on the site.
 
 ## Content notes
 

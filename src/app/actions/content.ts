@@ -1,23 +1,16 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { extname, join, resolve } from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { extractYoutubeId } from "@/lib/youtube";
 
 function text(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
-}
-
-function extractYoutubeId(value: string) {
-  const watch = value.match(/[?&]v=([\w-]{11})/);
-  if (watch) return watch[1];
-  const short = value.match(/youtu\.be\/([\w-]{11})/);
-  if (short) return short[1];
-  return value.slice(0, 11);
 }
 
 function slugify(value: string) {
@@ -141,15 +134,24 @@ export async function deleteSermon(id: string) {
 export async function saveGalleryMeta(formData: FormData) {
   await requireAdmin();
   const id = text(formData, "id");
+  const placement = normalizePlacement(text(formData, "placement"));
+  if (placement === "hero") {
+    await db.galleryImage.updateMany({
+      where: { placement: "hero", NOT: { id } },
+      data: { placement: "gallery" },
+    });
+  }
   await db.galleryImage.update({
     where: { id },
     data: {
       title: text(formData, "title"),
       caption: text(formData, "caption"),
       album: text(formData, "album") || "Congregation",
+      placement,
     },
   });
   revalidatePath("/gallery");
+  revalidatePath("/");
   redirect("/admin/gallery?saved=1");
 }
 
@@ -174,11 +176,20 @@ export async function uploadGalleryImage(formData: FormData) {
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, filename), Buffer.from(await file.arrayBuffer()));
 
+  const placement = normalizePlacement(text(formData, "placement"));
+  if (placement === "hero") {
+    await db.galleryImage.updateMany({
+      where: { placement: "hero" },
+      data: { placement: "gallery" },
+    });
+  }
+
   await db.galleryImage.create({
     data: {
       title: text(formData, "title") || file.name.replace(/\.[^.]+$/, ""),
       caption: text(formData, "caption"),
       album: text(formData, "album") || "Congregation",
+      placement,
       url: `/uploads/${filename}`,
     },
   });
@@ -190,9 +201,27 @@ export async function uploadGalleryImage(formData: FormData) {
 
 export async function deleteGalleryImage(id: string) {
   await requireAdmin();
-  await db.galleryImage.delete({ where: { id } });
+  const photo = await db.galleryImage.findUnique({ where: { id } });
+  if (photo) {
+    await db.galleryImage.delete({ where: { id } });
+    await removeUploadedFile(photo.url);
+  }
   revalidatePath("/gallery");
   revalidatePath("/");
+}
+
+function normalizePlacement(value: string) {
+  if (value === "hero" || value === "home") return value;
+  return "gallery";
+}
+
+async function removeUploadedFile(url: string) {
+  if (!url.startsWith("/uploads/")) return;
+  const uploadsDir = resolve(join(process.cwd(), "public", "uploads"));
+  const filePath = resolve(join(process.cwd(), "public", url));
+  const relative = filePath.startsWith(uploadsDir);
+  if (!relative || filePath === uploadsDir) return;
+  await unlink(filePath).catch(() => undefined);
 }
 
 export async function saveWeekly(formData: FormData) {

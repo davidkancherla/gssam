@@ -17,8 +17,9 @@ export default async function AdminGallery({
     <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="font-display text-4xl text-shepherd">Gallery photos</h1>
       <p className="text-ink/80">
-        Upload a picture for the public gallery or homepage albums. JPG, PNG,
-        WEBP, or GIF up to 8 MB.
+        Upload a picture for the public gallery. Choose Homepage gallery or
+        Homepage hero so it can appear on the public home page. JPG, PNG, WEBP,
+        or GIF up to 8 MB. Deleting an upload also removes the file.
       </p>
       <SavedNotice searchParams={params} />
       <form action={uploadGalleryImage} className="card grid gap-4 p-6 sm:grid-cols-2">
@@ -27,6 +28,14 @@ export default async function AdminGallery({
         </Field>
         <Field label="Title" name="title" />
         <Field label="Album" name="album" defaultValue="Congregation" />
+        <label className="text-sm">
+          <span className="mb-1 block font-medium text-shepherd">Show on</span>
+          <select className="input" name="placement" defaultValue="gallery">
+            <option value="gallery">Gallery only</option>
+            <option value="home">Homepage gallery</option>
+            <option value="hero">Homepage hero</option>
+          </select>
+        </label>
         <Field label="Caption" name="caption" />
         <div className="sm:col-span-2">
           <button className="btn btn-dark" type="submit">
@@ -43,6 +52,14 @@ export default async function AdminGallery({
               <input type="hidden" name="id" value={photo.id} />
               <Field label="Title" name="title" defaultValue={photo.title} />
               <Field label="Album" name="album" defaultValue={photo.album} />
+              <label className="text-sm">
+                <span className="mb-1 block font-medium text-shepherd">Show on</span>
+                <select className="input" name="placement" defaultValue={photo.placement}>
+                  <option value="gallery">Gallery only</option>
+                  <option value="home">Homepage gallery</option>
+                  <option value="hero">Homepage hero</option>
+                </select>
+              </label>
               <Field label="Caption" name="caption" defaultValue={photo.caption} />
               <div className="flex items-center justify-between">
                 <button className="btn btn-gold text-sm" type="submit">

@@ -1,11 +1,12 @@
 import { PublicShell } from "@/components/PublicShell";
 import { formatDate, formatShortDate, site } from "@/lib/site";
+import { youtubeThumbUrl, youtubeWatchUrl } from "@/lib/youtube";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
 
 export default async function HomePage() {
-  const [page, ministries, events, sermons, photos, user] = await Promise.all([
+  const [page, ministries, events, sermons, heroPhoto, photos, user] = await Promise.all([
     db.page.findUnique({ where: { slug: "home" } }),
     db.ministry.findMany({ orderBy: { sortOrder: "asc" }, take: 4 }),
     db.churchEvent.findMany({
@@ -26,7 +27,16 @@ export default async function HomePage() {
       orderBy: { preachedAt: "desc" },
       take: 3,
     }),
-    db.galleryImage.findMany({ orderBy: { createdAt: "desc" }, take: 6 }),
+    db.galleryImage.findFirst({ where: { placement: "hero" } }),
+    db.galleryImage.findMany({
+      where: { placement: "home" },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    }).then(async (homePhotos) =>
+      homePhotos.length
+        ? homePhotos
+        : db.galleryImage.findMany({ orderBy: { createdAt: "desc" }, take: 6 }),
+    ),
     getSessionUser(),
   ]);
 
@@ -36,8 +46,8 @@ export default async function HomePage() {
         <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/real-congregation.jpg"
-            alt="GSSAM congregation gathered for worship"
+            src={heroPhoto?.url || "/images/real-congregation.jpg"}
+            alt={heroPhoto?.title || "GSSAM congregation gathered for worship"}
             className="h-full w-full object-cover opacity-40"
           />
           <div className="hero-veil absolute inset-0" />
@@ -48,11 +58,7 @@ export default async function HomePage() {
               Lutheran congregation · Fremont, CA
             </p>
             <h1 className="mt-4 font-display text-5xl leading-[1.05] sm:text-6xl">
-              Good Shepherd
-              <br />
-              South Asian
-              <br />
-              Ministry
+              {page?.title || site.name}
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-gold-soft">
               {page?.excerpt || site.description}
@@ -177,14 +183,14 @@ export default async function HomePage() {
             {sermons.map((sermon) => (
               <a
                 key={sermon.id}
-                href={`https://www.youtube.com/watch?v=${sermon.youtubeId}`}
+                href={youtubeWatchUrl(sermon.youtubeId)}
                 className="card bg-shepherd-soft text-cream"
                 target="_blank"
                 rel="noreferrer"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`https://i.ytimg.com/vi/${sermon.youtubeId}/hqdefault.jpg`}
+                  src={youtubeThumbUrl(sermon.youtubeId)}
                   alt=""
                   className="h-40 w-full object-cover"
                 />

@@ -22,17 +22,6 @@ export default async function LoginPage({
             own giving, weekly bulletin, and household income tracking. Financial
             records are role-gated and never shown to other members.
           </p>
-          <div className="mt-8 card p-5 text-sm leading-7">
-            <p className="font-medium text-shepherd">Demo logins (local sample data)</p>
-            <p className="mt-2">
-              Admin: <code>admin@gssam.demo</code> / <code>GSSAM-Admin-2026</code>
-              <br />
-              Member: <code>member@gssam.demo</code> / <code>GSSAM-Member-2026</code>
-              <br />
-              Second member: <code>member2@gssam.demo</code> /{" "}
-              <code>GSSAM-Member-2026</code>
-            </p>
-          </div>
         </div>
         <div className="card p-6">
           <LoginForm next={next} />
