@@ -1,4 +1,5 @@
 import { ContactForm } from "@/app/contact/contact-form";
+import { IsolatedMap } from "@/components/IsolatedMap";
 import { PublicShell } from "@/components/PublicShell";
 import { PageHero, Prose } from "@/components/ui";
 import { db } from "@/lib/db";
@@ -34,14 +35,7 @@ export default async function ContactPage() {
               </a>
             </p>
           </div>
-          <div className="mt-8 overflow-hidden rounded-2xl border border-line">
-            <iframe
-              title="Map to GSSAM"
-              src={site.mapEmbed}
-              className="h-72 w-full"
-              loading="lazy"
-            />
-          </div>
+          <IsolatedMap src={site.mapEmbed} title="Map to GSSAM" />
         </div>
         <ContactForm />
       </section>
