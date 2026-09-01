@@ -56,11 +56,23 @@ All money rows are tagged in the UI as **demo sample data**. They are fictional.
 3. **Member** — Sign in as `member@gssam.demo`. Open Finance, Weekly, and Income. Confirm the banner says the figures are sample data. Sign in as `member2@gssam.demo` and confirm you do **not** see Priya Sharma’s rows.
 4. **Privacy** — Visit `/admin` while signed in as a member; you should be sent to the member portal. Visit `/member` while logged out; you should land on sign-in.
 
+## Tests
+
+Playwright covers public pages (home, about, gallery, events, messages, giving, contact), admin sign-in / page edit / photo upload, member finance / weekly / income, and role gating (members cannot see another household’s gifts). Demo logins and labeled sample finance data come from the seed.
+
+```bash
+npx playwright install --with-deps chromium
+npm run setup
+npm test
+```
+
+`npm test` starts the Next.js app if it is not already running. GitHub Actions runs the same suite on pull requests.
+
+If the site is already running on port 3000, a lighter HTTP smoke check is:
+
 ```bash
 npm run verify
 ```
-
-That script expects the app to already be running on port 3000. It checks public copy, login, and role gates.
 
 ## Portals
 
