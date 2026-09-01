@@ -102,6 +102,79 @@ async function main() {
     },
   });
 
+  const originalHome = await db.page.findUnique({ where: { slug: "home" } });
+  if (!originalHome) throw new Error("Home page is missing");
+  const originalHero = await db.galleryImage.findFirst({ where: { placement: "hero" } });
+  const homeFileSave = await fetch(`${BASE}/api/admin/pages`, {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      cookie: cookieHeader(adminToken),
+      accept: "text/html,application/xhtml+xml",
+      "sec-fetch-dest": "document",
+      "sec-fetch-mode": "navigate",
+    },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "home");
+      data.set("title", originalHome.title);
+      data.set("excerpt", originalHome.excerpt);
+      data.set("body", originalHome.body);
+      data.set("galleryUrl", "");
+      data.set("file", new File([PNG], "qa-home-hero.png", { type: "image/png" }));
+      return data;
+    })(),
+  });
+  const homeLocation = homeFileSave.headers.get("location") || "";
+  if (![303, 302, 307, 308].includes(homeFileSave.status) || !homeLocation.includes("slug=home")) {
+    throw new Error(`Home file save must 303 to slug=home, got ${homeFileSave.status} ${homeLocation}`);
+  }
+  const homeRow = await db.page.findUnique({ where: { slug: "home" } });
+  if (!homeRow?.imageUrl.startsWith("/uploads/")) {
+    throw new Error(`Home file upload did not persist an /uploads hero, got ${homeRow?.imageUrl}`);
+  }
+  const homeFilePath = join(process.cwd(), "public", homeRow.imageUrl);
+  if (!existsSync(homeFilePath) || readFileSync(homeFilePath).length < 10) {
+    throw new Error(`Home hero was not written to ${homeFilePath}`);
+  }
+  const publicHome = await (await fetch(`${BASE}/`)).text();
+  if (!publicHome.includes(homeRow.imageUrl)) {
+    throw new Error("Public homepage hero did not use the uploaded photo");
+  }
+  const blobSave = await json("/api/admin/pages", {
+    method: "POST",
+    headers: { cookie: cookieHeader(adminToken) },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "home");
+      data.set("title", originalHome.title);
+      data.set("excerpt", originalHome.excerpt);
+      data.set("body", originalHome.body);
+      data.set("file", new Blob([PNG], { type: "image/png" }));
+      return data;
+    })(),
+  });
+  if ((blobSave.body as { ok?: boolean })?.ok !== true) {
+    throw new Error(`Home Blob upload failed: ${blobSave.text}`);
+  }
+  const homeAfterBlob = await db.page.findUnique({ where: { slug: "home" } });
+  if (!homeAfterBlob?.imageUrl.startsWith("/uploads/")) {
+    throw new Error("Home Blob upload did not write an /uploads hero");
+  }
+  const blobPath = join(process.cwd(), "public", homeAfterBlob.imageUrl);
+  if (existsSync(homeFilePath) && homeFilePath !== blobPath) unlinkSync(homeFilePath);
+  await db.page.update({
+    where: { slug: "home" },
+    data: { imageUrl: originalHome.imageUrl },
+  });
+  if (originalHero) {
+    await db.galleryImage.update({
+      where: { id: originalHero.id },
+      data: { url: originalHero.url },
+    });
+  }
+  if (existsSync(blobPath)) unlinkSync(blobPath);
+
   const marker = `QA save ${Date.now()}`;
 
   const save = await json("/api/admin/pages", {

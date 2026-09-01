@@ -17,15 +17,9 @@ export function PageEditor({
       method="post"
       encType="multipart/form-data"
       className="card space-y-4 p-6"
+      {...{ enctype: "multipart/form-data" }}
     >
       <input type="hidden" name="slug" value={page.slug} />
-      <Field label="Title" name="title" defaultValue={page.title} required />
-      <Field
-        label="Short introduction"
-        name="excerpt"
-        type="textarea"
-        defaultValue={page.excerpt}
-      />
       {showPhoto ? (
         <div className="space-y-3">
           {page.imageUrl ? (
@@ -59,11 +53,18 @@ export function PageEditor({
           ) : null}
           <p className="text-xs text-muted">
             {page.slug === "home"
-              ? "This is the large picture behind the welcome heading."
+              ? "This is the large picture behind the welcome heading. A chosen file is saved on the server and used as the public hero."
               : "This picture appears on the About page and in the About section of the homepage."}
           </p>
         </div>
       ) : null}
+      <Field label="Title" name="title" defaultValue={page.title} required />
+      <Field
+        label="Short introduction"
+        name="excerpt"
+        type="textarea"
+        defaultValue={page.excerpt}
+      />
       <Field label="Page content" name="body">
         <textarea className="input min-h-64" name="body" defaultValue={page.body} />
       </Field>

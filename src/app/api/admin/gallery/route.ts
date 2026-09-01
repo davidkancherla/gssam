@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { adminError, adminResult } from "@/lib/form-response";
-import { storePublicUpload } from "@/lib/uploads";
+import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,12 +26,16 @@ export async function POST(request: Request) {
     return adminError(request, "/admin/gallery", "The photo was too large to read. Please keep photos under 8 MB.", 413);
   }
 
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    return adminError(request, "/admin/gallery", "Please choose a photo to upload.");
+  const uploaded = await takeUploadedFile(formData);
+  if (!uploaded.ok) {
+    return adminError(
+      request,
+      "/admin/gallery",
+      "error" in uploaded ? uploaded.error : "Please choose a photo to upload.",
+    );
   }
 
-  const stored = await storePublicUpload(file);
+  const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
   if ("error" in stored) {
     return adminError(request, "/admin/gallery", stored.error);
   }
@@ -48,7 +52,7 @@ export async function POST(request: Request) {
     data: {
       title:
         String(formData.get("title") || "").trim() ||
-        file.name.replace(/\.[^.]+$/, "") ||
+        uploaded.name.replace(/\.[^.]+$/, "") ||
         "Congregation photo",
       caption: String(formData.get("caption") || "").trim(),
       album: String(formData.get("album") || "").trim() || "Congregation",

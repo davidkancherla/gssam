@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { adminError, adminResult } from "@/lib/form-response";
-import { storePublicUpload } from "@/lib/uploads";
+import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,7 +21,17 @@ export async function POST(request: Request) {
     return adminError(request, "/login", "Please sign in as an admin to save.", 401);
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return adminError(
+      request,
+      "/admin/ministries",
+      "The photo was too large to read. Please keep photos under 8 MB.",
+      413,
+    );
+  }
   const id = String(formData.get("id") || "").trim();
   const name = String(formData.get("name") || "").trim();
   if (!name) {
@@ -30,9 +40,16 @@ export async function POST(request: Request) {
 
   const existing = id ? await db.ministry.findUnique({ where: { id } }) : null;
   let imageUrl = existing?.imageUrl || "";
-  const file = formData.get("file");
-  if (file instanceof File && file.size > 0) {
-    const stored = await storePublicUpload(file);
+  const uploaded = await takeUploadedFile(formData);
+  if (!uploaded.ok && "error" in uploaded) {
+    return adminError(
+      request,
+      existing ? `/admin/ministries?id=${existing.id}` : "/admin/ministries",
+      uploaded.error,
+    );
+  }
+  if (uploaded.ok) {
+    const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
     if ("error" in stored) {
       return adminError(
         request,

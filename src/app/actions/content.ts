@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdminUser, requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { storePublicUpload } from "@/lib/uploads";
+import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 import { extractYoutubeId } from "@/lib/youtube";
 
 function text(formData: FormData, key: string) {
@@ -32,13 +32,22 @@ export async function savePage(formData: FormData) {
   if (!existing) redirect("/admin/pages?error=That+page+was+not+found.");
 
   let imageUrl = existing.imageUrl;
-  const file = formData.get("file");
-  if (file instanceof File && file.size > 0) {
-    const stored = await storePublicUpload(file);
+  const uploaded = await takeUploadedFile(formData);
+  if (!uploaded.ok && "error" in uploaded) {
+    redirect(`/admin/pages?slug=${encodeURIComponent(slug)}&error=${encodeURIComponent(uploaded.error)}`);
+  }
+  if (uploaded.ok) {
+    const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
     if ("error" in stored) {
       redirect(`/admin/pages?slug=${encodeURIComponent(slug)}&error=${encodeURIComponent(stored.error)}`);
     } else {
       imageUrl = stored.url;
+      if (slug === "home") {
+        await db.galleryImage.updateMany({
+          where: { placement: "hero" },
+          data: { url: imageUrl },
+        });
+      }
     }
   } else {
     const galleryUrl = text(formData, "galleryUrl");
@@ -69,9 +78,16 @@ export async function saveMinistry(formData: FormData) {
   const name = text(formData, "name");
   const existing = id ? await db.ministry.findUnique({ where: { id } }) : null;
   let imageUrl = existing?.imageUrl || text(formData, "imageUrl");
-  const file = formData.get("file");
-  if (file instanceof File && file.size > 0) {
-    const stored = await storePublicUpload(file);
+  const uploaded = await takeUploadedFile(formData);
+  if (!uploaded.ok && "error" in uploaded) {
+    redirect(
+      existing
+        ? `/admin/ministries?id=${existing.id}&error=${encodeURIComponent(uploaded.error)}`
+        : `/admin/ministries?error=${encodeURIComponent(uploaded.error)}`,
+    );
+  }
+  if (uploaded.ok) {
+    const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
     if ("error" in stored) {
       redirect(
         existing
@@ -201,12 +217,12 @@ export async function uploadGalleryImage(
     return { error: "Your session expired. Please sign in again, then upload." };
   }
 
-  const file = formData.get("file");
-  if (!(file instanceof File)) {
-    return { error: "Please choose a photo to upload." };
+  const uploaded = await takeUploadedFile(formData);
+  if (!uploaded.ok) {
+    return { error: "error" in uploaded ? uploaded.error : "Please choose a photo to upload." };
   }
 
-  const stored = await storePublicUpload(file);
+  const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
   if ("error" in stored) {
     return { error: stored.error };
   }
@@ -221,7 +237,7 @@ export async function uploadGalleryImage(
 
   await db.galleryImage.create({
     data: {
-      title: text(formData, "title") || file.name.replace(/\.[^.]+$/, "") || "Congregation photo",
+      title: text(formData, "title") || uploaded.name.replace(/\.[^.]+$/, "") || "Congregation photo",
       caption: text(formData, "caption"),
       album: text(formData, "album") || "Congregation",
       placement,

@@ -19,6 +19,7 @@ export function MinistryForm({
       method="post"
       encType="multipart/form-data"
       className="card space-y-4 p-6"
+      {...{ enctype: "multipart/form-data" }}
     >
       <h2 className="font-display text-2xl">{current ? "Edit ministry" : "Add ministry"}</h2>
       {current ? <input type="hidden" name="id" value={current.id} /> : null}

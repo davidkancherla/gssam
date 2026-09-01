@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { adminError, adminResult } from "@/lib/form-response";
-import { storePublicUpload } from "@/lib/uploads";
+import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,7 +13,18 @@ export async function POST(request: Request) {
     return adminError(request, "/login", "Please sign in as an admin to save.", 401);
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return adminError(
+      request,
+      "/admin/pages",
+      "The photo was too large to read. Please keep photos under 8 MB.",
+      413,
+    );
+  }
+
   const slug = String(formData.get("slug") || "").trim();
   if (!slug) {
     return adminError(request, "/admin/pages", "This page could not be saved.");
@@ -25,13 +36,22 @@ export async function POST(request: Request) {
   }
 
   let imageUrl = existing.imageUrl;
-  const file = formData.get("file");
-  if (file instanceof File && file.size > 0) {
-    const stored = await storePublicUpload(file);
+  const uploaded = await takeUploadedFile(formData);
+  if (!uploaded.ok && "error" in uploaded) {
+    return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, uploaded.error);
+  }
+  if (uploaded.ok) {
+    const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
     if ("error" in stored) {
       return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, stored.error);
     }
     imageUrl = stored.url;
+    if (slug === "home") {
+      await db.galleryImage.updateMany({
+        where: { placement: "hero" },
+        data: { url: imageUrl },
+      });
+    }
   } else {
     const galleryUrl = String(formData.get("galleryUrl") || "").trim();
     if (galleryUrl.startsWith("/")) {
@@ -61,5 +81,6 @@ export async function POST(request: Request) {
   return adminResult(request, `/admin/pages?slug=${encodeURIComponent(slug)}&saved=1`, {
     ok: true,
     slug,
+    imageUrl,
   });
 }
