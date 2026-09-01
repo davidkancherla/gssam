@@ -1,89 +1,47 @@
-import { MapPin, Phone, Mail, Youtube, Clock, Heart, Facebook } from 'lucide-react';
-import { CHURCH, YOUTUBE, FACEBOOK, WORSHIP } from '@/data/site';
-import { NAV_ITEMS } from './Navbar';
+import Link from "next/link";
+import { site } from "@/lib/site";
 
-export default function Footer({ navigate }: { navigate: (p: string) => void }) {
+export function Footer() {
   return (
-    <footer className="bg-maroon-deep text-amber-50/85 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid gap-10 md:grid-cols-4">
-        <div className="md:col-span-2">
-          <h3 className="font-display text-2xl font-bold text-white">{CHURCH.name}</h3>
-          <p className="mt-1 text-sm text-amber-300 font-medium tracking-wide">{CHURCH.tagline}</p>
-          <p className="mt-4 text-sm leading-relaxed max-w-md">
-            A {CHURCH.denomination} congregation worshipping the Lord Jesus Christ through
-            traditional Lutheran hymns in {CHURCH.languages.join(', ')}. All are welcome at
-            the table of the Good Shepherd.
+    <footer className="mt-auto bg-shepherd-deep text-gold-soft">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-3">
+        <div>
+          <p className="font-display text-2xl text-white">{site.shortName}</p>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-gold-soft/80">
+            {site.name} is a Lutheran congregation in Fremont, California.
+            We worship in Telugu, Hindi, Tamil, and English.
           </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <a
-              href={YOUTUBE.subscribeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md transition-colors"
-            >
-              <Youtube className="w-4 h-4" /> Subscribe on YouTube
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-gold">Visit</p>
+          <p className="mt-3 text-sm leading-7">
+            {site.address}
+            <br />
+            {site.worship}
+            <br />
+            <a className="underline" href={site.phoneHref}>
+              {site.phone}
             </a>
-            <a
-              href={FACEBOOK.pageUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#1877F2] hover:bg-[#0f66d6] text-white text-sm font-semibold px-4 py-2.5 rounded-md transition-colors"
-            >
-              <Facebook className="w-4 h-4" /> Follow on Facebook
+            <br />
+            <a className="underline" href={`mailto:${site.email}`}>
+              {site.email}
             </a>
+          </p>
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-gold">On this site</p>
+          <div className="mt-3 flex flex-col gap-2 text-sm">
+            <Link href="/donate">Give an offering</Link>
+            <Link href="/messages">Watch messages</Link>
+            <a href={site.youtube}>YouTube · @GSSAMFremont</a>
+            <a href={site.facebook}>Facebook</a>
+            <Link href="/login">Member & admin sign in</Link>
+            <Link href="/privacy">Privacy policy</Link>
           </div>
         </div>
-
-        <div>
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Visit Us</h4>
-          <ul className="space-y-3 text-sm">
-            <li className="flex gap-2.5">
-              <Clock className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
-              <span>Sunday Worship<br />{WORSHIP.label}</span>
-            </li>
-            <li className="flex gap-2.5">
-              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${CHURCH.addressMapsQuery}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white underline-offset-2 hover:underline"
-              >
-                {CHURCH.address}
-              </a>
-            </li>
-            <li className="flex gap-2.5">
-              <Phone className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
-              <a href={CHURCH.phoneHref} className="hover:text-white">{CHURCH.phone}</a>
-            </li>
-            <li className="flex gap-2.5">
-              <Mail className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
-              <a href={`mailto:${CHURCH.email}`} className="hover:text-white break-all">{CHURCH.email}</a>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Explore</h4>
-          <ul className="space-y-2 text-sm">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.id}>
-                <button onClick={() => navigate(item.id)} className="hover:text-white transition-colors">
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
-
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-amber-50/60">
-          <p>© {new Date().getFullYear()} {CHURCH.name} · {CHURCH.city}, CA</p>
-          <p className="flex items-center gap-1.5">
-            Soli Deo Gloria <Heart className="w-3 h-3 text-amber-300" />
-          </p>
-        </div>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-gold-soft/70">
+        © {new Date().getFullYear()} {site.name}. EIN {site.ein}.
       </div>
     </footer>
   );

@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-shepherd: #14352b;
+  --color-shepherd-deep: #0d241c;
+  --color-shepherd-soft: #1f4b3c;
+  --color-gold: #c9a44c;
+  --color-gold-soft: #e8d7a5;
+  --color-cream: #f6efe3;
+  --color-parchment: #fbf7f0;
+  --color-burgundy: #7a2f32;
+  --color-ink: #1c1712;
+  --color-muted: #6a5f54;
+  --color-line: #e4d8c4;
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-source);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-source), "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+::selection {
+  background: var(--color-gold-soft);
+  color: var(--color-shepherd-deep);
+}
+
+.hero-veil {
+  background:
+    linear-gradient(180deg, rgba(13, 36, 28, 0.15) 0%, rgba(13, 36, 28, 0.72) 100%);
+}
+
+.cross-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  background: white;
+  border-radius: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(201, 164, 76, 0.25);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.7rem 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: 0.15s ease;
+}
+
+.btn-gold {
+  background: var(--color-gold);
+  color: var(--color-shepherd-deep);
+}
+
+.btn-gold:hover {
+  background: #d4b25c;
+}
+
+.btn-dark {
+  background: var(--color-shepherd);
+  color: white;
+}
+
+.btn-dark:hover {
+  background: var(--color-shepherd-soft);
+}
+
+.btn-outline {
+  border: 1px solid var(--color-gold);
+  color: var(--color-shepherd);
+  background: transparent;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(28, 23, 18, 0.04);
+}

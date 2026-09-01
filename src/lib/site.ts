@@ -1,0 +1,69 @@
+export const site = {
+  name: "Good Shepherd South Asian Ministry",
+  shortName: "GSSAM",
+  tagline: "A Lutheran congregation in Fremont, CA",
+  description:
+    "Good Shepherd South Asian Ministry (GSSAM) is a Lutheran congregation in Fremont, California. We worship the Lord Jesus Christ through traditional Lutheran hymns from our South Asian congregation in Telugu, Hindi, Tamil, and English.",
+  address: "4211 Carol Ave, Fremont, CA 94538",
+  addressLines: ["4211 Carol Ave", "Fremont, CA 94538"],
+  phone: "(510) 688-8241",
+  phoneHref: "tel:+15106888241",
+  email: "gssam2005@gmail.com",
+  ein: "20-5071191",
+  pastor: "Ps. Anand Darla",
+  denomination: "Lutheran (ELCA)",
+  worship: "Sunday School & Worship 11:30 AM–1:00 PM",
+  languages: ["Telugu", "Hindi", "Tamil", "English"],
+  mapUrl:
+    "https://www.google.com/maps/search/?api=1&query=4211+Carol+Ave+Fremont+CA+94538",
+  mapEmbed:
+    "https://maps.google.com/maps?q=4211%20Carol%20Ave%20Fremont%20CA%2094538&t=&z=15&ie=UTF8&iwloc=&output=embed",
+  youtube: "https://www.youtube.com/@GSSAMFremont",
+  facebook: "https://www.facebook.com/gssam.fremontca/",
+  paypalEmail: "gssam2005@gmail.com",
+  zelleEmail: "gssam2005@gmail.com",
+};
+
+export const nav = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About Us" },
+  { href: "/ministries", label: "Ministries" },
+  { href: "/events", label: "Events" },
+  { href: "/messages", label: "Messages" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/donate", label: "Giving" },
+  { href: "/contact", label: "Contact" },
+];
+
+export function formatMoney(cents: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(cents / 100);
+}
+
+export function formatDate(value: Date | string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+export function formatShortDate(value: Date | string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+export function paragraphs(text: string) {
+  return text
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+}
