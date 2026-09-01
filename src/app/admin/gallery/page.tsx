@@ -23,11 +23,7 @@ export default async function AdminGallery({
         WEBP, or GIF up to 8 MB.
       </p>
       <SavedNotice searchParams={params} />
-      <form
-        action={uploadGalleryImage}
-        encType="multipart/form-data"
-        className="card grid gap-4 p-6 sm:grid-cols-2"
-      >
+      <form action={uploadGalleryImage} className="card grid gap-4 p-6 sm:grid-cols-2">
         <Field label="Photo" name="file">
           <input className="input" name="file" type="file" accept="image/*" required />
         </Field>

@@ -122,7 +122,11 @@ async function main() {
     "GSSAM-Admin-2026",
     "GSSAM-Member-2026",
   ]);
-  await mustContain("/privacy", ["Member financial records"]);
+  await mustContain("/privacy", [
+    "Member financial records",
+    "unnamed congregation offering total",
+    "Other households",
+  ]);
 
   assertRedirect(await fetchText("/admin"), "/admin", "/login");
   assertRedirect(await fetchText("/member"), "/member", "/login");
@@ -180,9 +184,20 @@ async function main() {
     await mustContain("/admin/gallery", ["Upload photo", "Gallery photos"], adminToken);
     await mustContain(
       "/admin/finance",
-      ["Church-wide finance", "Priya Sharma", "Arun Reddy", "Demo sample data"],
+      [
+        "Church-wide finance",
+        "Church-wide income",
+        "$1,845.00",
+        "$605.00",
+        "Priya Sharma",
+        "Arun Reddy",
+        "Demo sample data",
+        "church-wide",
+      ],
       adminToken,
     );
+    const adminFinance = await fetchText("/admin/finance", adminToken);
+    mustNotContain("/admin/finance totals", adminFinance.text, ["$5,545.00", "$630.00"]);
 
     const memberFinance = await fetchText("/member/finance", memberToken);
     if (memberFinance.status !== 200) {
@@ -220,6 +235,48 @@ async function main() {
       throw new Error(`/member/income returned ${memberIncome.status}`);
     }
     mustNotContain("/member/income", memberIncome.text, ["Arun Reddy", "$1,850.00"]);
+    if (!memberIncome.text.includes('step="0.01"') || !memberIncome.text.includes('name="returnTo"')) {
+      throw new Error("Income form should accept cents and return to /member/income.");
+    }
+    if (!memberIncome.text.includes('value="/member/income"')) {
+      throw new Error("Income form is missing returnTo=/member/income.");
+    }
+    if (!memberFinance.text.includes('step="0.01"')) {
+      throw new Error("Finance amount input should accept cents (step=0.01).");
+    }
+
+    const memberWeekly = await fetchText("/member/weekly", memberToken);
+    if (memberWeekly.status !== 200) {
+      throw new Error(`/member/weekly returned ${memberWeekly.status}`);
+    }
+    if (!memberWeekly.text.includes("Congregation offering total")) {
+      throw new Error("Weekly bulletin should still show unnamed congregation offering totals.");
+    }
+    mustNotContain("/member/weekly", memberWeekly.text, ["Arun Reddy"]);
+
+    const adminWeekly = await fetchText("/member/weekly", adminToken);
+    if (adminWeekly.status !== 200) {
+      throw new Error(`/member/weekly as admin returned ${adminWeekly.status}`);
+    }
+    mustNotContain("/member/weekly as admin", adminWeekly.text, [
+      "Priya Sharma",
+      "Arun Reddy",
+      "$150.00",
+      "$200.00",
+      "$1,200.00",
+      "$1,850.00",
+    ]);
+
+    const adminAsMemberFinance = await fetchText("/member/finance", adminToken);
+    if (adminAsMemberFinance.status !== 200) {
+      throw new Error(`/member/finance as admin returned ${adminAsMemberFinance.status}`);
+    }
+    mustNotContain("/member/finance as admin", adminAsMemberFinance.text, [
+      "Priya Sharma",
+      "Arun Reddy",
+      "$1,200.00",
+      "$1,850.00",
+    ]);
 
     const filename = `${randomUUID()}.png`;
     mkdirSync(join(ROOT, "public", "uploads"), { recursive: true });

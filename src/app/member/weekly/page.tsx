@@ -23,8 +23,9 @@ export default async function MemberWeekly() {
     <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="font-display text-4xl text-shepherd">Weekly</h1>
       <p className="text-ink/80">
-        The congregation bulletin is shared with every member. Your weekly
-        giving list below is only your household.
+        The congregation bulletin is shared with every member. Unnamed offering
+        totals below are bulletin figures; they do not list who gave. Your
+        weekly giving list is only your household.
       </p>
       <DemoBanner />
       {weeks.map((week) => (

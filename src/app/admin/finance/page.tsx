@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
 import { DemoBanner, Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
+import { isChurchScoped } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
 export const metadata = { title: "Church finance" };
@@ -26,10 +27,11 @@ export default async function AdminFinance({
     }),
   ]);
 
-  const income = entries
+  const churchEntries = entries.filter(isChurchScoped);
+  const income = churchEntries
     .filter((entry) => entry.kind !== "EXPENSE")
     .reduce((sum, entry) => sum + entry.amountCents, 0);
-  const expenses = entries
+  const expenses = churchEntries
     .filter((entry) => entry.kind === "EXPENSE")
     .reduce((sum, entry) => sum + entry.amountCents, 0);
 
@@ -38,21 +40,27 @@ export default async function AdminFinance({
       <h1 className="font-display text-4xl text-shepherd">Church-wide finance</h1>
       <DemoBanner />
       <SavedNotice searchParams={params} />
+      <p className="text-sm text-ink/80">
+        The cards count <strong>church-wide</strong> (unnamed) rows only.
+        Household income and personal expenses stay on each member’s portal and
+        are not added into these totals.
+      </p>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="card p-5">
-          <p className="text-sm text-muted">Income & offerings</p>
+          <p className="text-sm text-muted">Church-wide income & offerings</p>
           <p className="mt-2 font-display text-3xl text-shepherd">{formatMoney(income)}</p>
         </div>
         <div className="card p-5">
-          <p className="text-sm text-muted">Expenses</p>
+          <p className="text-sm text-muted">Church-wide expenses</p>
           <p className="mt-2 font-display text-3xl text-burgundy">{formatMoney(expenses)}</p>
         </div>
         <div className="card p-5">
-          <p className="text-sm text-muted">Net (sample)</p>
+          <p className="text-sm text-muted">Net (church-wide sample)</p>
           <p className="mt-2 font-display text-3xl">{formatMoney(income - expenses)}</p>
         </div>
       </div>
       <form action={addFinanceEntry} className="card grid gap-4 p-6 sm:grid-cols-2">
+        <input type="hidden" name="returnTo" value="/admin/finance" />
         <h2 className="font-display text-2xl sm:col-span-2">Add a sample record</h2>
         <label className="text-sm">
           <span className="mb-1 block font-medium text-shepherd">Type</span>
@@ -81,7 +89,7 @@ export default async function AdminFinance({
             ))}
           </select>
         </label>
-        <Field label="Amount (USD)" name="amount" type="number" required />
+        <Field label="Amount (USD)" name="amount" type="number" step="0.01" min="0.01" required />
         <Field label="Date" name="occurredOn" type="date" required />
         <Field label="Category" name="category" defaultValue="Sunday offering" />
         <Field label="Memo" name="memo" defaultValue="DEMO SAMPLE DATA — not a real offering or household record." />

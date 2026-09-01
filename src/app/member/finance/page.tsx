@@ -15,10 +15,8 @@ export default async function MemberFinance({
 }) {
   const params = await searchParams;
   const user = await requireMemberArea();
-  const isAdmin = user.role === "ADMIN";
   const visible = await db.financeEntry.findMany({
     where: financeWhereFor(user),
-    include: { member: true },
     orderBy: { occurredOn: "desc" },
   });
 
@@ -56,6 +54,7 @@ export default async function MemberFinance({
         </div>
       </div>
       <form action={addFinanceEntry} className="card grid gap-4 p-6 sm:grid-cols-2">
+        <input type="hidden" name="returnTo" value="/member/finance" />
         <h2 className="font-display text-2xl sm:col-span-2">Add a household record</h2>
         <label className="text-sm">
           <span className="mb-1 block font-medium text-shepherd">Type</span>
@@ -66,7 +65,7 @@ export default async function MemberFinance({
             <option value="EXPENSE">Expense</option>
           </select>
         </label>
-        <Field label="Amount (USD)" name="amount" type="number" required />
+        <Field label="Amount (USD)" name="amount" type="number" step="0.01" min="0.01" required />
         <Field label="Date" name="occurredOn" type="date" required />
         <Field label="Category" name="category" defaultValue="Sunday offering" />
         <Field
@@ -85,7 +84,6 @@ export default async function MemberFinance({
           <thead className="bg-cream text-muted">
             <tr>
               <th className="px-4 py-3">Date</th>
-              {isAdmin ? <th className="px-4 py-3">Household</th> : null}
               <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Amount</th>
@@ -96,9 +94,6 @@ export default async function MemberFinance({
             {visible.map((entry) => (
               <tr key={entry.id} className="border-t border-line">
                 <td className="px-4 py-3">{formatShortDate(entry.occurredOn)}</td>
-                {isAdmin ? (
-                  <td className="px-4 py-3">{entry.member?.name ?? "Church-wide"}</td>
-                ) : null}
                 <td className="px-4 py-3">{entry.kind}</td>
                 <td className="px-4 py-3">{entry.category}</td>
                 <td className="px-4 py-3">{formatMoney(entry.amountCents)}</td>

@@ -68,6 +68,9 @@ export function Field({
   type = "text",
   defaultValue,
   required,
+  step,
+  min,
+  max,
   children,
 }: {
   label: string;
@@ -75,6 +78,9 @@ export function Field({
   type?: string;
   defaultValue?: string | number;
   required?: boolean;
+  step?: string | number;
+  min?: string | number;
+  max?: string | number;
   children?: ReactNode;
 }) {
   return (
@@ -96,6 +102,9 @@ export function Field({
           type={type}
           defaultValue={defaultValue}
           required={required}
+          step={step}
+          min={min}
+          max={max}
         />
       )}
     </label>

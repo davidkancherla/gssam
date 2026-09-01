@@ -48,7 +48,18 @@ export async function addFinanceEntry(formData: FormData) {
   revalidatePath("/member/finance");
   revalidatePath("/member/income");
   revalidatePath("/admin/finance");
-  redirect(user.role === "ADMIN" ? "/admin/finance?saved=1" : "/member/finance?saved=1");
+
+  const returnTo = text(formData, "returnTo");
+  const returnPaths =
+    user.role === "ADMIN"
+      ? ["/admin/finance", "/member/finance", "/member/income"]
+      : ["/member/finance", "/member/income"];
+  const dest = returnPaths.includes(returnTo)
+    ? returnTo
+    : user.role === "ADMIN"
+      ? "/admin/finance"
+      : "/member/finance";
+  redirect(`${dest}?saved=1`);
 }
 
 export async function deleteFinanceEntry(id: string) {

@@ -35,7 +35,7 @@ export default async function MemberHome() {
         </h1>
         <p className="mt-3 max-w-2xl text-ink/80">
           {isAdmin
-            ? "You are signed in as an administrator. This member view can show church-wide sample totals. Ordinary members only see their own household."
+            ? "You are signed in as an administrator. This member view shows only your own household sample, the same way a member would see it. Congregation-wide figures are on Church finance."
             : "This portal shows only your household’s sample records, plus the weekly bulletin for the congregation."}
         </p>
       </div>

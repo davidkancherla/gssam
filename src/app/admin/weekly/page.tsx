@@ -61,6 +61,8 @@ export default async function AdminWeekly({
             label="Congregation offering total (USD)"
             name="offeringTotal"
             type="number"
+            step="0.01"
+            min="0"
             defaultValue={current ? current.offeringTotalCents / 100 : 0}
           />
           <label className="flex items-center gap-2 text-sm">
