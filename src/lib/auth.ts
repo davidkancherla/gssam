@@ -1,18 +1,11 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { db } from "./db";
-import {
-  SESSION_COOKIE,
-  type Role,
-  type SessionUser,
-  verifySession,
-} from "./session";
+import { userFromToken } from "./current-user";
+import { SESSION_COOKIE, type Role, type SessionUser } from "./session";
 
 export async function getSessionUser(): Promise<SessionUser | null> {
   const jar = await cookies();
-  const token = jar.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
-  return verifySession(token);
+  return userFromToken(jar.get(SESSION_COOKIE)?.value);
 }
 
 export async function requireUser(role?: Role): Promise<SessionUser> {
@@ -33,8 +26,4 @@ export async function requireMemberArea() {
   if (!user) redirect("/login");
   if (user.role !== "MEMBER" && user.role !== "ADMIN") redirect("/login");
   return user;
-}
-
-export async function findUserByEmail(email: string) {
-  return db.user.findUnique({ where: { email: email.toLowerCase() } });
 }

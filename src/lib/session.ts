@@ -11,9 +11,19 @@ export type SessionUser = {
   role: Role;
 };
 
+const DEV_FALLBACK_SECRET = "gssam-local-dev-secret-not-for-production";
+const EXAMPLE_SECRET = "change-this-to-a-long-random-string-before-production";
+
 function secretKey() {
-  const secret =
-    process.env.AUTH_SECRET || "gssam-local-dev-secret-not-for-production";
+  const secret = process.env.AUTH_SECRET;
+  if (!secret || secret === EXAMPLE_SECRET) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "AUTH_SECRET must be set to a long random value before production.",
+      );
+    }
+    return new TextEncoder().encode(secret || DEV_FALLBACK_SECRET);
+  }
   return new TextEncoder().encode(secret);
 }
 

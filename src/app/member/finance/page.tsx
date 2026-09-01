@@ -3,6 +3,7 @@ import { requireMemberArea } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
 import { DemoBanner, Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
 export const metadata = { title: "Finance" };
@@ -15,15 +16,11 @@ export default async function MemberFinance({
   const params = await searchParams;
   const user = await requireMemberArea();
   const isAdmin = user.role === "ADMIN";
-  const entries = await db.financeEntry.findMany({
-    where: isAdmin ? undefined : { memberId: user.id },
+  const visible = await db.financeEntry.findMany({
+    where: financeWhereFor(user),
     include: { member: true },
     orderBy: { occurredOn: "desc" },
   });
-
-  const visible = isAdmin
-    ? entries
-    : entries.filter((entry) => entry.memberId === user.id);
 
   const offerings = visible
     .filter((entry) => entry.kind === "TITHE" || entry.kind === "OFFERING")

@@ -2,6 +2,7 @@ import { PublicShell } from "@/components/PublicShell";
 import { PageHero } from "@/components/ui";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Gallery" };
 
 export default async function GalleryPage() {

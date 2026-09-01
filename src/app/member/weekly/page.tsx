@@ -1,6 +1,7 @@
 import { requireMemberArea } from "@/lib/auth";
 import { DemoBanner } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
 export const metadata = { title: "Weekly" };
@@ -13,10 +14,7 @@ export default async function MemberWeekly() {
   });
 
   const myOfferings = await db.financeEntry.findMany({
-    where:
-      user.role === "ADMIN"
-        ? { kind: { in: ["TITHE", "OFFERING"] } }
-        : { memberId: user.id, kind: { in: ["TITHE", "OFFERING"] } },
+    where: financeWhereFor(user, { kind: { in: ["TITHE", "OFFERING"] } }),
     orderBy: { occurredOn: "desc" },
     take: 8,
   });

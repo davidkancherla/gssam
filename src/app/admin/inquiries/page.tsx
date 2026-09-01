@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/site";
 
 export const metadata = { title: "Contact inbox" };
 
 export default async function AdminInquiries() {
+  await requireAdmin();
   const inquiries = await db.inquiry.findMany({ orderBy: { createdAt: "desc" } });
 
   return (

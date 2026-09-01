@@ -60,7 +60,7 @@ All money rows are tagged in the UI as **demo sample data**. They are fictional.
 npm run verify
 ```
 
-That script expects the app to already be running on port 3000. It checks public copy, login, and role gates.
+That script expects the app to already be running on port 3000. It checks public copy, demo passwords, role gates (including a forged admin cookie), member finance isolation, and that `/uploads/` photo URLs are served.
 
 ## Portals
 

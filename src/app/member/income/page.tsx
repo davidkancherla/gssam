@@ -2,6 +2,7 @@ import { addFinanceEntry } from "@/app/actions/finance";
 import { requireMemberArea } from "@/lib/auth";
 import { DemoBanner, Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
 export const metadata = { title: "Income" };
@@ -14,10 +15,7 @@ export default async function MemberIncome({
   const params = await searchParams;
   const user = await requireMemberArea();
   const entries = await db.financeEntry.findMany({
-    where:
-      user.role === "ADMIN"
-        ? { kind: "INCOME" }
-        : { memberId: user.id, kind: "INCOME" },
+    where: financeWhereFor(user, { kind: "INCOME" }),
     include: { member: true },
     orderBy: { occurredOn: "desc" },
   });

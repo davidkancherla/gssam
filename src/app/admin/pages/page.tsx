@@ -1,4 +1,5 @@
 import { savePage } from "@/app/actions/content";
+import { requireAdmin } from "@/lib/auth";
 import { Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
 import Link from "next/link";
@@ -11,6 +12,7 @@ export default async function AdminPages({
   searchParams: Promise<{ saved?: string; slug?: string }>;
 }) {
   const params = await searchParams;
+  await requireAdmin();
   const pages = await db.page.findMany({ orderBy: { title: "asc" } });
   const current = pages.find((page) => page.slug === params.slug) ?? pages[0];
 

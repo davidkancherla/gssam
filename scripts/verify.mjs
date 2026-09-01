@@ -1,13 +1,74 @@
-const BASE = process.env.BASE_URL || "http://localhost:3000";
+import { randomUUID } from "node:crypto";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import bcrypt from "bcryptjs";
+import { SignJWT } from "jose";
+import { PrismaClient } from "@prisma/client";
 
-async function fetchText(path) {
-  const res = await fetch(`${BASE}${path}`, { redirect: "manual" });
+const BASE = process.env.BASE_URL || "http://localhost:3000";
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const SESSION_COOKIE = "gssam_session";
+const EXAMPLE_SECRET = "change-this-to-a-long-random-string-before-production";
+const DEV_FALLBACK_SECRET = "gssam-local-dev-secret-not-for-production";
+
+function loadEnv() {
+  try {
+    const text = readFileSync(join(ROOT, ".env"), "utf8");
+    for (const line of text.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eq = trimmed.indexOf("=");
+      if (eq === -1) continue;
+      const key = trimmed.slice(0, eq);
+      let value = trimmed.slice(eq + 1);
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1);
+      }
+      if (!process.env[key]) process.env[key] = value;
+    }
+  } catch {
+    // .env is optional when the caller already exported vars
+  }
+}
+
+loadEnv();
+
+function secretBytes() {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret || secret === EXAMPLE_SECRET) {
+    return new TextEncoder().encode(secret || DEV_FALLBACK_SECRET);
+  }
+  return new TextEncoder().encode(secret);
+}
+
+async function signUser(user) {
+  return new SignJWT({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("14d")
+    .sign(secretBytes());
+}
+
+async function fetchText(path, cookie) {
+  const res = await fetch(`${BASE}${path}`, {
+    redirect: "manual",
+    headers: cookie ? { cookie: `${SESSION_COOKIE}=${cookie}` } : undefined,
+  });
   const text = await res.text();
   return { status: res.status, location: res.headers.get("location"), text };
 }
 
-async function mustContain(path, snippets) {
-  const { status, text } = await fetchText(path);
+async function mustContain(path, snippets, cookie) {
+  const { status, text } = await fetchText(path, cookie);
   if (status !== 200) {
     throw new Error(`${path} returned ${status}`);
   }
@@ -17,6 +78,28 @@ async function mustContain(path, snippets) {
     }
   }
 }
+
+function mustNotContain(path, text, snippets) {
+  for (const snippet of snippets) {
+    if (text.includes(snippet)) {
+      throw new Error(`${path} leaked private data: ${snippet}`);
+    }
+  }
+}
+
+function assertRedirect(result, path, needle) {
+  if (result.status !== 307 && result.status !== 308 && result.status !== 302) {
+    throw new Error(`${path} should redirect, got ${result.status}`);
+  }
+  if (!result.location?.includes(needle)) {
+    throw new Error(`${path} redirect was ${result.location}, expected ${needle}`);
+  }
+}
+
+const TINY_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64",
+);
 
 async function main() {
   await mustContain("/", [
@@ -33,23 +116,126 @@ async function main() {
   await mustContain("/messages", ["GSSAM"]);
   await mustContain("/events", ["Christmas"]);
   await mustContain("/ministries/mens-fellowship", ["Men"]);
-  await mustContain("/login", ["admin@gssam.demo", "member@gssam.demo"]);
+  await mustContain("/login", [
+    "admin@gssam.demo",
+    "member@gssam.demo",
+    "GSSAM-Admin-2026",
+    "GSSAM-Member-2026",
+  ]);
   await mustContain("/privacy", ["Member financial records"]);
 
-  const admin = await fetchText("/admin");
-  if (admin.status !== 307 && admin.status !== 308 && admin.status !== 302) {
-    throw new Error(`/admin should redirect when logged out, got ${admin.status}`);
-  }
-  if (!admin.location?.includes("/login")) {
-    throw new Error(`/admin redirect was ${admin.location}`);
+  assertRedirect(await fetchText("/admin"), "/admin", "/login");
+  assertRedirect(await fetchText("/member"), "/member", "/login");
+  assertRedirect(await fetchText("/admin/finance"), "/admin/finance", "/login");
+  assertRedirect(await fetchText("/member/income"), "/member/income", "/login");
+
+  const db = new PrismaClient();
+  try {
+    const users = await db.user.findMany({ orderBy: { email: "asc" } });
+    const admin = users.find((user) => user.email === "admin@gssam.demo");
+    const member = users.find((user) => user.email === "member@gssam.demo");
+    const member2 = users.find((user) => user.email === "member2@gssam.demo");
+    if (!admin || !member || !member2) {
+      throw new Error("Demo users are missing. Run npm run setup.");
+    }
+    if (admin.role !== "ADMIN" || member.role !== "MEMBER" || member2.role !== "MEMBER") {
+      throw new Error("Demo user roles are wrong.");
+    }
+    if (!(await bcrypt.compare("GSSAM-Admin-2026", admin.passwordHash))) {
+      throw new Error("Admin demo password does not match the seeded hash.");
+    }
+    if (!(await bcrypt.compare("GSSAM-Member-2026", member.passwordHash))) {
+      throw new Error("Member demo password does not match the seeded hash.");
+    }
+    if (!(await bcrypt.compare("GSSAM-Member-2026", member2.passwordHash))) {
+      throw new Error("Second member demo password does not match the seeded hash.");
+    }
+
+    const adminToken = await signUser(admin);
+    const memberToken = await signUser(member);
+    const member2Token = await signUser(member2);
+    const forgedAdmin = await signUser({ ...member, role: "ADMIN" });
+
+    assertRedirect(await fetchText("/admin", memberToken), "/admin as member", "/member");
+    assertRedirect(
+      await fetchText("/admin/finance", memberToken),
+      "/admin/finance as member",
+      "/member",
+    );
+    assertRedirect(
+      await fetchText("/admin/gallery", memberToken),
+      "/admin/gallery as member",
+      "/member",
+    );
+    assertRedirect(
+      await fetchText("/admin", forgedAdmin),
+      "/admin with forged ADMIN jwt",
+      "/member",
+    );
+
+    await mustContain("/admin", ["Keep GSSAM", "Photos"], adminToken);
+    await mustContain("/admin/pages", ["Edit public pages", "About GSSAM"], adminToken);
+    await mustContain("/admin/events", ["Events", "Christmas Worship"], adminToken);
+    await mustContain("/admin/messages", ["Messages", "YouTube"], adminToken);
+    await mustContain("/admin/gallery", ["Upload photo", "Gallery photos"], adminToken);
+    await mustContain(
+      "/admin/finance",
+      ["Church-wide finance", "Priya Sharma", "Arun Reddy", "Demo sample data"],
+      adminToken,
+    );
+
+    const memberFinance = await fetchText("/member/finance", memberToken);
+    if (memberFinance.status !== 200) {
+      throw new Error(`/member/finance returned ${memberFinance.status}`);
+    }
+    if (!memberFinance.text.includes("Demo sample data")) {
+      throw new Error("Member finance is missing the demo data banner.");
+    }
+    if (!memberFinance.text.includes("$1,200.00") || !memberFinance.text.includes("$150.00")) {
+      throw new Error("Member finance is missing Priya Sharma's demo rows.");
+    }
+    mustNotContain("/member/finance", memberFinance.text, [
+      "Arun Reddy",
+      "$1,850.00",
+      "$200.00",
+      "Utilities",
+    ]);
+
+    const member2Finance = await fetchText("/member/finance", member2Token);
+    if (member2Finance.status !== 200) {
+      throw new Error(`/member/finance (member2) returned ${member2Finance.status}`);
+    }
+    if (!member2Finance.text.includes("$1,850.00") || !member2Finance.text.includes("$200.00")) {
+      throw new Error("Second member finance is missing Arun Reddy's demo rows.");
+    }
+    mustNotContain("/member/finance (member2)", member2Finance.text, [
+      "Priya Sharma",
+      "$1,200.00",
+      "$150.00",
+      "Utilities",
+    ]);
+
+    const memberIncome = await fetchText("/member/income", memberToken);
+    if (memberIncome.status !== 200) {
+      throw new Error(`/member/income returned ${memberIncome.status}`);
+    }
+    mustNotContain("/member/income", memberIncome.text, ["Arun Reddy", "$1,850.00"]);
+
+    const filename = `${randomUUID()}.png`;
+    mkdirSync(join(ROOT, "public", "uploads"), { recursive: true });
+    writeFileSync(join(ROOT, "public", "uploads", filename), TINY_PNG);
+    const uploaded = await fetchText(`/uploads/${filename}`);
+    if (uploaded.status !== 200) {
+      throw new Error(`Uploaded photo URL /uploads/${filename} returned ${uploaded.status}`);
+    }
+    if (!uploaded.text.includes("PNG") && uploaded.text.length < 10) {
+      throw new Error("Uploaded photo URL did not return image bytes.");
+    }
+  } finally {
+    await db.$disconnect();
   }
 
-  const member = await fetchText("/member");
-  if (!member.location?.includes("/login")) {
-    throw new Error(`/member should redirect to login when logged out`);
-  }
-
-  console.log("Public pages, GSSAM copy, and role gates look good.");
+  console.log("Public pages, demo logins, role gates, finance privacy, and photo URLs look good.");
 }
 
 main().catch((error) => {

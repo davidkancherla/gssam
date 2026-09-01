@@ -1,4 +1,5 @@
 import { addFinanceEntry, deleteFinanceEntry } from "@/app/actions/finance";
+import { requireAdmin } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
 import { DemoBanner, Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
@@ -12,12 +13,17 @@ export default async function AdminFinance({
   searchParams: Promise<{ saved?: string }>;
 }) {
   const params = await searchParams;
+  await requireAdmin();
   const [entries, members] = await Promise.all([
     db.financeEntry.findMany({
-      include: { member: true },
+      include: { member: { select: { id: true, name: true, email: true } } },
       orderBy: { occurredOn: "desc" },
     }),
-    db.user.findMany({ orderBy: { name: "asc" } }),
+    db.user.findMany({
+      where: { role: "MEMBER" },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   const income = entries

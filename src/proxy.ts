@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SESSION_COOKIE, verifySession } from "@/lib/session";
+import { userFromToken } from "@/lib/current-user";
+import { SESSION_COOKIE } from "@/lib/session";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
-  const user = token ? await verifySession(token) : null;
+  const user = await userFromToken(request.cookies.get(SESSION_COOKIE)?.value);
 
   if (pathname.startsWith("/admin")) {
     if (!user) {

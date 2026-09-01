@@ -1,4 +1,5 @@
 import { deleteWeekly, saveWeekly } from "@/app/actions/content";
+import { requireAdmin } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
@@ -17,6 +18,7 @@ export default async function AdminWeekly({
   searchParams: Promise<{ saved?: string; id?: string }>;
 }) {
   const params = await searchParams;
+  await requireAdmin();
   const weeks = await db.weeklyBulletin.findMany({ orderBy: { weekOf: "desc" } });
   const current = weeks.find((item) => item.id === params.id);
 

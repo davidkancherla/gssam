@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getSessionUser, requireAdmin, requireMemberArea } from "@/lib/auth";
+import { requireAdmin, requireMemberArea } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { canAccessFinanceEntry } from "@/lib/finance";
 
 function text(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -22,12 +23,14 @@ export async function addFinanceEntry(formData: FormData) {
     throw new Error("Please enter an amount greater than zero.");
   }
 
+  const requestedMemberId = text(formData, "memberId");
   const isAdminChurch = user.role === "ADMIN" && text(formData, "scope") === "CHURCH";
-  const assignedMemberId = isAdminChurch
-    ? null
-    : user.role === "ADMIN" && text(formData, "memberId")
-      ? text(formData, "memberId")
-      : user.id;
+  let assignedMemberId: string | null = user.id;
+  if (user.role === "ADMIN") {
+    assignedMemberId = isAdminChurch ? null : requestedMemberId || user.id;
+  } else if (requestedMemberId && requestedMemberId !== user.id) {
+    throw new Error("You can only add records for your own household.");
+  }
 
   await db.financeEntry.create({
     data: {
@@ -36,7 +39,7 @@ export async function addFinanceEntry(formData: FormData) {
       amountCents: Math.round(amount * 100),
       occurredOn: new Date(text(formData, "occurredOn") || new Date().toISOString()),
       category: text(formData, "category") || kind.toLowerCase(),
-      memo: text(formData, "memo") || "Recorded in the GSSAM portal.",
+      memo: text(formData, "memo") || "DEMO SAMPLE DATA — not a real offering or household record.",
       scope: isAdminChurch ? "CHURCH" : "MEMBER",
       isDemo: true,
     },
@@ -49,13 +52,12 @@ export async function addFinanceEntry(formData: FormData) {
 }
 
 export async function deleteFinanceEntry(id: string) {
-  const user = await getSessionUser();
-  if (!user) redirect("/login");
+  const user = await requireMemberArea();
 
   const entry = await db.financeEntry.findUnique({ where: { id } });
   if (!entry) return;
 
-  if (user.role !== "ADMIN" && entry.memberId !== user.id) {
+  if (!canAccessFinanceEntry(user, entry)) {
     throw new Error("You can only remove your own records.");
   }
 

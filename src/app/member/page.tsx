@@ -1,6 +1,7 @@
 import { requireMemberArea } from "@/lib/auth";
 import { DemoBanner } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney } from "@/lib/site";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ export default async function MemberHome() {
   const user = await requireMemberArea();
   const isAdmin = user.role === "ADMIN";
   const entries = await db.financeEntry.findMany({
-    where: isAdmin ? undefined : { memberId: user.id },
+    where: financeWhereFor(user),
     orderBy: { occurredOn: "desc" },
   });
   const week = await db.weeklyBulletin.findFirst({

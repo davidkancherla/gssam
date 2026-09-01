@@ -2,11 +2,16 @@
 
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { join } from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import {
+  UPLOAD_DIR,
+  extensionForImage,
+  uploadedBlob,
+} from "@/lib/uploads";
 
 function text(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -155,28 +160,33 @@ export async function saveGalleryMeta(formData: FormData) {
 
 export async function uploadGalleryImage(formData: FormData) {
   await requireAdmin();
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
+  const file = uploadedBlob(formData.get("file"));
+  if (!file) {
     throw new Error("Please choose a photo to upload.");
   }
   if (file.size > 8 * 1024 * 1024) {
     throw new Error("Please keep photos under 8 MB.");
   }
 
+  const named = file as Blob & { name?: string; type?: string };
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  if (!allowed.includes(file.type)) {
+  if (named.type && !allowed.includes(named.type)) {
+    throw new Error("Please upload a JPG, PNG, WEBP, or GIF photo.");
+  }
+  const extension = extensionForImage(named);
+  if (!extension) {
     throw new Error("Please upload a JPG, PNG, WEBP, or GIF photo.");
   }
 
-  const extension = extname(file.name).toLowerCase() || ".jpg";
   const filename = `${randomUUID()}${extension}`;
-  const dir = join(process.cwd(), "public", "uploads");
-  await mkdir(dir, { recursive: true });
-  await writeFile(join(dir, filename), Buffer.from(await file.arrayBuffer()));
+  await mkdir(UPLOAD_DIR, { recursive: true });
+  await writeFile(join(UPLOAD_DIR, filename), Buffer.from(await file.arrayBuffer()));
 
   await db.galleryImage.create({
     data: {
-      title: text(formData, "title") || file.name.replace(/\.[^.]+$/, ""),
+      title:
+        text(formData, "title") ||
+        (named.name ? named.name.replace(/\.[^.]+$/, "") : "Congregation photo"),
       caption: text(formData, "caption"),
       album: text(formData, "album") || "Congregation",
       url: `/uploads/${filename}`,
