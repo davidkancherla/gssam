@@ -166,6 +166,20 @@ async function main() {
   assertRedirect(await fetchText("/admin/finance"), "/admin/finance", "/login");
   assertRedirect(await fetchText("/member/income"), "/member/income", "/login");
 
+  const cookieHelper = readFileSync(join(ROOT, "src/lib/session-cookie.ts"), "utf8");
+  const authActions = readFileSync(join(ROOT, "src/app/actions/auth.ts"), "utf8");
+  if (!authActions.includes("clearSession") || authActions.includes("jar.delete(SESSION_COOKIE)")) {
+    throw new Error("logoutAction must clear gssam_session with matching path/sameSite, not a bare delete.");
+  }
+  if (
+    !cookieHelper.includes("sessionCookieIdentity") ||
+    !cookieHelper.includes("jar.delete") ||
+    !cookieHelper.includes('path: "/"') ||
+    !cookieHelper.includes('sameSite: "lax"')
+  ) {
+    throw new Error("clearSession must reuse the same path=/ and sameSite=lax used when setting the cookie.");
+  }
+
   const db = new PrismaClient();
   try {
     const users = await db.user.findMany({ orderBy: { email: "asc" } });

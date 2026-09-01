@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { SESSION_COOKIE, signSession, type Role } from "@/lib/session";
-import { sessionCookieOptions } from "@/lib/session-cookie";
+import { clearSession, sessionCookieOptions } from "@/lib/session-cookie";
 
 function safeNextPath(next: string, role: Role) {
   const fallback = role === "ADMIN" ? "/admin" : "/member";
@@ -53,7 +53,6 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
 }
 
 export async function logoutAction() {
-  const jar = await cookies();
-  jar.delete(SESSION_COOKIE);
+  await clearSession();
   redirect("/");
 }
