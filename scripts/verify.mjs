@@ -235,11 +235,8 @@ async function main() {
       throw new Error(`/member/income returned ${memberIncome.status}`);
     }
     mustNotContain("/member/income", memberIncome.text, ["Arun Reddy", "$1,850.00"]);
-    if (!memberIncome.text.includes('step="0.01"') || !memberIncome.text.includes('name="returnTo"')) {
-      throw new Error("Income form should accept cents and return to /member/income.");
-    }
-    if (!memberIncome.text.includes('value="/member/income"')) {
-      throw new Error("Income form is missing returnTo=/member/income.");
+    if (!memberIncome.text.includes('step="0.01"') || !memberIncome.text.includes("Save income")) {
+      throw new Error("Income form should accept cents and save on this page.");
     }
     if (!memberFinance.text.includes('step="0.01"')) {
       throw new Error("Finance amount input should accept cents (step=0.01).");

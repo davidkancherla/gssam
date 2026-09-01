@@ -1,9 +1,9 @@
-import { addFinanceEntry } from "@/app/actions/finance";
 import { requireMemberArea } from "@/lib/auth";
-import { DemoBanner, Field, SavedNotice } from "@/components/ui";
+import { DemoBanner, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
 import { financeWhereFor } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
+import { IncomeForm } from "./income-form";
 
 export const metadata = { title: "Income" };
 
@@ -33,24 +33,7 @@ export default async function MemberIncome({
         <p className="text-sm text-muted">Year-to-date sample income</p>
         <p className="mt-2 font-display text-4xl text-shepherd">{formatMoney(total)}</p>
       </div>
-      <form action={addFinanceEntry} className="card grid gap-4 p-6 sm:grid-cols-2">
-        <input type="hidden" name="kind" value="INCOME" />
-        <input type="hidden" name="returnTo" value="/member/income" />
-        <h2 className="font-display text-2xl sm:col-span-2">Add income</h2>
-        <Field label="Amount (USD)" name="amount" type="number" step="0.01" min="0.01" required />
-        <Field label="Date" name="occurredOn" type="date" required />
-        <Field label="Source / category" name="category" defaultValue="Household income (demo)" />
-        <Field
-          label="Memo"
-          name="memo"
-          defaultValue="DEMO SAMPLE DATA — not a real offering or household record."
-        />
-        <div className="sm:col-span-2">
-          <button className="btn btn-dark" type="submit">
-            Save income
-          </button>
-        </div>
-      </form>
+      <IncomeForm />
       <ul className="card divide-y divide-line">
         {entries.map((entry) => (
           <li key={entry.id} className="flex justify-between px-5 py-3 text-sm">
