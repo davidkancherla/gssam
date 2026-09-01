@@ -1,5 +1,5 @@
-import { savePage } from "@/app/actions/content";
-import { Field, SavedNotice } from "@/components/ui";
+import { PageEditor } from "@/app/admin/pages/page-editor";
+import { SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
 import Link from "next/link";
 
@@ -31,22 +31,7 @@ export default async function AdminPages({
           </Link>
         ))}
       </div>
-      {current ? (
-        <form action={savePage} className="card space-y-4 p-6">
-          <input type="hidden" name="slug" value={current.slug} />
-          <Field label="Title" name="title" defaultValue={current.title} required />
-          <Field label="Short introduction" name="excerpt" type="textarea" defaultValue={current.excerpt} />
-          <Field label="Page content" name="body" type="textarea" defaultValue={current.body} />
-          <p className="text-xs text-muted">
-            On Home, the title is the hero heading and the short introduction is
-            the hero paragraph. On other pages, title and introduction appear in
-            the page header. Separate body paragraphs with a blank line.
-          </p>
-          <button className="btn btn-dark" type="submit">
-            Save {current.title}
-          </button>
-        </form>
-      ) : null}
+      {current ? <PageEditor key={current.slug} page={current} /> : null}
     </div>
   );
 }

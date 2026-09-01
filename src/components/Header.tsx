@@ -1,15 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { logoutAction } from "@/app/actions/auth";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { nav, site } from "@/lib/site";
 import type { SessionUser } from "@/lib/session";
 
-export function Header({ user }: { user: SessionUser | null }) {
+export function Header({ user: initialUser }: { user: SessionUser | null }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [signedOut, setSignedOut] = useState(false);
-  const visibleUser = signedOut ? null : user;
+  const [user, setUser] = useState<SessionUser | null>(initialUser);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/session", { cache: "no-store", credentials: "same-origin" })
+      .then((res) => res.json())
+      .then((data: { user?: SessionUser | null }) => {
+        if (!cancelled) setUser(data.user ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setUser(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
 
   return (
     <header className="relative z-40">
@@ -50,19 +65,17 @@ export function Header({ user }: { user: SessionUser | null }) {
                 {item.label}
               </Link>
             ))}
-            {visibleUser ? (
+            {user ? (
               <div className="flex items-center gap-3">
                 <Link
-                  href={visibleUser.role === "ADMIN" ? "/admin" : "/member"}
+                  href={user.role === "ADMIN" ? "/admin" : "/member"}
                   className="btn btn-gold text-sm"
                 >
-                  {visibleUser.role === "ADMIN" ? "Admin" : "Member"} portal
+                  {user.role === "ADMIN" ? "Admin" : "Member"} portal
                 </Link>
-                <form action={logoutAction} onSubmit={() => setSignedOut(true)}>
-                  <button className="text-sm text-muted hover:text-burgundy" type="submit">
-                    Sign out
-                  </button>
-                </form>
+                <a className="text-sm text-muted hover:text-burgundy" href="/api/logout">
+                  Sign out
+                </a>
               </div>
             ) : (
               <Link href="/login" className="btn btn-dark text-sm">
@@ -94,14 +107,12 @@ export function Header({ user }: { user: SessionUser | null }) {
                   {item.label}
                 </Link>
               ))}
-              {visibleUser ? (
+              {user ? (
                 <>
-                  <Link href={visibleUser.role === "ADMIN" ? "/admin" : "/member"}>
-                    {visibleUser.role === "ADMIN" ? "Admin portal" : "Member portal"}
+                  <Link href={user.role === "ADMIN" ? "/admin" : "/member"}>
+                    {user.role === "ADMIN" ? "Admin portal" : "Member portal"}
                   </Link>
-                  <form action={logoutAction} onSubmit={() => setSignedOut(true)}>
-                    <button type="submit">Sign out</button>
-                  </form>
+                  <a href="/api/logout">Sign out</a>
                 </>
               ) : (
                 <Link href="/login">Sign in</Link>

@@ -1,16 +1,20 @@
 import { PublicShell } from "@/components/PublicShell";
 import { PageHero } from "@/components/ui";
 import { db } from "@/lib/db";
+import { applySermonCatalog } from "@/lib/sermon-catalog";
 import { formatDate } from "@/lib/site";
-import { youtubeEmbedUrl, youtubeThumbUrl, youtubeWatchUrl } from "@/lib/youtube";
+import { youtubeEmbedUrl, youtubeWatchUrl } from "@/lib/youtube";
 
 export const metadata = { title: "Messages" };
 
 export default async function MessagesPage() {
-  const sermons = await db.sermon.findMany({
+  const rows = await db.sermon.findMany({
     where: { published: true },
     orderBy: { preachedAt: "desc" },
   });
+  const sermons = applySermonCatalog(rows).sort(
+    (a, b) => b.preachedAt.getTime() - a.preachedAt.getTime(),
+  );
 
   return (
     <PublicShell>
@@ -21,30 +25,15 @@ export default async function MessagesPage() {
       />
       <section className="mx-auto max-w-6xl px-4 py-14">
         <div className="grid gap-8 md:grid-cols-2">
-          {sermons.map((sermon, index) => (
-            <article key={sermon.id} className="card">
-              {index === 0 ? (
-                <iframe
-                  className="aspect-video w-full"
-                  src={youtubeEmbedUrl(sermon.youtubeId)}
-                  title={sermon.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <a
-                  href={youtubeWatchUrl(sermon.youtubeId)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={youtubeThumbUrl(sermon.youtubeId)}
-                    alt=""
-                    className="aspect-video w-full object-cover"
-                  />
-                </a>
-              )}
+          {sermons.map((sermon) => (
+            <article key={sermon.youtubeId} className="card">
+              <iframe
+                className="aspect-video w-full"
+                src={youtubeEmbedUrl(sermon.youtubeId)}
+                title={sermon.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
               <div className="p-5">
                 <p className="text-xs uppercase tracking-wide text-gold">
                   {formatDate(sermon.preachedAt)}
@@ -54,6 +43,14 @@ export default async function MessagesPage() {
                   {sermon.preacher} · {sermon.language}
                 </p>
                 <p className="mt-3 text-sm leading-6">{sermon.description}</p>
+                <a
+                  className="mt-3 inline-block text-sm text-burgundy underline"
+                  href={youtubeWatchUrl(sermon.youtubeId)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open on YouTube
+                </a>
               </div>
             </article>
           ))}

@@ -36,7 +36,30 @@ async function main() {
   await mustContain("/contact", ["4211 Carol Ave", "gssam2005@gmail.com"]);
   await mustContain("/donate", ["Zelle", "PayPal"]);
   await mustContain("/gallery", ["Gallery"]);
-  await mustContain("/messages", ["GSSAM"]);
+  await mustContain("/messages", [
+    "GSSAM",
+    "xkEJUf0WZhc",
+    "July 26TH",
+    "July 19th",
+    "NRFAQ8_ncEE",
+  ]);
+  const messages = await fetchText("/messages");
+  if (messages.text.includes("--YvdIrX6Sc") || messages.text.includes("February 11, 2024 — GSSAM worship")) {
+    throw new Error("/messages still has the duplicate February 11 sermon");
+  }
+  if (!messages.text.includes("NRFAQ8_ncEE")) {
+    throw new Error("/messages is missing the Feb 11 YouTube message");
+  }
+
+  const session = await fetchText("/api/session");
+  if (session.status !== 200 || !session.text.includes('"user":null')) {
+    throw new Error(`/api/session should return a logged-out user, got ${session.status} ${session.text}`);
+  }
+
+  const logout = await fetchText("/api/logout");
+  if (![301, 302, 303, 307, 308].includes(logout.status) || !logout.location?.includes("/")) {
+    throw new Error(`/api/logout should redirect home, got ${logout.status} ${logout.location}`);
+  }
   await mustContain("/events", ["Christmas"]);
   await mustContain("/ministries/mens-fellowship", ["Men"]);
   await mustContain("/privacy", ["Member financial records"]);

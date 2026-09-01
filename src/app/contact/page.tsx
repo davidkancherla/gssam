@@ -1,19 +1,14 @@
-import { submitInquiry } from "@/app/actions/contact";
+import { ContactForm } from "@/app/contact/contact-form";
 import { PublicShell } from "@/components/PublicShell";
-import { Field, PageHero, Prose } from "@/components/ui";
+import { PageHero, Prose } from "@/components/ui";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
 import { notFound } from "next/navigation";
 
 export const metadata = { title: "Contact Us" };
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ sent?: string; error?: string }>;
-}) {
+export default async function ContactPage() {
   const page = await db.page.findUnique({ where: { slug: "contact" } });
-  const params = await searchParams;
   if (!page) notFound();
 
   return (
@@ -48,26 +43,7 @@ export default async function ContactPage({
             />
           </div>
         </div>
-        <form action={submitInquiry} className="card space-y-4 p-6">
-          <h2 className="font-display text-2xl text-shepherd">Send a message</h2>
-          {params.sent ? (
-            <p className="rounded-lg bg-shepherd/10 p-3 text-sm text-shepherd">
-              Thank you. The church office will see your note in the admin inbox.
-            </p>
-          ) : null}
-          {params.error ? (
-            <p className="rounded-lg bg-burgundy/10 p-3 text-sm text-burgundy">
-              Please include your name, email, and a message.
-            </p>
-          ) : null}
-          <Field label="Name" name="name" required />
-          <Field label="Email" name="email" type="email" required />
-          <Field label="Phone" name="phone" />
-          <Field label="Message" name="message" type="textarea" required />
-          <button className="btn btn-dark" type="submit">
-            Send to GSSAM
-          </button>
-        </form>
+        <ContactForm />
       </section>
     </PublicShell>
   );

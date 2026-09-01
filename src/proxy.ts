@@ -3,6 +3,13 @@ import type { NextRequest } from "next/server";
 import { SESSION_COOKIE, verifySession } from "@/lib/session";
 
 export async function proxy(request: NextRequest) {
+  // Server actions POST to the current page URL. Redirecting those requests
+  // to /login returns HTML instead of an action result ("couldn't load")
+  // and can look like the session was dropped. Actions enforce auth themselves.
+  if (request.headers.has("next-action")) {
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const user = token ? await verifySession(token) : null;

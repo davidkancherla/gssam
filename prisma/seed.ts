@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import { SERMON_CATALOG } from "../src/lib/sermon-catalog";
 
 const db = new PrismaClient();
 
@@ -351,114 +352,13 @@ Come early for carol singing. A light reception follows worship.`,
   });
 
   await db.sermon.createMany({
-    data: [
-      {
-        title: "Sunday Worship — 26 July 2026",
-        youtubeId: "xkEJUf0WZhc",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2026-07-26T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "Sunday Worship — 19 July 2026",
-        youtubeId: "V7Ei8ArS1vI",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2026-07-19T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "Sunday Worship — 5 July 2026",
-        youtubeId: "AogGJlMbqgU",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2026-07-05T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "Sunday Worship — 7 June 2026",
-        youtubeId: "achHEyqrhl8",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2026-06-07T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "Sunday Worship — 17 May 2026",
-        youtubeId: "MBIN-BPBz_c",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2026-05-17T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "GSSAM Easter Sunday live — 31 March",
-        youtubeId: "7NfSbYOQtgI",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-03-31T11:30:00-07:00"),
-        description:
-          "Easter Sunday worship with the GSSAM congregation in Fremont. Live from 11:30 AM–1:00 PM.",
-      },
-      {
-        title: "GSSAM Good Friday worship live — 29 March",
-        youtubeId: "zOr44DwARfk",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-03-29T19:00:00-07:00"),
-        description: "Good Friday evening worship, 7:00–8:30 PM.",
-      },
-      {
-        title: "GSSAM Palm Sunday worship live — 24 March",
-        youtubeId: "D9G1jnlXheA",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-03-24T11:30:00-07:00"),
-        description: "Palm Sunday worship, 11:30 AM–1:00 PM.",
-      },
-      {
-        title: "GSSAM Sunday worship live — 17 March",
-        youtubeId: "elDcgGhHm8k",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-03-17T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "GSSAM Sunday worship live — 10 March",
-        youtubeId: "M3Qgw6f_by8",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-03-10T11:30:00-07:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "GSSAM Sunday worship live — 3 March",
-        youtubeId: "9gjPgTqupx8",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-03-03T11:15:00-08:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "GSSAM Fremont Sunday live stream — 25 February",
-        youtubeId: "cUKBVFtXxw4",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-02-25T11:30:00-08:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "GSSAM Sunday worship live — 18 February",
-        youtubeId: "PqsKFecjJng",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-02-18T10:30:00-08:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "GSSAM Sunday worship live — 11 February",
-        youtubeId: "NRFAQ8_ncEE",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-02-11T10:30:00-08:00"),
-        description: "Sunday worship livestream from GSSAM Fremont.",
-      },
-      {
-        title: "February 11, 2024 — GSSAM worship",
-        youtubeId: "--YvdIrX6Sc",
-        preacher: "GSSAM Fremont",
-        preachedAt: new Date("2024-02-11T10:00:00-08:00"),
-        description: "Additional worship recording from GSSAM Fremont.",
-      },
-    ],
+    data: SERMON_CATALOG.map((sermon) => ({
+      title: sermon.title,
+      youtubeId: sermon.youtubeId,
+      preacher: "GSSAM Fremont",
+      preachedAt: sermon.preachedAt,
+      description: sermon.description,
+    })),
   });
 
   const gallery = [

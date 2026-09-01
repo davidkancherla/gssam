@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import {
   SESSION_COOKIE,
+  expireSessionCookie,
   sessionCookieBase,
   signSession,
   type Role,
@@ -45,16 +46,7 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
 
 export async function logoutAction() {
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, "", {
-    ...sessionCookieBase,
-    maxAge: 0,
-  });
-  jar.delete({
-    name: SESSION_COOKIE,
-    path: sessionCookieBase.path,
-    sameSite: sessionCookieBase.sameSite,
-    secure: sessionCookieBase.secure,
-  });
+  expireSessionCookie(jar);
   revalidatePath("/", "layout");
   redirect("/");
 }

@@ -1,12 +1,12 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import { extname, join, resolve } from "node:path";
+import { unlink } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { getAdminUser, requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { storePublicUpload } from "@/lib/uploads";
 import { extractYoutubeId } from "@/lib/youtube";
 
 function text(formData: FormData, key: string) {
@@ -21,24 +21,39 @@ function slugify(value: string) {
     .slice(0, 80);
 }
 
-export async function savePage(formData: FormData) {
-  await requireAdmin();
+export type SavePageState = { ok?: boolean; error?: string; slug?: string } | null;
+
+export async function savePage(
+  _prev: SavePageState,
+  formData: FormData,
+): Promise<NonNullable<SavePageState>> {
+  const admin = await getAdminUser();
+  if (!admin) {
+    return { error: "Your session expired. Please sign in again, then save." };
+  }
+
   const slug = text(formData, "slug");
-  await db.page.update({
-    where: { slug },
-    data: {
-      title: text(formData, "title"),
-      excerpt: text(formData, "excerpt"),
-      body: String(formData.get("body") || ""),
-    },
-  });
-  revalidatePath("/");
-  revalidatePath(`/${slug === "home" ? "" : slug}`);
-  revalidatePath("/about");
-  revalidatePath("/contact");
-  revalidatePath("/donate");
-  revalidatePath("/privacy");
-  redirect("/admin/pages?saved=1");
+  if (!slug) {
+    return { error: "This page could not be saved because the slug was missing." };
+  }
+
+  try {
+    await db.page.update({
+      where: { slug },
+      data: {
+        title: text(formData, "title"),
+        excerpt: text(formData, "excerpt"),
+        body: String(formData.get("body") || ""),
+      },
+    });
+  } catch {
+    return { error: "Could not save this page. Please try again." };
+  }
+
+  const publicPath = slug === "home" ? "/" : `/${slug}`;
+  revalidatePath(publicPath);
+  revalidatePath("/admin/pages");
+  return { ok: true, slug };
 }
 
 export async function saveMinistry(formData: FormData) {
@@ -155,26 +170,26 @@ export async function saveGalleryMeta(formData: FormData) {
   redirect("/admin/gallery?saved=1");
 }
 
-export async function uploadGalleryImage(formData: FormData) {
-  await requireAdmin();
+export type UploadGalleryState = { ok?: boolean; error?: string } | null;
+
+export async function uploadGalleryImage(
+  _prev: UploadGalleryState,
+  formData: FormData,
+): Promise<NonNullable<UploadGalleryState>> {
+  const admin = await getAdminUser();
+  if (!admin) {
+    return { error: "Your session expired. Please sign in again, then upload." };
+  }
+
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    throw new Error("Please choose a photo to upload.");
-  }
-  if (file.size > 8 * 1024 * 1024) {
-    throw new Error("Please keep photos under 8 MB.");
+  if (!(file instanceof File)) {
+    return { error: "Please choose a photo to upload." };
   }
 
-  const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  if (!allowed.includes(file.type)) {
-    throw new Error("Please upload a JPG, PNG, WEBP, or GIF photo.");
+  const stored = await storePublicUpload(file);
+  if ("error" in stored) {
+    return { error: stored.error };
   }
-
-  const extension = extname(file.name).toLowerCase() || ".jpg";
-  const filename = `${randomUUID()}${extension}`;
-  const dir = join(process.cwd(), "public", "uploads");
-  await mkdir(dir, { recursive: true });
-  await writeFile(join(dir, filename), Buffer.from(await file.arrayBuffer()));
 
   const placement = normalizePlacement(text(formData, "placement"));
   if (placement === "hero") {
@@ -186,17 +201,18 @@ export async function uploadGalleryImage(formData: FormData) {
 
   await db.galleryImage.create({
     data: {
-      title: text(formData, "title") || file.name.replace(/\.[^.]+$/, ""),
+      title: text(formData, "title") || file.name.replace(/\.[^.]+$/, "") || "Congregation photo",
       caption: text(formData, "caption"),
       album: text(formData, "album") || "Congregation",
       placement,
-      url: `/uploads/${filename}`,
+      url: stored.url,
     },
   });
 
   revalidatePath("/gallery");
   revalidatePath("/");
-  redirect("/admin/gallery?saved=1");
+  revalidatePath("/admin/gallery");
+  return { ok: true };
 }
 
 export async function deleteGalleryImage(id: string) {

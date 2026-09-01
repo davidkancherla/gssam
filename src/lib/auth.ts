@@ -15,6 +15,12 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   return verifySession(token);
 }
 
+export async function getAdminUser(): Promise<SessionUser | null> {
+  const user = await getSessionUser();
+  if (!user || user.role !== "ADMIN") return null;
+  return user;
+}
+
 export async function requireUser(role?: Role): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) redirect("/login");

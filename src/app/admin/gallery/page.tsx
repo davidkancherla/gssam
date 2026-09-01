@@ -1,4 +1,5 @@
-import { deleteGalleryImage, saveGalleryMeta, uploadGalleryImage } from "@/app/actions/content";
+import { deleteGalleryImage, saveGalleryMeta } from "@/app/actions/content";
+import { GalleryUploadForm } from "@/app/admin/gallery/upload-form";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
@@ -22,27 +23,7 @@ export default async function AdminGallery({
         or GIF up to 8 MB. Deleting an upload also removes the file.
       </p>
       <SavedNotice searchParams={params} />
-      <form action={uploadGalleryImage} className="card grid gap-4 p-6 sm:grid-cols-2">
-        <Field label="Photo" name="file">
-          <input className="input" name="file" type="file" accept="image/*" required />
-        </Field>
-        <Field label="Title" name="title" />
-        <Field label="Album" name="album" defaultValue="Congregation" />
-        <label className="text-sm">
-          <span className="mb-1 block font-medium text-shepherd">Show on</span>
-          <select className="input" name="placement" defaultValue="gallery">
-            <option value="gallery">Gallery only</option>
-            <option value="home">Homepage gallery</option>
-            <option value="hero">Homepage hero</option>
-          </select>
-        </label>
-        <Field label="Caption" name="caption" />
-        <div className="sm:col-span-2">
-          <button className="btn btn-dark" type="submit">
-            Upload photo
-          </button>
-        </div>
-      </form>
+      <GalleryUploadForm />
       <div className="grid gap-4 sm:grid-cols-2">
         {photos.map((photo) => (
           <article key={photo.id} className="card overflow-hidden">

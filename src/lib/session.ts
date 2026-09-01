@@ -18,6 +18,22 @@ export type SessionUser = {
   role: Role;
 };
 
+type CookieJar = {
+  set: (
+    name: string,
+    value: string,
+    options?: {
+      httpOnly?: boolean;
+      sameSite?: "lax" | "strict" | "none";
+      path?: string;
+      secure?: boolean;
+      maxAge?: number;
+      expires?: Date;
+    },
+  ) => unknown;
+  delete: (name: string) => unknown;
+};
+
 const EXAMPLE_AUTH_SECRET =
   "change-this-to-a-long-random-string-before-production";
 
@@ -54,4 +70,17 @@ export async function verifySession(token: string): Promise<SessionUser | null> 
   } catch {
     return null;
   }
+}
+
+export function expireSessionCookie(jar: CookieJar) {
+  const expired = {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  };
+  jar.set(SESSION_COOKIE, "", { ...expired, secure: sessionCookieBase.secure });
+  jar.set(SESSION_COOKIE, "", { ...expired, secure: !sessionCookieBase.secure });
+  jar.delete(SESSION_COOKIE);
 }
