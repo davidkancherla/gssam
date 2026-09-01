@@ -8,6 +8,8 @@ import type { SessionUser } from "@/lib/session";
 
 export function Header({ user }: { user: SessionUser | null }) {
   const [open, setOpen] = useState(false);
+  const [signedOut, setSignedOut] = useState(false);
+  const visibleUser = signedOut ? null : user;
 
   return (
     <header className="relative z-40">
@@ -48,15 +50,15 @@ export function Header({ user }: { user: SessionUser | null }) {
                 {item.label}
               </Link>
             ))}
-            {user ? (
+            {visibleUser ? (
               <div className="flex items-center gap-3">
                 <Link
-                  href={user.role === "ADMIN" ? "/admin" : "/member"}
+                  href={visibleUser.role === "ADMIN" ? "/admin" : "/member"}
                   className="btn btn-gold text-sm"
                 >
-                  {user.role === "ADMIN" ? "Admin" : "Member"} portal
+                  {visibleUser.role === "ADMIN" ? "Admin" : "Member"} portal
                 </Link>
-                <form action={logoutAction}>
+                <form action={logoutAction} onSubmit={() => setSignedOut(true)}>
                   <button className="text-sm text-muted hover:text-burgundy" type="submit">
                     Sign out
                   </button>
@@ -92,12 +94,12 @@ export function Header({ user }: { user: SessionUser | null }) {
                   {item.label}
                 </Link>
               ))}
-              {user ? (
+              {visibleUser ? (
                 <>
-                  <Link href={user.role === "ADMIN" ? "/admin" : "/member"}>
-                    {user.role === "ADMIN" ? "Admin portal" : "Member portal"}
+                  <Link href={visibleUser.role === "ADMIN" ? "/admin" : "/member"}>
+                    {visibleUser.role === "ADMIN" ? "Admin portal" : "Member portal"}
                   </Link>
-                  <form action={logoutAction}>
+                  <form action={logoutAction} onSubmit={() => setSignedOut(true)}>
                     <button type="submit">Sign out</button>
                   </form>
                 </>

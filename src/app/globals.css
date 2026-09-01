@@ -103,6 +103,12 @@ a {
   background: transparent;
 }
 
+.btn-outline-light {
+  border: 1px solid var(--color-gold-soft);
+  color: var(--color-cream);
+  background: transparent;
+}
+
 .card {
   background: white;
   border: 1px solid var(--color-line);

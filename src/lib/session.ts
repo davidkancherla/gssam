@@ -2,6 +2,13 @@ import { jwtVerify, SignJWT } from "jose";
 
 export const SESSION_COOKIE = "gssam_session";
 
+export const sessionCookieBase = {
+  httpOnly: true,
+  sameSite: "lax" as const,
+  path: "/",
+  secure: process.env.NODE_ENV === "production",
+};
+
 export type Role = "ADMIN" | "MEMBER";
 
 export type SessionUser = {

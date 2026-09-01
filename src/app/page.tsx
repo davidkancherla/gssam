@@ -67,7 +67,7 @@ export default async function HomePage() {
               <Link href="/about" className="btn btn-gold">
                 Welcome to GSSAM
               </Link>
-              <Link href="/donate" className="btn btn-outline border-gold-soft text-cream">
+              <Link href="/donate" className="btn btn-outline-light">
                 Give an offering
               </Link>
             </div>

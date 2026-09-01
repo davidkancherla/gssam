@@ -3,8 +3,14 @@
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { SESSION_COOKIE, signSession, type Role } from "@/lib/session";
+import {
+  SESSION_COOKIE,
+  sessionCookieBase,
+  signSession,
+  type Role,
+} from "@/lib/session";
 
 export async function loginAction(_prev: { error?: string } | null, formData: FormData) {
   const email = String(formData.get("email") || "")
@@ -27,11 +33,8 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
 
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
+    ...sessionCookieBase,
     maxAge: 60 * 60 * 24 * 14,
-    secure: process.env.NODE_ENV === "production",
   });
 
   if (next.startsWith("/") && !next.startsWith("//")) {
@@ -42,6 +45,16 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
 
 export async function logoutAction() {
   const jar = await cookies();
-  jar.delete(SESSION_COOKIE);
+  jar.set(SESSION_COOKIE, "", {
+    ...sessionCookieBase,
+    maxAge: 0,
+  });
+  jar.delete({
+    name: SESSION_COOKIE,
+    path: sessionCookieBase.path,
+    sameSite: sessionCookieBase.sameSite,
+    secure: sessionCookieBase.secure,
+  });
+  revalidatePath("/", "layout");
   redirect("/");
 }
