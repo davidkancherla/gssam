@@ -18,9 +18,6 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export async function requireUser(role?: Role): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) redirect("/login");
-  if (role && user.role !== role && user.role !== "ADMIN") {
-    redirect(user.role === "ADMIN" ? "/admin" : "/member");
-  }
   if (role === "ADMIN" && user.role !== "ADMIN") {
     redirect("/member");
   }
