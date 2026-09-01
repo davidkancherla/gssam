@@ -6,6 +6,25 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { SESSION_COOKIE, signSession, type Role } from "@/lib/session";
 
+function safeNextPath(next: string, role: Role) {
+  const fallback = role === "ADMIN" ? "/admin" : "/member";
+  if (!next.startsWith("/") || next.startsWith("//") || next.includes("\\")) {
+    return fallback;
+  }
+  try {
+    const url = new URL(next, "http://gssam.local");
+    if (url.origin !== "http://gssam.local" || url.username || url.password) {
+      return fallback;
+    }
+    const path = `${url.pathname}${url.search}`;
+    if (path.startsWith("/admin") && role !== "ADMIN") return "/member";
+    if (path.startsWith("/login")) return fallback;
+    return path;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function loginAction(_prev: { error?: string } | null, formData: FormData) {
   const email = String(formData.get("email") || "")
     .trim()
@@ -18,11 +37,12 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
     return { error: "That email or password is not right. Please try again." };
   }
 
+  const role = user.role as Role;
   const token = await signSession({
     id: user.id,
     name: user.name,
     email: user.email,
-    role: user.role as Role,
+    role,
   });
 
   const jar = await cookies();
@@ -34,10 +54,7 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
     secure: process.env.NODE_ENV === "production",
   });
 
-  if (next.startsWith("/") && !next.startsWith("//")) {
-    redirect(next);
-  }
-  redirect(user.role === "ADMIN" ? "/admin" : "/member");
+  redirect(safeNextPath(next, role));
 }
 
 export async function logoutAction() {

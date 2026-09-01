@@ -143,7 +143,7 @@ How we use your information
 Your information may be used to respond to inquiries, personalize your experience, communicate about worship and ministries, and — for signed-in members — to show only your own giving records. Non-personal information may be used for analytics so we can improve the site.
 
 Member financial records
-Giving, income, and expense records in the member portal are private. Members see only their own records. Church-wide totals and other households’ gifts are visible only to administrators. Demo sample data in this project is clearly labeled and is not real member finances.
+Giving, income, and expense records tied to a household are private. Members see only their own records. Other households’ named gifts and the church-wide finance ledger are visible only to administrators. The weekly bulletin may include an unnamed congregation offering total for that week; it does not say who gave. Demo sample data in this project is clearly labeled and is not real member finances.
 
 Information sharing
 We do not sell, trade, or otherwise transfer your personal information to outside parties. This does not include trusted third parties who assist us in operating our website, conducting our business, or serving you, as long as those parties agree to keep this information confidential.

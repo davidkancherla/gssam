@@ -1,6 +1,7 @@
 import { requireMemberArea } from "@/lib/auth";
 import { DemoBanner } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney } from "@/lib/site";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ export default async function MemberHome() {
   const user = await requireMemberArea();
   const isAdmin = user.role === "ADMIN";
   const entries = await db.financeEntry.findMany({
-    where: isAdmin ? undefined : { memberId: user.id },
+    where: financeWhereFor(user),
     orderBy: { occurredOn: "desc" },
   });
   const week = await db.weeklyBulletin.findFirst({
@@ -34,7 +35,7 @@ export default async function MemberHome() {
         </h1>
         <p className="mt-3 max-w-2xl text-ink/80">
           {isAdmin
-            ? "You are signed in as an administrator. This member view can show church-wide sample totals. Ordinary members only see their own household."
+            ? "You are signed in as an administrator. This member view shows only your own household sample, the same way a member would see it. Congregation-wide figures are on Church finance."
             : "This portal shows only your household’s sample records, plus the weekly bulletin for the congregation."}
         </p>
       </div>

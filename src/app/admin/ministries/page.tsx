@@ -1,4 +1,5 @@
 import { deleteMinistry, saveMinistry } from "@/app/actions/content";
+import { requireAdmin } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
@@ -11,6 +12,7 @@ export default async function AdminMinistries({
   searchParams: Promise<{ saved?: string; id?: string }>;
 }) {
   const params = await searchParams;
+  await requireAdmin();
   const ministries = await db.ministry.findMany({ orderBy: { sortOrder: "asc" } });
   const current = ministries.find((item) => item.id === params.id);
 

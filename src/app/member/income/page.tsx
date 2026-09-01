@@ -2,6 +2,7 @@ import { addFinanceEntry } from "@/app/actions/finance";
 import { requireMemberArea } from "@/lib/auth";
 import { DemoBanner, Field, SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
 export const metadata = { title: "Income" };
@@ -14,11 +15,7 @@ export default async function MemberIncome({
   const params = await searchParams;
   const user = await requireMemberArea();
   const entries = await db.financeEntry.findMany({
-    where:
-      user.role === "ADMIN"
-        ? { kind: "INCOME" }
-        : { memberId: user.id, kind: "INCOME" },
-    include: { member: true },
+    where: financeWhereFor(user, { kind: "INCOME" }),
     orderBy: { occurredOn: "desc" },
   });
   const total = entries.reduce((sum, entry) => sum + entry.amountCents, 0);
@@ -28,8 +25,7 @@ export default async function MemberIncome({
       <h1 className="font-display text-4xl text-shepherd">Income tracking</h1>
       <p className="text-ink/80">
         Record household income so you can see giving in context. These figures
-        are private to your login
-        {user.role === "ADMIN" ? " (admins see every demo household)" : ""}.
+        are private to your login.
       </p>
       <DemoBanner />
       <SavedNotice searchParams={params} />
@@ -39,8 +35,9 @@ export default async function MemberIncome({
       </div>
       <form action={addFinanceEntry} className="card grid gap-4 p-6 sm:grid-cols-2">
         <input type="hidden" name="kind" value="INCOME" />
+        <input type="hidden" name="returnTo" value="/member/income" />
         <h2 className="font-display text-2xl sm:col-span-2">Add income</h2>
-        <Field label="Amount (USD)" name="amount" type="number" required />
+        <Field label="Amount (USD)" name="amount" type="number" step="0.01" min="0.01" required />
         <Field label="Date" name="occurredOn" type="date" required />
         <Field label="Source / category" name="category" defaultValue="Household income (demo)" />
         <Field
@@ -59,7 +56,6 @@ export default async function MemberIncome({
           <li key={entry.id} className="flex justify-between px-5 py-3 text-sm">
             <span>
               {formatShortDate(entry.occurredOn)} · {entry.category}
-              {user.role === "ADMIN" && entry.member ? ` · ${entry.member.name}` : ""}
             </span>
             <span>{formatMoney(entry.amountCents)}</span>
           </li>
