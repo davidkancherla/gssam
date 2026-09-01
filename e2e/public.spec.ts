@@ -1,26 +1,27 @@
 import { expect, test } from "@playwright/test";
+import { expectPageHas } from "./helpers";
 
 test.describe("public pages", () => {
   test("home shows GSSAM worship copy", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: /Good Shepherd/i })).toBeVisible();
-    await expect(page.getByText("South Asian")).toBeVisible();
-    await expect(page.getByText("Telugu")).toBeVisible();
-    await expect(page.getByText(/11:30/)).toBeVisible();
-    await expect(page.getByText("Fremont")).toBeVisible();
+    await expectPageHas(page, "South Asian");
+    await expectPageHas(page, "Telugu");
+    await expectPageHas(page, /11:30/);
+    await expectPageHas(page, "Fremont");
   });
 
   test("about describes the Lutheran congregation", async ({ page }) => {
     await page.goto("/about");
     await expect(page.getByRole("heading", { name: "About GSSAM" })).toBeVisible();
-    await expect(page.getByText("Triune God")).toBeVisible();
-    await expect(page.getByText("Lutheran")).toBeVisible();
+    await expectPageHas(page, "Triune God");
+    await expectPageHas(page, "Lutheran");
   });
 
   test("gallery lists congregation photos", async ({ page }) => {
     await page.goto("/gallery");
     await expect(page.getByRole("heading", { name: "Gallery" })).toBeVisible();
-    await expect(page.getByText("Sunday worship")).toBeVisible();
+    await expectPageHas(page, "Sunday worship");
   });
 
   test("events lists Christmas worship", async ({ page }) => {
@@ -32,22 +33,22 @@ test.describe("public pages", () => {
   test("messages embeds GSSAM worship recordings", async ({ page }) => {
     await page.goto("/messages");
     await expect(page.getByRole("heading", { name: "Messages" })).toBeVisible();
-    await expect(page.getByText("GSSAM Fremont")).toBeVisible();
+    await expectPageHas(page, "GSSAM Fremont");
     await expect(page.locator('iframe[title*="Sunday Worship"]').first()).toBeVisible();
   });
 
   test("giving page lists PayPal and Zelle", async ({ page }) => {
     await page.goto("/donate");
     await expect(page.getByRole("heading", { name: "Giving & Offerings" })).toBeVisible();
-    await expect(page.getByText("PayPal")).toBeVisible();
-    await expect(page.getByText("Zelle")).toBeVisible();
-    await expect(page.getByText("gssam2005@gmail.com").first()).toBeVisible();
+    await expectPageHas(page, "PayPal");
+    await expectPageHas(page, "Zelle");
+    await expectPageHas(page, "gssam2005@gmail.com");
   });
 
   test("contact page has church address and form", async ({ page }) => {
     await page.goto("/contact");
     await expect(page.getByRole("heading", { name: "Contact Us" })).toBeVisible();
-    await expect(page.getByText("4211 Carol Ave")).toBeVisible();
+    await expectPageHas(page, "4211 Carol Ave");
     await expect(page.getByRole("button", { name: "Send to GSSAM" })).toBeVisible();
   });
 });

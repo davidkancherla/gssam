@@ -51,7 +51,7 @@ test.describe("admin portal", () => {
     await page.goto("/admin/finance");
     await expect(page.getByRole("heading", { name: "Church-wide finance" })).toBeVisible();
     await expectDemoFinanceBanner(page);
-    await expect(page.getByText("Priya Sharma (Demo)")).toBeVisible();
-    await expect(page.getByText("Arun Reddy (Demo)")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Priya Sharma (Demo)" }).first()).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Arun Reddy (Demo)" }).first()).toBeVisible();
   });
 });

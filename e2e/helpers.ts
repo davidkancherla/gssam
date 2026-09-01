@@ -22,11 +22,15 @@ export async function signOut(page: Page) {
   await page.waitForURL("/");
 }
 
+export async function expectPageHas(page: Page, text: string | RegExp) {
+  await expect(page.getByText(text).first()).toBeVisible();
+}
+
+export async function expectPageLacks(page: Page, text: string | RegExp) {
+  await expect(page.getByText(text)).toHaveCount(0);
+}
+
 export async function expectDemoFinanceBanner(page: Page) {
-  await expect(
-    page.getByText("Demo sample data only.", { exact: false }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("not real GSSAM member finances", { exact: false }),
-  ).toBeVisible();
+  await expectPageHas(page, "Demo sample data only.");
+  await expectPageHas(page, "not real GSSAM member finances");
 }
