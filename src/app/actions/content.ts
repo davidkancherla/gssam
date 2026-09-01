@@ -21,61 +21,81 @@ function slugify(value: string) {
     .slice(0, 80);
 }
 
-export type SavePageState = { ok?: boolean; error?: string; slug?: string } | null;
-
-export async function savePage(
-  _prev: SavePageState,
-  formData: FormData,
-): Promise<NonNullable<SavePageState>> {
+export async function savePage(formData: FormData) {
   const admin = await getAdminUser();
-  if (!admin) {
-    return { error: "Your session expired. Please sign in again, then save." };
-  }
+  if (!admin) redirect("/login");
 
   const slug = text(formData, "slug");
-  if (!slug) {
-    return { error: "This page could not be saved because the slug was missing." };
+  if (!slug) redirect("/admin/pages?error=This+page+could+not+be+saved.");
+
+  const existing = await db.page.findUnique({ where: { slug } });
+  if (!existing) redirect("/admin/pages?error=That+page+was+not+found.");
+
+  let imageUrl = existing.imageUrl;
+  const file = formData.get("file");
+  if (file instanceof File && file.size > 0) {
+    const stored = await storePublicUpload(file);
+    if ("error" in stored) {
+      redirect(`/admin/pages?slug=${encodeURIComponent(slug)}&error=${encodeURIComponent(stored.error)}`);
+    } else {
+      imageUrl = stored.url;
+    }
+  } else {
+    const galleryUrl = text(formData, "galleryUrl");
+    if (galleryUrl.startsWith("/")) imageUrl = galleryUrl;
   }
 
-  try {
-    await db.page.update({
-      where: { slug },
-      data: {
-        title: text(formData, "title"),
-        excerpt: text(formData, "excerpt"),
-        body: String(formData.get("body") || ""),
-      },
-    });
-  } catch {
-    return { error: "Could not save this page. Please try again." };
-  }
+  await db.page.update({
+    where: { slug },
+    data: {
+      title: text(formData, "title"),
+      excerpt: text(formData, "excerpt"),
+      body: String(formData.get("body") || ""),
+      imageUrl,
+    },
+  });
 
   const publicPath = slug === "home" ? "/" : `/${slug}`;
   revalidatePath(publicPath);
+  revalidatePath("/");
+  revalidatePath("/about");
   revalidatePath("/admin/pages");
-  return { ok: true, slug };
+  redirect(`/admin/pages?slug=${encodeURIComponent(slug)}&saved=1`);
 }
 
 export async function saveMinistry(formData: FormData) {
   await requireAdmin();
   const id = text(formData, "id");
   const name = text(formData, "name");
+  const existing = id ? await db.ministry.findUnique({ where: { id } }) : null;
+  let imageUrl = existing?.imageUrl || text(formData, "imageUrl");
+  const file = formData.get("file");
+  if (file instanceof File && file.size > 0) {
+    const stored = await storePublicUpload(file);
+    if ("error" in stored) {
+      redirect(
+        existing
+          ? `/admin/ministries?id=${existing.id}&error=${encodeURIComponent(stored.error)}`
+          : `/admin/ministries?error=${encodeURIComponent(stored.error)}`,
+      );
+    } else {
+      imageUrl = stored.url;
+    }
+  }
   const data = {
     name,
     slug: text(formData, "slug") || slugify(name),
     summary: text(formData, "summary"),
     body: String(formData.get("body") || ""),
-    imageUrl: text(formData, "imageUrl"),
+    imageUrl,
     sortOrder: Number(formData.get("sortOrder") || 0),
   };
-  if (id) {
-    await db.ministry.update({ where: { id }, data });
-  } else {
-    await db.ministry.create({ data });
-  }
+  const saved = existing
+    ? await db.ministry.update({ where: { id: existing.id }, data })
+    : await db.ministry.create({ data });
   revalidatePath("/ministries");
   revalidatePath("/");
-  redirect(id ? `/admin/ministries?saved=1&id=${id}` : "/admin/ministries?saved=1");
+  redirect(`/admin/ministries?saved=1&id=${saved.id}`);
 }
 
 export async function deleteMinistry(id: string) {

@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
-import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { adminError, adminResult } from "@/lib/form-response";
 import { storePublicUpload } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
@@ -10,24 +10,18 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user || user.role !== "ADMIN") {
-    return NextResponse.json(
-      { error: "Your session expired. Please sign in again, then save." },
-      { status: 401 },
-    );
+    return adminError(request, "/login", "Please sign in as an admin to save.", 401);
   }
 
   const formData = await request.formData();
   const slug = String(formData.get("slug") || "").trim();
   if (!slug) {
-    return NextResponse.json(
-      { error: "This page could not be saved because the slug was missing." },
-      { status: 400 },
-    );
+    return adminError(request, "/admin/pages", "This page could not be saved.");
   }
 
   const existing = await db.page.findUnique({ where: { slug } });
   if (!existing) {
-    return NextResponse.json({ error: "That page was not found." }, { status: 404 });
+    return adminError(request, "/admin/pages", "That page was not found.", 404);
   }
 
   let imageUrl = existing.imageUrl;
@@ -35,7 +29,7 @@ export async function POST(request: Request) {
   if (file instanceof File && file.size > 0) {
     const stored = await storePublicUpload(file);
     if ("error" in stored) {
-      return NextResponse.json({ error: stored.error }, { status: 400 });
+      return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, stored.error);
     }
     imageUrl = stored.url;
   } else {
@@ -56,10 +50,7 @@ export async function POST(request: Request) {
       },
     });
   } catch {
-    return NextResponse.json(
-      { error: "Could not save this page. Please try again." },
-      { status: 400 },
-    );
+    return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, "Could not save this page.");
   }
 
   const publicPath = slug === "home" ? "/" : `/${slug}`;
@@ -67,5 +58,8 @@ export async function POST(request: Request) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin/pages");
-  return NextResponse.json({ ok: true, slug });
+  return adminResult(request, `/admin/pages?slug=${encodeURIComponent(slug)}&saved=1`, {
+    ok: true,
+    slug,
+  });
 }

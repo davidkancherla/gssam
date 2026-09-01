@@ -1,6 +1,3 @@
-"use client";
-
-import { useState, type FormEvent } from "react";
 import { Field } from "@/components/ui";
 
 const PHOTO_PAGES = new Set(["home", "about"]);
@@ -12,51 +9,16 @@ export function PageEditor({
   page: { slug: string; title: string; excerpt: string; body: string; imageUrl: string };
   gallery: { id: string; url: string; title: string }[];
 }) {
-  const [error, setError] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [pending, setPending] = useState(false);
   const showPhoto = PHOTO_PAGES.has(page.slug);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    setError("");
-    setSaved(false);
-    setPending(true);
-    try {
-      const res = await fetch("/api/admin/pages", {
-        method: "POST",
-        body: new FormData(form),
-        credentials: "same-origin",
-      });
-      const payload = (await res.json().catch(() => ({}))) as {
-        error?: string;
-        slug?: string;
-      };
-      if (!res.ok) {
-        setError(payload.error || "Could not save this page. Please try again.");
-        return;
-      }
-      setSaved(true);
-      const slug = payload.slug || page.slug;
-      window.location.assign(`/admin/pages?slug=${encodeURIComponent(slug)}&saved=1`);
-    } catch {
-      setError("Could not save this page. Please try again.");
-      setPending(false);
-    }
-  }
-
   return (
-    <form onSubmit={onSubmit} className="card space-y-4 p-6">
+    <form
+      action="/api/admin/pages"
+      method="post"
+      encType="multipart/form-data"
+      className="card space-y-4 p-6"
+    >
       <input type="hidden" name="slug" value={page.slug} />
-      {error ? (
-        <p className="rounded-lg bg-burgundy/10 p-3 text-sm text-burgundy">{error}</p>
-      ) : null}
-      {saved ? (
-        <p className="rounded-lg bg-shepherd/10 p-3 text-sm text-shepherd">
-          Saved. The public page will show this update.
-        </p>
-      ) : null}
       <Field label="Title" name="title" defaultValue={page.title} required />
       <Field
         label="Short introduction"
@@ -110,8 +72,8 @@ export function PageEditor({
         hero paragraph. On other pages, title and introduction appear in the page
         header. Separate body paragraphs with a blank line.
       </p>
-      <button className="btn btn-dark" disabled={pending} type="submit">
-        {pending ? "Saving…" : `Save ${page.title}`}
+      <button className="btn btn-dark" type="submit">
+        Save {page.title}
       </button>
     </form>
   );

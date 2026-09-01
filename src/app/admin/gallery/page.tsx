@@ -9,7 +9,7 @@ export const metadata = { title: "Gallery CMS" };
 export default async function AdminGallery({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const photos = await db.galleryImage.findMany({ orderBy: { createdAt: "desc" } });

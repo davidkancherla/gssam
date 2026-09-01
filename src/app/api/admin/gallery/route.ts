@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { adminError, adminResult } from "@/lib/form-response";
 import { storePublicUpload } from "@/lib/uploads";
-import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,30 +16,24 @@ function placementOf(value: FormDataEntryValue | null) {
 export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user || user.role !== "ADMIN") {
-    return NextResponse.json(
-      { error: "Please sign in as an admin to upload a photo." },
-      { status: 401 },
-    );
+    return adminError(request, "/login", "Please sign in as an admin to upload a photo.", 401);
   }
 
   let formData: FormData;
   try {
     formData = await request.formData();
   } catch {
-    return NextResponse.json(
-      { error: "The photo was too large to read. Please keep photos under 8 MB." },
-      { status: 413 },
-    );
+    return adminError(request, "/admin/gallery", "The photo was too large to read. Please keep photos under 8 MB.", 413);
   }
 
   const file = formData.get("file");
-  if (!(file instanceof File)) {
-    return NextResponse.json({ error: "Please choose a photo to upload." }, { status: 400 });
+  if (!(file instanceof File) || file.size === 0) {
+    return adminError(request, "/admin/gallery", "Please choose a photo to upload.");
   }
 
   const stored = await storePublicUpload(file);
   if ("error" in stored) {
-    return NextResponse.json({ error: stored.error }, { status: 400 });
+    return adminError(request, "/admin/gallery", stored.error);
   }
 
   const placement = placementOf(formData.get("placement"));
@@ -66,6 +60,9 @@ export async function POST(request: Request) {
   revalidatePath("/gallery");
   revalidatePath("/");
   revalidatePath("/admin/gallery");
-
-  return NextResponse.json({ ok: true, id: photo.id, url: photo.url });
+  return adminResult(request, "/admin/gallery?saved=1", {
+    ok: true,
+    id: photo.id,
+    url: photo.url,
+  });
 }

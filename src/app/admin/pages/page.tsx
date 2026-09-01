@@ -8,7 +8,7 @@ export const metadata = { title: "Edit pages" };
 export default async function AdminPages({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; slug?: string }>;
+  searchParams: Promise<{ saved?: string; slug?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const [pages, gallery] = await Promise.all([

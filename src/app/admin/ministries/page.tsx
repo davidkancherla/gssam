@@ -9,7 +9,7 @@ export const metadata = { title: "Ministries CMS" };
 export default async function AdminMinistries({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; id?: string }>;
+  searchParams: Promise<{ saved?: string; id?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const ministries = await db.ministry.findMany({ orderBy: { sortOrder: "asc" } });

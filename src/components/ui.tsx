@@ -102,7 +102,20 @@ export function Field({
   );
 }
 
-export function SavedNotice({ searchParams }: { searchParams?: { saved?: string } }) {
+export function SavedNotice({
+  searchParams,
+}: {
+  searchParams?: { saved?: string; error?: string };
+}) {
+  if (searchParams?.error) {
+    return (
+      <p className="rounded-xl bg-burgundy/10 px-4 py-3 text-sm text-burgundy">
+        {searchParams.error === "1"
+          ? "Could not save. Please try again."
+          : searchParams.error}
+      </p>
+    );
+  }
   if (!searchParams?.saved) return null;
   return (
     <p className="rounded-xl bg-shepherd/10 px-4 py-3 text-sm text-shepherd">

@@ -48,6 +48,60 @@ async function main() {
 
   const original = await db.page.findUnique({ where: { slug: "about" } });
   if (!original) throw new Error("About page is missing");
+  const originalContact = await db.page.findUnique({ where: { slug: "contact" } });
+  if (!originalContact) throw new Error("Contact page is missing");
+
+  const editor = await fetch(`${BASE}/admin/pages?slug=contact`, {
+    headers: { cookie: cookieHeader(adminToken) },
+    redirect: "manual",
+  });
+  const editorHtml = await editor.text();
+  if (
+    !editorHtml.includes('action="/api/admin/pages"') ||
+    !editorHtml.includes('method="post"') ||
+    !editorHtml.includes('name="slug"') ||
+    !editorHtml.includes('value="contact"')
+  ) {
+    throw new Error("Contact editor is missing a native POST form that saves without JS");
+  }
+
+  const browserSave = await fetch(`${BASE}/api/admin/pages`, {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      cookie: cookieHeader(adminToken),
+      accept: "text/html,application/xhtml+xml",
+      "sec-fetch-dest": "document",
+      "sec-fetch-mode": "navigate",
+    },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "contact");
+      data.set("title", "Contact Us");
+      data.set("excerpt", "Browser form persist check");
+      data.set("body", "Office hours stay the same.");
+      return data;
+    })(),
+  });
+  const browserLocation = browserSave.headers.get("location") || "";
+  if (![303, 302, 307, 308].includes(browserSave.status) || !browserLocation.includes("slug=contact")) {
+    throw new Error(
+      `Browser form save must 303 to the same slug, got ${browserSave.status} ${browserLocation}`,
+    );
+  }
+  const contactRow = await db.page.findUnique({ where: { slug: "contact" } });
+  if (contactRow?.excerpt !== "Browser form persist check") {
+    throw new Error("Native POST did not persist the Contact excerpt");
+  }
+  await db.page.update({
+    where: { slug: "contact" },
+    data: {
+      title: originalContact.title,
+      excerpt: originalContact.excerpt,
+      body: originalContact.body,
+    },
+  });
+
   const marker = `QA save ${Date.now()}`;
 
   const save = await json("/api/admin/pages", {
