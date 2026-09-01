@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { SignOutButton } from "@/components/SignOutButton";
 import { nav, site } from "@/lib/site";
 import type { SessionUser } from "@/lib/session";
 
@@ -73,9 +74,7 @@ export function Header({ user: initialUser }: { user: SessionUser | null }) {
                 >
                   {user.role === "ADMIN" ? "Admin" : "Member"} portal
                 </Link>
-                <a className="text-sm text-muted hover:text-burgundy" href="/api/logout">
-                  Sign out
-                </a>
+                <SignOutButton className="text-sm text-muted hover:text-burgundy" />
               </div>
             ) : (
               <Link href="/login" className="btn btn-dark text-sm">
@@ -112,7 +111,7 @@ export function Header({ user: initialUser }: { user: SessionUser | null }) {
                   <Link href={user.role === "ADMIN" ? "/admin" : "/member"}>
                     {user.role === "ADMIN" ? "Admin portal" : "Member portal"}
                   </Link>
-                  <a href="/api/logout">Sign out</a>
+                  <SignOutButton />
                 </>
               ) : (
                 <Link href="/login">Sign in</Link>

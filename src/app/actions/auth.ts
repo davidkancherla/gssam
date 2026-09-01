@@ -6,9 +6,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import {
-  SESSION_COOKIE,
+  applySessionCookie,
   expireSessionCookie,
-  sessionCookieBase,
   signSession,
   type Role,
 } from "@/lib/session";
@@ -32,11 +31,7 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
     role: user.role as Role,
   });
 
-  const jar = await cookies();
-  jar.set(SESSION_COOKIE, token, {
-    ...sessionCookieBase,
-    maxAge: 60 * 60 * 24 * 14,
-  });
+  applySessionCookie(await cookies(), token);
 
   if (next.startsWith("/") && !next.startsWith("//")) {
     redirect(next);
@@ -45,8 +40,7 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
 }
 
 export async function logoutAction() {
-  const jar = await cookies();
-  expireSessionCookie(jar);
+  expireSessionCookie(await cookies());
   revalidatePath("/", "layout");
   redirect("/");
 }

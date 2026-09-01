@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SignOutButton } from "@/components/SignOutButton";
 import type { SessionUser } from "@/lib/session";
 
 const adminLinks = [
@@ -55,9 +56,7 @@ export function PortalNav({
             Back to admin
           </Link>
         ) : null}
-        <a className="rounded-full px-3 py-2 text-sm text-muted" href="/api/logout">
-          Sign out
-        </a>
+        <SignOutButton className="rounded-full px-3 py-2 text-sm text-muted" />
       </nav>
     </aside>
   );

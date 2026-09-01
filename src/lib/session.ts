@@ -2,6 +2,7 @@ import { jwtVerify, SignJWT } from "jose";
 
 export const SESSION_COOKIE = "gssam_session";
 
+/** Attributes used for every set and clear of gssam_session. Must stay in sync. */
 export const sessionCookieBase = {
   httpOnly: true,
   sameSite: "lax" as const,
@@ -18,20 +19,8 @@ export type SessionUser = {
   role: Role;
 };
 
-type CookieJar = {
-  set: (
-    name: string,
-    value: string,
-    options?: {
-      httpOnly?: boolean;
-      sameSite?: "lax" | "strict" | "none";
-      path?: string;
-      secure?: boolean;
-      maxAge?: number;
-      expires?: Date;
-    },
-  ) => unknown;
-  delete: (name: string) => unknown;
+type CookieWriter = {
+  set: (name: string, value: string, options?: object) => unknown;
 };
 
 const EXAMPLE_AUTH_SECRET =
@@ -72,15 +61,33 @@ export async function verifySession(token: string): Promise<SessionUser | null> 
   }
 }
 
-export function expireSessionCookie(jar: CookieJar) {
-  const expired = {
-    httpOnly: true,
-    sameSite: "lax" as const,
-    path: "/",
+export function applySessionCookie(jar: CookieWriter, token: string) {
+  jar.set(SESSION_COOKIE, token, {
+    ...sessionCookieBase,
+    maxAge: 60 * 60 * 24 * 14,
+  });
+}
+
+export function expiredSessionCookieHeader() {
+  const sameSite =
+    sessionCookieBase.sameSite.charAt(0).toUpperCase() +
+    sessionCookieBase.sameSite.slice(1);
+  const parts = [
+    `${SESSION_COOKIE}=`,
+    `Path=${sessionCookieBase.path}`,
+    "Max-Age=0",
+    "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+    `SameSite=${sameSite}`,
+  ];
+  if (sessionCookieBase.httpOnly) parts.push("HttpOnly");
+  if (sessionCookieBase.secure) parts.push("Secure");
+  return parts.join("; ");
+}
+
+export function expireSessionCookie(jar: CookieWriter) {
+  jar.set(SESSION_COOKIE, "", {
+    ...sessionCookieBase,
     maxAge: 0,
     expires: new Date(0),
-  };
-  jar.set(SESSION_COOKIE, "", { ...expired, secure: sessionCookieBase.secure });
-  jar.set(SESSION_COOKIE, "", { ...expired, secure: !sessionCookieBase.secure });
-  jar.delete(SESSION_COOKIE);
+  });
 }

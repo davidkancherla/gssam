@@ -118,7 +118,7 @@ async function main() {
   }
 
   const logout = await fetch(`${BASE}/api/logout`, {
-    method: "GET",
+    method: "POST",
     redirect: "manual",
     headers: { cookie: cookieHeader(memberToken) },
   });
@@ -126,11 +126,16 @@ async function main() {
     throw new Error(`Logout did not redirect, got ${logout.status}`);
   }
   const setCookie = logout.headers.getSetCookie?.() || [logout.headers.get("set-cookie") || ""];
-  const expired = setCookie.some(
-    (value) =>
-      value.includes(SESSION_COOKIE) &&
-      (/max-age=0/i.test(value) || /expires=thu, 01 jan 1970/i.test(value)),
-  );
+  const expired = setCookie.some((value) => {
+    const text = value.toLowerCase();
+    return (
+      text.includes(SESSION_COOKIE.toLowerCase()) &&
+      text.includes("path=/") &&
+      text.includes("samesite=lax") &&
+      text.includes("httponly") &&
+      /max-age=0/.test(text)
+    );
+  });
   if (!expired) {
     throw new Error(`Logout did not expire the session cookie: ${setCookie.join(" | ")}`);
   }
