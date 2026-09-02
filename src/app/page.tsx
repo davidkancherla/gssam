@@ -13,10 +13,11 @@ import { PublicShell } from "@/components/PublicShell";
 import { db } from "@/lib/db";
 import { applySermonCatalog } from "@/lib/sermon-catalog";
 import { formatDate, formatShortDate, site } from "@/lib/site";
+import { WELCOME_HOME_DEFAULTS } from "@/lib/gallery-placement";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
 export default async function HomePage() {
-  const [page, events, sermons, photos] = await Promise.all([
+  const [page, events, sermons, photos, welcomeLeft, welcomeRight] = await Promise.all([
     db.page.findUnique({ where: { slug: "home" } }),
     db.churchEvent.findMany({
       where: { published: true, startsAt: { gte: new Date() } },
@@ -45,6 +46,8 @@ export default async function HomePage() {
         ? homePhotos
         : db.galleryImage.findMany({ orderBy: { createdAt: "desc" }, take: 4 }),
     ),
+    db.galleryImage.findFirst({ where: { placement: "welcome-left" } }),
+    db.galleryImage.findFirst({ where: { placement: "welcome-right" } }),
   ]);
 
   const latestSermon = applySermonCatalog(sermons)[0];
@@ -79,14 +82,14 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/real-congregation.jpg"
-              alt="GSSAM congregation on Palm Sunday"
+              src={welcomeLeft?.url || WELCOME_HOME_DEFAULTS.left.url}
+              alt={welcomeLeft?.caption || welcomeLeft?.title || WELCOME_HOME_DEFAULTS.left.alt}
               className="h-48 w-full rounded-xl object-cover shadow-md"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/real-elders.jpg"
-              alt="GSSAM elders honored with flower garlands"
+              src={welcomeRight?.url || WELCOME_HOME_DEFAULTS.right.url}
+              alt={welcomeRight?.caption || welcomeRight?.title || WELCOME_HOME_DEFAULTS.right.alt}
               className="mt-8 h-48 w-full rounded-xl object-cover shadow-md"
             />
           </div>

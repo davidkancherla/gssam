@@ -11,9 +11,11 @@ export default async function AdminPages({
   searchParams: Promise<{ saved?: string; slug?: string; error?: string }>;
 }) {
   const params = await searchParams;
-  const [pages, gallery] = await Promise.all([
+  const [pages, gallery, welcomeLeft, welcomeRight] = await Promise.all([
     db.page.findMany({ orderBy: { title: "asc" } }),
     db.galleryImage.findMany({ orderBy: { createdAt: "desc" } }),
+    db.galleryImage.findFirst({ where: { placement: "welcome-left" } }),
+    db.galleryImage.findFirst({ where: { placement: "welcome-right" } }),
   ]);
   const current =
     pages.find((page) => page.slug === params.slug) ??
@@ -41,6 +43,8 @@ export default async function AdminPages({
         <PageEditor
           key={current.slug}
           page={current}
+          welcomeLeftUrl={welcomeLeft?.url}
+          welcomeRightUrl={welcomeRight?.url}
           gallery={gallery.map((photo) => ({
             id: photo.id,
             url: photo.url,

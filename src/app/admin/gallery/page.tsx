@@ -18,9 +18,9 @@ export default async function AdminGallery({
     <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="font-display text-4xl text-shepherd">Gallery photos</h1>
       <p className="text-ink/80">
-        Upload a picture for the public gallery. Choose Homepage gallery or
-        Homepage hero so it can appear on the public home page. JPG, PNG, WEBP,
-        or GIF up to 8 MB. Deleting an upload also removes the file.
+        Upload a picture for the public gallery. Homepage hero, Welcome Home left
+        or right, and Homepage gallery strip can appear on the public home page.
+        JPG, PNG, WEBP, or GIF up to 8 MB. Deleting an upload also removes the file.
       </p>
       <SavedNotice searchParams={params} />
       <GalleryUploadForm />
@@ -37,8 +37,10 @@ export default async function AdminGallery({
                 <span className="mb-1 block font-medium text-shepherd">Show on</span>
                 <select className="input" name="placement" defaultValue={photo.placement}>
                   <option value="gallery">Gallery only</option>
-                  <option value="home">Homepage gallery</option>
+                  <option value="home">Homepage gallery strip</option>
                   <option value="hero">Homepage hero</option>
+                  <option value="welcome-left">Welcome Home left</option>
+                  <option value="welcome-right">Welcome Home right</option>
                 </select>
               </label>
               <Field label="Caption" name="caption" defaultValue={photo.caption} />

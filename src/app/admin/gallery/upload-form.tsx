@@ -17,8 +17,10 @@ export function GalleryUploadForm() {
         <span className="mb-1 block font-medium text-shepherd">Show on</span>
         <select className="input" name="placement" defaultValue="gallery">
           <option value="gallery">Gallery only</option>
-          <option value="home">Homepage gallery</option>
+          <option value="home">Homepage gallery strip</option>
           <option value="hero">Homepage hero</option>
+          <option value="welcome-left">Welcome Home left</option>
+          <option value="welcome-right">Welcome Home right</option>
         </select>
       </label>
       <Field label="Caption" name="caption" />

@@ -175,6 +175,120 @@ async function main() {
   }
   if (existsSync(blobPath)) unlinkSync(blobPath);
 
+  const homeEditor = await fetch(`${BASE}/admin/pages?slug=home`, {
+    headers: { cookie: cookieHeader(adminToken) },
+    redirect: "manual",
+  });
+  const homeEditorHtml = await homeEditor.text();
+  if (
+    !homeEditorHtml.includes('action="/api/admin/pages"') ||
+    !homeEditorHtml.includes('name="welcomeLeftFile"') ||
+    !homeEditorHtml.includes('name="welcomeRightFile"') ||
+    !homeEditorHtml.includes('name="welcomeLeftGalleryUrl"') ||
+    !homeEditorHtml.includes("Welcome Home left photo")
+  ) {
+    throw new Error("Home editor is missing native POST fields for the Welcome Home photo pair");
+  }
+
+  const originalWelcomeLeft = await db.galleryImage.findFirst({ where: { placement: "welcome-left" } });
+  const originalWelcomeRight = await db.galleryImage.findFirst({
+    where: { placement: "welcome-right" },
+  });
+  const welcomeSave = await fetch(`${BASE}/api/admin/pages`, {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      cookie: cookieHeader(adminToken),
+      accept: "text/html,application/xhtml+xml",
+      "sec-fetch-dest": "document",
+      "sec-fetch-mode": "navigate",
+    },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "home");
+      data.set("title", originalHome.title);
+      data.set("excerpt", originalHome.excerpt);
+      data.set("body", originalHome.body);
+      data.set("welcomeLeftFile", new File([PNG], "qa-welcome-left.png", { type: "image/png" }));
+      data.set("welcomeRightFile", new File([PNG], "qa-welcome-right.png", { type: "image/png" }));
+      return data;
+    })(),
+  });
+  const welcomeLocation = welcomeSave.headers.get("location") || "";
+  if (![303, 302, 307, 308].includes(welcomeSave.status) || !welcomeLocation.includes("slug=home")) {
+    throw new Error(
+      `Welcome Home photo save must 303 to slug=home, got ${welcomeSave.status} ${welcomeLocation}`,
+    );
+  }
+  const homeAfterWelcome = await db.page.findUnique({ where: { slug: "home" } });
+  if (homeAfterWelcome?.imageUrl !== originalHome.imageUrl) {
+    throw new Error("Welcome Home photo save must not replace the homepage hero");
+  }
+  const welcomeLeftRow = await db.galleryImage.findFirst({ where: { placement: "welcome-left" } });
+  const welcomeRightRow = await db.galleryImage.findFirst({ where: { placement: "welcome-right" } });
+  if (!welcomeLeftRow?.url.startsWith("/uploads/") || !welcomeRightRow?.url.startsWith("/uploads/")) {
+    throw new Error("Welcome Home file upload did not persist /uploads photos");
+  }
+  const welcomeLeftPath = join(process.cwd(), "public", welcomeLeftRow.url);
+  const welcomeRightPath = join(process.cwd(), "public", welcomeRightRow.url);
+  if (!existsSync(welcomeLeftPath) || !existsSync(welcomeRightPath)) {
+    throw new Error("Welcome Home photos were not written to /uploads");
+  }
+  const publicWelcome = await (await fetch(`${BASE}/`)).text();
+  if (!publicWelcome.includes(welcomeLeftRow.url) || !publicWelcome.includes(welcomeRightRow.url)) {
+    throw new Error("Public homepage Welcome Home did not use the uploaded photos");
+  }
+  if (!publicWelcome.includes("Welcome Home") || !publicWelcome.includes("Many Languages")) {
+    throw new Error("Welcome Home photo save dropped the Vite homepage copy");
+  }
+
+  const galleryPick = await db.galleryImage.findFirst({
+    where: { placement: "gallery", url: { startsWith: "/images/" } },
+  });
+  if (!galleryPick) throw new Error("No gallery photo available to pick for Welcome Home");
+  const welcomePickSave = await json("/api/admin/pages", {
+    method: "POST",
+    headers: { cookie: cookieHeader(adminToken) },
+    body: (() => {
+      const data = new FormData();
+      data.set("slug", "home");
+      data.set("title", originalHome.title);
+      data.set("excerpt", originalHome.excerpt);
+      data.set("body", originalHome.body);
+      data.set("welcomeLeftGalleryUrl", galleryPick.url);
+      return data;
+    })(),
+  });
+  if ((welcomePickSave.body as { ok?: boolean })?.ok !== true) {
+    throw new Error(`Welcome Home gallery pick failed: ${welcomePickSave.text}`);
+  }
+  const leftAfterPick = await db.galleryImage.findFirst({ where: { placement: "welcome-left" } });
+  if (leftAfterPick?.url !== galleryPick.url) {
+    throw new Error("Welcome Home gallery pick did not update the left photo");
+  }
+  const publicAfterPick = await (await fetch(`${BASE}/`)).text();
+  if (!publicAfterPick.includes(galleryPick.url)) {
+    throw new Error("Public homepage did not show the gallery-picked Welcome Home photo");
+  }
+
+  const restoreWelcome = async (
+    original: { id: string; url: string } | null,
+    placement: "welcome-left" | "welcome-right",
+    uploadedUrl?: string,
+  ) => {
+    if (original) {
+      await db.galleryImage.update({ where: { id: original.id }, data: { url: original.url } });
+    } else {
+      await db.galleryImage.deleteMany({ where: { placement } });
+    }
+    if (uploadedUrl && uploadedUrl.startsWith("/uploads/")) {
+      const leftover = join(process.cwd(), "public", uploadedUrl);
+      if (existsSync(leftover)) unlinkSync(leftover);
+    }
+  };
+  await restoreWelcome(originalWelcomeLeft, "welcome-left", welcomeLeftRow.url);
+  await restoreWelcome(originalWelcomeRight, "welcome-right", welcomeRightRow.url);
+
   const marker = `QA save ${Date.now()}`;
 
   const save = await json("/api/admin/pages", {

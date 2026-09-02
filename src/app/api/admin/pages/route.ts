@@ -2,10 +2,34 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { adminError, adminResult } from "@/lib/form-response";
+import {
+  WELCOME_LEFT,
+  WELCOME_RIGHT,
+  setPlacementUrl,
+} from "@/lib/gallery-placement";
 import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+async function applyPhotoField(
+  formData: FormData,
+  fileKey: string,
+  galleryKey: string,
+): Promise<{ error: string } | { url: string | null }> {
+  const uploaded = await takeUploadedFile(formData, fileKey);
+  if (!uploaded.ok && "error" in uploaded) {
+    return { error: uploaded.error };
+  }
+  if (uploaded.ok) {
+    const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
+    if ("error" in stored) return { error: stored.error };
+    return { url: stored.url };
+  }
+  const galleryUrl = String(formData.get(galleryKey) || "").trim();
+  if (galleryUrl.startsWith("/")) return { url: galleryUrl };
+  return { url: null as string | null };
+}
 
 export async function POST(request: Request) {
   const user = await getSessionUser();
@@ -35,27 +59,37 @@ export async function POST(request: Request) {
     return adminError(request, "/admin/pages", "That page was not found.", 404);
   }
 
-  let imageUrl = existing.imageUrl;
-  const uploaded = await takeUploadedFile(formData);
-  if (!uploaded.ok && "error" in uploaded) {
-    return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, uploaded.error);
+  const hero = await applyPhotoField(formData, "file", "galleryUrl");
+  if ("error" in hero) {
+    return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, hero.error);
   }
-  if (uploaded.ok) {
-    const stored = await storePublicBuffer(uploaded.buffer, uploaded.name, uploaded.file.type);
-    if ("error" in stored) {
-      return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, stored.error);
-    }
-    imageUrl = stored.url;
+
+  let imageUrl = existing.imageUrl;
+  if (hero.url) {
+    imageUrl = hero.url;
     if (slug === "home") {
-      await db.galleryImage.updateMany({
-        where: { placement: "hero" },
-        data: { url: imageUrl },
-      });
+      await setPlacementUrl("hero", imageUrl, "Homepage hero");
     }
-  } else {
-    const galleryUrl = String(formData.get("galleryUrl") || "").trim();
-    if (galleryUrl.startsWith("/")) {
-      imageUrl = galleryUrl;
+  }
+
+  let welcomeLeftUrl: string | null = null;
+  let welcomeRightUrl: string | null = null;
+  if (slug === "home") {
+    const left = await applyPhotoField(formData, "welcomeLeftFile", "welcomeLeftGalleryUrl");
+    if ("error" in left) {
+      return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, left.error);
+    }
+    const right = await applyPhotoField(formData, "welcomeRightFile", "welcomeRightGalleryUrl");
+    if ("error" in right) {
+      return adminError(request, `/admin/pages?slug=${encodeURIComponent(slug)}`, right.error);
+    }
+    if (left.url) {
+      await setPlacementUrl(WELCOME_LEFT, left.url, "Welcome Home left");
+      welcomeLeftUrl = left.url;
+    }
+    if (right.url) {
+      await setPlacementUrl(WELCOME_RIGHT, right.url, "Welcome Home right");
+      welcomeRightUrl = right.url;
     }
   }
 
@@ -82,5 +116,7 @@ export async function POST(request: Request) {
     ok: true,
     slug,
     imageUrl,
+    welcomeLeftUrl,
+    welcomeRightUrl,
   });
 }

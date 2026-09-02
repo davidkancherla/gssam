@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdminUser, requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { demoteOtherUniquePlacements, normalizeGalleryPlacement } from "@/lib/gallery-placement";
 import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 import { extractYoutubeId } from "@/lib/youtube";
 
@@ -185,13 +186,8 @@ export async function deleteSermon(id: string) {
 export async function saveGalleryMeta(formData: FormData) {
   await requireAdmin();
   const id = text(formData, "id");
-  const placement = normalizePlacement(text(formData, "placement"));
-  if (placement === "hero") {
-    await db.galleryImage.updateMany({
-      where: { placement: "hero", NOT: { id } },
-      data: { placement: "gallery" },
-    });
-  }
+  const placement = normalizeGalleryPlacement(text(formData, "placement"));
+  await demoteOtherUniquePlacements(placement, id);
   await db.galleryImage.update({
     where: { id },
     data: {
@@ -227,13 +223,8 @@ export async function uploadGalleryImage(
     return { error: stored.error };
   }
 
-  const placement = normalizePlacement(text(formData, "placement"));
-  if (placement === "hero") {
-    await db.galleryImage.updateMany({
-      where: { placement: "hero" },
-      data: { placement: "gallery" },
-    });
-  }
+  const placement = normalizeGalleryPlacement(text(formData, "placement"));
+  await demoteOtherUniquePlacements(placement);
 
   await db.galleryImage.create({
     data: {
@@ -260,11 +251,6 @@ export async function deleteGalleryImage(id: string) {
   }
   revalidatePath("/gallery");
   revalidatePath("/");
-}
-
-function normalizePlacement(value: string) {
-  if (value === "hero" || value === "home") return value;
-  return "gallery";
 }
 
 async function removeUploadedFile(url: string) {

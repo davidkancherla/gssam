@@ -1,15 +1,63 @@
 import { Field } from "@/components/ui";
+import { WELCOME_HOME_DEFAULTS } from "@/lib/gallery-placement";
 
 const PHOTO_PAGES = new Set(["home", "about"]);
+
+function PhotoPicker({
+  label,
+  fileName,
+  galleryName,
+  currentUrl,
+  help,
+  gallery,
+}: {
+  label: string;
+  fileName: string;
+  galleryName: string;
+  currentUrl: string;
+  help: string;
+  gallery: { id: string; url: string; title: string }[];
+}) {
+  return (
+    <div className="space-y-3">
+      {currentUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={currentUrl} alt="" className="h-40 w-full rounded-xl object-cover" />
+      ) : null}
+      <Field label={label} name={fileName}>
+        <input className="input" name={fileName} type="file" accept="image/*" />
+      </Field>
+      {gallery.length ? (
+        <label className="block text-sm">
+          <span className="mb-1 block font-medium text-shepherd">Or use a gallery photo</span>
+          <select className="input" name={galleryName} defaultValue="">
+            <option value="">Keep the current photo</option>
+            {gallery.map((photo) => (
+              <option key={photo.id} value={photo.url}>
+                {photo.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+      <p className="text-xs text-muted">{help}</p>
+    </div>
+  );
+}
 
 export function PageEditor({
   page,
   gallery,
+  welcomeLeftUrl,
+  welcomeRightUrl,
 }: {
   page: { slug: string; title: string; excerpt: string; body: string; imageUrl: string };
   gallery: { id: string; url: string; title: string }[];
+  welcomeLeftUrl?: string;
+  welcomeRightUrl?: string;
 }) {
   const showPhoto = PHOTO_PAGES.has(page.slug);
+  const isHome = page.slug === "home";
 
   return (
     <form
@@ -21,41 +69,37 @@ export function PageEditor({
     >
       <input type="hidden" name="slug" value={page.slug} />
       {showPhoto ? (
-        <div className="space-y-3">
-          {page.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={page.imageUrl}
-              alt=""
-              className="h-40 w-full rounded-xl object-cover"
-            />
-          ) : null}
-          <Field
-            label={page.slug === "home" ? "Homepage photo" : "About photo"}
-            name="file"
-          >
-            <input className="input" name="file" type="file" accept="image/*" />
-          </Field>
-          {gallery.length ? (
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium text-shepherd">
-                Or use a gallery photo
-              </span>
-              <select className="input" name="galleryUrl" defaultValue="">
-                <option value="">Keep the current photo</option>
-                {gallery.map((photo) => (
-                  <option key={photo.id} value={photo.url}>
-                    {photo.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <p className="text-xs text-muted">
-            {page.slug === "home"
+        <PhotoPicker
+          label={isHome ? "Homepage hero photo" : "About photo"}
+          fileName="file"
+          galleryName="galleryUrl"
+          currentUrl={page.imageUrl}
+          help={
+            isHome
               ? "This is the large picture behind the welcome heading. A chosen file is saved on the server and used as the public hero."
-              : "This picture appears in the About page header."}
-          </p>
+              : "This picture appears in the About page header."
+          }
+          gallery={gallery}
+        />
+      ) : null}
+      {isHome ? (
+        <div className="grid gap-6 border-t border-line pt-4 sm:grid-cols-2">
+          <PhotoPicker
+            label="Welcome Home left photo"
+            fileName="welcomeLeftFile"
+            galleryName="welcomeLeftGalleryUrl"
+            currentUrl={welcomeLeftUrl || WELCOME_HOME_DEFAULTS.left.url}
+            help="Left picture beside Welcome Home. File upload or gallery pick, same Save as the hero."
+            gallery={gallery}
+          />
+          <PhotoPicker
+            label="Welcome Home right photo"
+            fileName="welcomeRightFile"
+            galleryName="welcomeRightGalleryUrl"
+            currentUrl={welcomeRightUrl || WELCOME_HOME_DEFAULTS.right.url}
+            help="Right picture beside Welcome Home (elders / fellowship). File upload or gallery pick."
+            gallery={gallery}
+          />
         </div>
       ) : null}
       <Field label="Title" name="title" defaultValue={page.title} required />

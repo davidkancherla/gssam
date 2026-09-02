@@ -2,15 +2,14 @@ import { revalidatePath } from "next/cache";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { adminError, adminResult } from "@/lib/form-response";
+import { demoteOtherUniquePlacements, normalizeGalleryPlacement } from "@/lib/gallery-placement";
 import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 function placementOf(value: FormDataEntryValue | null) {
-  const placement = String(value || "");
-  if (placement === "hero" || placement === "home") return placement;
-  return "gallery";
+  return normalizeGalleryPlacement(String(value || ""));
 }
 
 export async function POST(request: Request) {
@@ -41,12 +40,7 @@ export async function POST(request: Request) {
   }
 
   const placement = placementOf(formData.get("placement"));
-  if (placement === "hero") {
-    await db.galleryImage.updateMany({
-      where: { placement: "hero" },
-      data: { placement: "gallery" },
-    });
-  }
+  await demoteOtherUniquePlacements(placement);
 
   const photo = await db.galleryImage.create({
     data: {
