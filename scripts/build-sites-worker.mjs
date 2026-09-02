@@ -129,7 +129,15 @@ function style() {
       text-decoration: none;
       min-width: 240px;
     }
-    .brand img { width: 56px; height: 56px; object-fit: contain; }
+    .brand img {
+      width: 96px;
+      height: 50px;
+      object-fit: contain;
+      background: var(--red-dark);
+      border-radius: 8px;
+      padding: 7px;
+      box-shadow: 0 8px 22px rgba(100, 20, 20, 0.2);
+    }
     .brand strong { display: block; color: var(--red-dark); font-size: 1.08rem; line-height: 1.1; }
     .brand span { display: block; color: var(--muted); font-size: 0.86rem; }
     .links {

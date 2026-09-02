@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Church, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { SignOutButton } from "@/components/SignOutButton";
 import { nav, site } from "@/lib/site";
 import type { SessionUser } from "@/lib/session";
@@ -37,9 +37,10 @@ export function Header({ user: initialUser }: { user: SessionUser | null }) {
     <header className="sticky top-0 z-50 border-b border-border bg-white/90 shadow-sm backdrop-blur-md">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6" aria-label="Main navigation">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="group flex items-center gap-2.5 text-foreground">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-maroon text-white transition-transform group-hover:scale-105">
-              <Church className="h-5 w-5" />
+          <Link href="/" className="group flex items-center gap-3 text-foreground">
+            <span className="flex h-12 w-24 items-center justify-center rounded-lg bg-maroon px-2 py-1.5 shadow-sm ring-1 ring-maroon-deep/20 transition-transform group-hover:scale-105">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo.png" alt="GSSAM logo" className="h-full w-full object-contain" />
             </span>
             <span className="text-left leading-tight">
               <span className="block font-display text-lg font-bold tracking-wide">
