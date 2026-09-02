@@ -68,7 +68,7 @@ export default async function HomePage() {
             <p className="mt-4 leading-relaxed text-foreground/85">
               Since 1988, Good Shepherd South Asian Ministry has gathered in Fremont to worship
               the Lord Jesus Christ through the timeless hymns of the Lutheran church — sung in the
-              heart languages of our people: Telugu, Hindi, Tamil, and English.
+              heart languages of our people: Telugu, Hindi, and English.
             </p>
             <p className="mt-3 leading-relaxed text-foreground/85">
               Whether you are new to the Bay Area, exploring faith, or looking for a church that

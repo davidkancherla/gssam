@@ -47,7 +47,7 @@ export function LiveHero({ imageUrl, caption }: { imageUrl?: string; caption?: s
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-amber-50/85 sm:text-lg">
             Join our South Asian Lutheran family as we worship the Lord Jesus Christ with
-            traditional hymns in Telugu, Hindi, Tamil, and English — in person in Fremont
+            traditional hymns in Telugu, Hindi, and English — in person in Fremont
             and live online every Sunday.
           </p>
 

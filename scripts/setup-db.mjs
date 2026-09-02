@@ -86,7 +86,7 @@ const statements = [
     title TEXT NOT NULL,
     youtubeId TEXT NOT NULL,
     preacher TEXT NOT NULL DEFAULT 'GSSAM Fremont',
-    language TEXT NOT NULL DEFAULT 'Telugu, Hindi, Tamil, English',
+    language TEXT NOT NULL DEFAULT 'Telugu, Hindi, English',
     preachedAt DATETIME NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     published BOOLEAN NOT NULL DEFAULT 1

@@ -57,7 +57,7 @@ model Sermon {
   title       String
   youtubeId   String
   preacher    String   @default("GSSAM Fremont")
-  language    String   @default("Telugu, Hindi, Tamil, English")
+  language    String   @default("Telugu, Hindi, English")
   preachedAt  DateTime
   description String   @default("")
   published   Boolean  @default(true)

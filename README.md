@@ -6,8 +6,8 @@ Public **copy** follows the live WordPress site at [gssam-iccfremont.com](https:
 
 - **Church:** Good Shepherd South Asian Ministry (GSSAM)
 - **Address:** 4211 Carol Ave, Fremont, CA 94538
-- **Worship:** Sunday School & Worship 11:30 AM–1:00 PM
-- **Languages:** Telugu, Hindi, Tamil, and English
+- **Worship:** Sunday School & Worship 11:30 AM–1:30 PM
+- **Languages:** Telugu, Hindi, and English
 - **Ministries:** Men’s Fellowship, Women’s Fellowship, Youth Fellowship, Sunday School, Community Engagement
 
 ## Stack

@@ -4,7 +4,7 @@ export const site = {
   city: "Fremont",
   tagline: "Worshipping the Good Shepherd in the languages of our hearts",
   description:
-    "Join our South Asian Lutheran family as we worship the Lord Jesus Christ with traditional hymns in Telugu, Hindi, Tamil, and English — in person in Fremont and live online every Sunday.",
+    "Join our South Asian Lutheran family as we worship the Lord Jesus Christ with traditional hymns in Telugu, Hindi, and English — in person in Fremont and live online every Sunday.",
   address: "4211 Carol Ave, Fremont, CA 94538",
   addressLines: ["4211 Carol Ave", "Fremont, CA 94538"],
   addressMapsQuery: "4211+Carol+Ave,+Fremont,+CA+94538",
@@ -14,8 +14,8 @@ export const site = {
   ein: "20-5071191",
   pastor: "Ps. Anand Darla",
   denomination: "Lutheran (ELCA)",
-  worship: "Sundays · 11:30 AM – 1:00 PM PT",
-  languages: ["Telugu", "Hindi", "Tamil", "English"],
+  worship: "Sundays · 11:30 AM – 1:30 PM PT",
+  languages: ["Telugu", "Hindi", "English"],
   mapUrl:
     "https://www.google.com/maps/search/?api=1&query=4211+Carol+Ave+Fremont+CA+94538",
   mapEmbed:
@@ -37,7 +37,7 @@ export const WORSHIP = {
   startHour: 11,
   startMinute: 30,
   endHour: 13,
-  endMinute: 0,
+  endMinute: 30,
   label: site.worship,
   image: "/images/real-bishop-visit.jpg",
 };

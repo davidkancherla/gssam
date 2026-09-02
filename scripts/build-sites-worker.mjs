@@ -25,7 +25,7 @@ const site = {
   phone: "(510) 688-8241",
   email: "gssamfremont@gmail.com",
   paymentEmail: "gssam2005@gmail.com",
-  worship: "Sundays | 11:30 AM - 1:00 PM PT",
+  worship: "Sundays | 11:30 AM - 1:30 PM PT",
   youtube: "https://www.youtube.com/@GSSAMFremont",
   facebook: "https://www.facebook.com/gssam.fremontca/",
 };
@@ -49,7 +49,7 @@ const ministries = [
 ];
 
 const events = [
-  ["Sunday School and Worship", "Every Sunday, 11:30 AM - 1:00 PM", site.address],
+  ["Sunday School and Worship", "Every Sunday, 11:30 AM - 1:30 PM", site.address],
   ["Women's All-Night Prayer", "Monthly gathering", "Prayer and fellowship for the women of the congregation."],
   ["Community Care", "Seasonal outreach", "Food, clothing, books, and support for neighbors in need."],
 ];
@@ -57,7 +57,7 @@ const events = [
 const messages = [
   ["Sunday Worship Recordings", "Watch recent worship messages on the GSSAM Fremont YouTube channel."],
   ["Live Worship", "Join online when travel or health keeps you away from Sunday worship."],
-  ["Multilingual Worship", "Traditional Lutheran hymns and liturgy in Telugu, Hindi, Tamil, and English."],
+  ["Multilingual Worship", "Traditional Lutheran hymns and liturgy in Telugu, Hindi, and English."],
 ];
 
 function escapeHtml(value) {
@@ -332,7 +332,7 @@ function shell({ title, description, body, path = "/" }) {
     <div class="footer-inner">
       <div>
         <h2>${site.name}</h2>
-        <p>Worshipping the Good Shepherd in Telugu, Hindi, Tamil, and English.</p>
+        <p>Worshipping the Good Shepherd in Telugu, Hindi, and English.</p>
       </div>
       <div>
         <strong>Visit</strong>
@@ -358,7 +358,7 @@ function home() {
         <div class="section">
           <p class="kicker">Good Shepherd South Asian Ministry</p>
           <h1>Worship in the languages of our hearts.</h1>
-          <p class="lead">Join our South Asian Lutheran family in Fremont for Sunday School and worship with traditional hymns in Telugu, Hindi, Tamil, and English.</p>
+          <p class="lead">Join our South Asian Lutheran family in Fremont for Sunday School and worship with traditional hymns in Telugu, Hindi, and English.</p>
           <p class="hero-caption">Pastor Anand Darla's ordination</p>
           <div class="actions">
             <a class="button primary" href="/contact">Plan a Visit</a>
@@ -370,8 +370,7 @@ function home() {
         <div>
           <p class="eyebrow">Sunday worship</p>
           <h2>Come as family. Worship as one body in Christ.</h2>
-          <p class="intro">GSSAM welcomes families across the East Bay and South Bay to gather each Sunday from 11:30 AM to 1:00 PM at 4211 Carol Ave in Fremont.</p>
-          <div class="notice">This validation deployment publishes the public church website on managed hosting. The existing admin CMS and member portals remain in the repo and are ready for the next managed database and storage phase.</div>
+          <p class="intro">GSSAM welcomes families across the Bay Area to gather each Sunday from 11:30 AM to 1:30 PM at 4211 Carol Ave in Fremont.</p>
         </div>
         <img class="photo" src="${images.congregation}" alt="GSSAM congregation gathered for worship">
       </section>
@@ -468,19 +467,19 @@ const routes = {
     "/privacy",
     "Privacy",
     "GSSAM values your privacy and protects personal information shared through the website.",
-    `<div class="notice">This validation deployment does not collect form submissions. The repo's full Next.js CMS/member portal includes private session handling and role-based access for the managed backend phase.</div>`,
+    `<div class="notice">For questions about privacy or personal information, please contact the church office at <a href="mailto:${site.email}">${site.email}</a>.</div>`,
   ),
   "/admin": simplePage(
     "/admin",
     "Admin Portal",
-    "The admin CMS is included in the source repo and awaits managed database and storage provisioning before production use.",
-    `<div class="notice">Next phase: connect managed Postgres or D1, object storage for uploads, production secrets, and role-based admin accounts.</div>`,
+    "The admin portal is being prepared for church volunteers.",
+    `<div class="notice">Please contact the church office if you need access to manage church content.</div>`,
   ),
   "/member": simplePage(
     "/member",
     "Member Portal",
-    "The member portal is included in the source repo and designed to share backend rules with the future mobile app.",
-    `<div class="notice">Next phase: expose versioned API routes for mobile, keep authorization server-side, and remove demo financial data before launch.</div>`,
+    "The member portal is being prepared for congregation use.",
+    `<div class="notice">Please contact the church office if you need help with member information.</div>`,
   ),
 };
 

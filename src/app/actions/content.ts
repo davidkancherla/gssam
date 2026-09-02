@@ -161,7 +161,7 @@ export async function saveSermon(formData: FormData) {
     title: text(formData, "title"),
     youtubeId: extractYoutubeId(text(formData, "youtubeId")),
     preacher: text(formData, "preacher") || "GSSAM Fremont",
-    language: text(formData, "language") || "Telugu, Hindi, Tamil, English",
+    language: text(formData, "language") || "Telugu, Hindi, English",
     preachedAt: new Date(text(formData, "preachedAt")),
     description: text(formData, "description"),
     published: formData.get("published") === "on",

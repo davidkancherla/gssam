@@ -58,9 +58,9 @@ async function main() {
           "Please come and join our vibrant, welcoming and engaging community at our worship service on Sundays and/or join our ministries.",
         body: `Good Shepherd South Asian Ministry in Fremont, CA welcomes you to join this community of faith. If you’re unfamiliar with our church, some of what you learn may surprise you.
 
-We are a Lutheran congregation who worship the Lord Jesus Christ through traditional Lutheran hymns from our South Asian congregation members in Telugu, Hindi, Tamil, and English.
+We are a Lutheran congregation who worship the Lord Jesus Christ through traditional Lutheran hymns from our South Asian congregation members in Telugu, Hindi, and English.
 
-Sunday School and worship are together each Sunday from 11:30 AM to 1:00 PM at 4211 Carol Ave, Fremont.`,
+Sunday School and worship are together each Sunday from 11:30 AM to 1:30 PM at 4211 Carol Ave, Fremont.`,
       },
       {
         slug: "about",
@@ -88,7 +88,7 @@ As the congregation supports the mission of preaching the Good News and spiritua
 
 A Lutheran congregation with South Asian roots
 
-We worship with traditional Lutheran hymns and liturgy, sung and spoken in Telugu, Hindi, Tamil, and English. GSSAM continues the ministry of Good Shepherd Lutheran Church at 4211 Carol Ave in Fremont, serving families across the East Bay and South Bay. We are a Lutheran (ELCA) congregation.
+We worship with traditional Lutheran hymns and liturgy, sung and spoken in Telugu, Hindi, and English. GSSAM continues the ministry of Good Shepherd Lutheran Church at 4211 Carol Ave in Fremont, serving families across the Bay Area. We are a Lutheran (ELCA) congregation.
 
 Our Pastor
 
@@ -106,7 +106,7 @@ The word “disciple” can be used by all Christians. “A ‘disciple’ was n
         slug: "contact",
         title: "Contact Us",
         excerpt: "We would be glad to welcome you on Sunday or answer a question during the week.",
-        body: `Our location is 4211 Carol Ave, Fremont, California 94538. Sunday School and worship are 11:30 AM–1:00 PM.
+        body: `Our location is 4211 Carol Ave, Fremont, California 94538. Sunday School and worship are 11:30 AM–1:30 PM.
 
 You can reach the church office at (510) 688-8241 or gssamfremont@gmail.com.`,
       },
@@ -232,7 +232,7 @@ Integration with the Larger Church: While the youth fellowship is a distinct gro
         sortOrder: 4,
         imageUrl: "/images/ministries/sunday-school.jpg",
         summary:
-          "Age-appropriate Bible teaching, songs, and crafts for the children of GSSAM, Sundays 11:30 AM–1:00 PM.",
+          "Age-appropriate Bible teaching, songs, and crafts for the children of GSSAM, Sundays 11:30 AM–1:30 PM.",
         body: `Sunday School serves as an integral part of our Church, contributing to the overall educational and spiritual growth of little tiny tots within the church. We provide a structured and nurturing environment for learning about the Christian faith and cultivating a deeper understanding of the Bible. It is also designed to provide structured learning opportunities for people of various age groups, with a primary focus on children and young people, and aims to teach biblical principles, nurture spiritual growth, and provide a foundation for Christian faith.
 
 Age-Appropriate Classes: Sunday School classes are organized based on different age groups, ensuring that the content and teaching methods are appropriate for the developmental stage of the participants.
@@ -247,7 +247,7 @@ Interactive Activities: To engage kids actively, our classes often include inter
 
 Memory Verses: Children are encouraged to memorize key Bible verses as a way of internalizing and retaining important teachings.
 
-Sunday School meets with worship each Sunday from 11:30 AM to 1:00 PM.`,
+Sunday School meets with worship each Sunday from 11:30 AM to 1:30 PM.`,
       },
       {
         slug: "community-engagement",
@@ -272,7 +272,7 @@ The sense of spiritual community is often reinforced through mentorship programs
       {
         slug: "thanksgiving-worship",
         title: "Thanksgiving Worship",
-        summary: "A service of gratitude with hymns in Telugu, Hindi, Tamil, and English.",
+        summary: "A service of gratitude with hymns in Telugu, Hindi, and English.",
         body: `Join GSSAM for Thanksgiving worship as we give thanks to God for harvest, family, and the gift of Christ. All are welcome — members, neighbors, and guests visiting Fremont for the holiday.
 
 Worship includes congregational singing, Scripture, and a time of testimony. A fellowship meal follows in the church hall.`,
@@ -473,7 +473,7 @@ Come early for carol singing. A light reception follows worship.`,
         title: "Week of August 31, 2026",
         scripture: "Psalm 23; John 10:11–16 — The Lord is my shepherd.",
         worshipNotes:
-          "Sunday School and worship 11:30 AM–1:00 PM. Hymns in Telugu, Hindi, Tamil, and English. Holy Communion this Sunday.",
+          "Sunday School and worship 11:30 AM–1:30 PM. Hymns in Telugu, Hindi, and English. Holy Communion this Sunday.",
         announcements:
           "Women’s Fellowship all-night prayer this Friday. Clothing donation bags may be left in the narthex. Youth choir rehearsal after worship.",
         offeringTotalCents: 184500,
@@ -484,7 +484,7 @@ Come early for carol singing. A light reception follows worship.`,
         title: "Week of August 24, 2026",
         scripture: "Isaiah 40:11; Luke 15:3–7 — The shepherd who seeks the lost.",
         worshipNotes:
-          "Sunday School and worship 11:30 AM–1:00 PM. Men’s Fellowship breakfast Saturday at 8:30 AM in the hall.",
+          "Sunday School and worship 11:30 AM–1:30 PM. Men’s Fellowship breakfast Saturday at 8:30 AM in the hall.",
         announcements:
           "Sign up to help with the September food drive. New visitors are invited to stay for tea after worship.",
         offeringTotalCents: 162000,
@@ -495,7 +495,7 @@ Come early for carol singing. A light reception follows worship.`,
         title: "Week of August 17, 2026",
         scripture: "Philippians 2:1–11 — The mind of Christ.",
         worshipNotes:
-          "Sunday School and worship 11:30 AM–1:00 PM. Special prayer for students returning to school.",
+          "Sunday School and worship 11:30 AM–1:30 PM. Special prayer for students returning to school.",
         announcements:
           "Sunday School teachers meeting after worship. Please update your household contact information with the church office.",
         offeringTotalCents: 171250,

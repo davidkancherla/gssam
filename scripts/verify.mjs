@@ -30,6 +30,7 @@ async function main() {
     "Good Shepherd",
     "Telugu",
     "11:30",
+    "1:30",
     "Fremont",
     "One Shepherd",
     "Many Languages",

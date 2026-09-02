@@ -47,7 +47,7 @@ export const SERMON_CATALOG = [
     youtubeId: "D9G1jnlXheA",
     title: "GSSAM Palm Sunday worship live - March 24th 11.30 AM - 1 PM",
     preachedAt: new Date("2024-03-24T11:30:00-07:00"),
-    description: "Palm Sunday worship, 11:30 AM–1:00 PM.",
+    description: "Palm Sunday worship, 11:30 AM–1:30 PM.",
   },
   {
     youtubeId: "elDcgGhHm8k",
