@@ -9,9 +9,9 @@
     "lint": "eslint",
     "build:sites": "node scripts/build-sites-worker.mjs",
     "build:managed": "npm run build && npm run build:sites",
-    "setup": "prisma generate && prisma db push && prisma db seed",
+    "setup": "prisma generate && node scripts/setup-db.mjs --reset && prisma db seed",
     "db:seed": "prisma db seed",
-    "db:reset": "prisma db push --force-reset && prisma db seed",
+    "db:reset": "node scripts/setup-db.mjs --reset && prisma db seed",
     "verify": "node scripts/verify.mjs"
   },
   "prisma": {
