@@ -395,10 +395,10 @@ Come early for carol singing. A light reception follows worship.`,
         url: `/images/gallery/${n}.jpg`,
       })),
       {
-        title: "Bishop's visit",
+        title: "Pastor Anand Darla's ordination",
         album: "Worship",
         placement: "hero",
-        caption: "Bishop's visit — worship with our clergy",
+        caption: "Pastor Anand Darla's ordination",
         url: "/images/real-bishop-visit.jpg",
       },
       {

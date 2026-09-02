@@ -38,8 +38,7 @@ async function main() {
     "Watch Sunday Worship Live",
     "Plan Your Visit",
     "real-bishop-visit.jpg",
-    "Bishop's visit",
-    "worship with our clergy",
+    "Pastor Anand Darla's ordination",
   ]);
   await mustContain("/about", ["Triune God", "Lutheran"]);
   await mustContain("/contact", ["4211 Carol Ave", "gssam2005@gmail.com"]);

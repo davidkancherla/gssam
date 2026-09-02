@@ -177,6 +177,17 @@ function style() {
       font-size: 1.2rem;
       color: rgba(255, 255, 255, 0.9);
     }
+    .hero-caption {
+      display: inline-flex;
+      margin-top: 18px;
+      padding: 8px 11px;
+      border-radius: 6px;
+      background: rgba(255, 250, 241, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
     .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
     .button {
       display: inline-flex;
@@ -339,6 +350,7 @@ function home() {
           <p class="kicker">Good Shepherd South Asian Ministry</p>
           <h1>Worship in the languages of our hearts.</h1>
           <p class="lead">Join our South Asian Lutheran family in Fremont for Sunday School and worship with traditional hymns in Telugu, Hindi, Tamil, and English.</p>
+          <p class="hero-caption">Pastor Anand Darla's ordination</p>
           <div class="actions">
             <a class="button primary" href="/contact">Plan a Visit</a>
             <a class="button secondary" href="${site.youtube}">Watch Online</a>

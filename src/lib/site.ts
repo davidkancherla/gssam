@@ -42,10 +42,10 @@ export const WORSHIP = {
   image: "/images/real-bishop-visit.jpg",
 };
 
-/** Gallery source of truth from the Vite site — no invented bishop name or date. */
+/** Gallery source of truth for the homepage hero. */
 export const BISHOP_VISIT = {
   image: "/images/real-bishop-visit.jpg",
-  caption: "Bishop's visit — worship with our clergy",
+  caption: "Pastor Anand Darla's ordination",
 };
 
 export const nav = [
