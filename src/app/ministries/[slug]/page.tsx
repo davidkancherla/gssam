@@ -14,7 +14,7 @@ export default async function MinistryPage({
 
   return (
     <PublicShell>
-      <PageHero title={ministry.name} lede={ministry.summary} />
+      <PageHero title={ministry.name} lede={ministry.summary} image={ministry.imageUrl} />
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         {ministry.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

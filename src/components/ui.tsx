@@ -32,21 +32,36 @@ export function PageHero({
   eyebrow,
   title,
   lede,
+  image,
 }: {
   eyebrow?: string;
   title: string;
   lede?: string;
+  image?: string;
 }) {
   return (
-    <section className="bg-shepherd text-cream">
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:py-20">
+    <section className="relative overflow-hidden bg-maroon-deep text-white">
+      {image ? (
+        <>
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${image}')` }}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
+        </>
+      ) : null}
+      <div className="relative mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 md:py-20">
         {eyebrow ? (
-          <p className="text-xs uppercase tracking-[0.25em] text-gold">{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">{eyebrow}</p>
         ) : null}
-        <h1 className="mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
-          {title}
-        </h1>
-        {lede ? <p className="mt-4 max-w-2xl text-lg text-gold-soft/90">{lede}</p> : null}
+        <h1 className="mt-2 font-display text-3xl font-bold sm:text-5xl">{title}</h1>
+        {lede ? <p className="mx-auto mt-3 max-w-2xl text-sm text-amber-100/85 sm:text-base">{lede}</p> : null}
+        <div className="ornament-divider mt-6">
+          <span className="text-lg text-amber-300" aria-hidden="true">
+            ✦
+          </span>
+        </div>
       </div>
     </section>
   );

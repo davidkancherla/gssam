@@ -19,6 +19,7 @@ export default async function EventDetailPage({
         eyebrow={formatDate(event.startsAt)}
         title={event.title}
         lede={event.summary}
+        image={event.imageUrl}
       />
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 lg:grid-cols-[1.2fr_0.8fr]">
         <Prose text={event.body} />

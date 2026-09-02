@@ -18,6 +18,7 @@ export default async function EventsPage() {
         eyebrow="Calendar"
         title="Church events"
         lede="Worship feasts, fellowship, and neighbor-care gatherings at 4211 Carol Ave."
+        image="/images/real-palm-sunday.jpg"
       />
       <section className="mx-auto max-w-6xl px-4 py-14">
         <div className="grid gap-6 md:grid-cols-2">

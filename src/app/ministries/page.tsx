@@ -14,6 +14,7 @@ export default async function MinistriesPage() {
         eyebrow="Serve & grow"
         title="Ministries"
         lede="GSSAM has a range of fellowships and departments that live out the vision of this congregation in Fremont."
+        image="/images/real-kids-singing.jpg"
       />
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-14 md:grid-cols-2">
         {ministries.map((ministry) => (

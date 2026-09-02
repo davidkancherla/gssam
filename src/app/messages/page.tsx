@@ -5,7 +5,7 @@ import { applySermonCatalog } from "@/lib/sermon-catalog";
 import { formatDate } from "@/lib/site";
 import { youtubeEmbedUrl, youtubeWatchUrl } from "@/lib/youtube";
 
-export const metadata = { title: "Messages" };
+export const metadata = { title: "Sermons" };
 
 export default async function MessagesPage() {
   const rows = await db.sermon.findMany({
@@ -20,8 +20,9 @@ export default async function MessagesPage() {
     <PublicShell>
       <PageHero
         eyebrow="Word & sacrament"
-        title="Messages"
+        title="Sermons"
         lede="Sunday worship livestreams from GSSAM Fremont. Watch on YouTube and join us in person at 11:30 AM."
+        image="/images/real-altar-candles.jpg"
       />
       <section className="mx-auto max-w-6xl px-4 py-14">
         <div className="grid gap-8 md:grid-cols-2">

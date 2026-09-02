@@ -17,7 +17,7 @@ export function IsolatedMap({ src, title }: { src: string; title: string }) {
     const iframe = document.createElement("iframe");
     iframe.title = title;
     iframe.src = src;
-    iframe.className = "h-72 w-full border-0";
+    iframe.className = "h-64 w-full border-0";
     iframe.setAttribute("loading", "eager");
     iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
     // Allow the map to run, but not to navigate the church page.
@@ -34,7 +34,7 @@ export function IsolatedMap({ src, title }: { src: string; title: string }) {
   return (
     <div
       ref={hostRef}
-      className="mt-8 h-72 overflow-hidden rounded-2xl border border-line bg-cream"
+      className="mt-6 h-64 overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-border"
       aria-label={title}
     />
   );

@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
       { source: "/about-us", destination: "/about", permanent: true },
       { source: "/contact-us", destination: "/contact", permanent: true },
       { source: "/donation", destination: "/donate", permanent: true },
+      { source: "/give", destination: "/donate", permanent: true },
+      { source: "/sermons", destination: "/messages", permanent: true },
       { source: "/privacy-policy", destination: "/privacy", permanent: true },
     ];
   },

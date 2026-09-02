@@ -16,6 +16,7 @@ export default async function GalleryPage() {
         eyebrow="Life together"
         title="Gallery"
         lede="Photos from worship, fellowship, and congregation life at GSSAM in Fremont. Admins can add new pictures from the church portal."
+        image="/images/real-congregation.jpg"
       />
       <section className="mx-auto max-w-6xl px-4 py-14">
         {albums.map((album) => (

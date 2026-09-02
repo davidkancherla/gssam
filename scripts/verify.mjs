@@ -31,7 +31,12 @@ async function main() {
     "Telugu",
     "11:30",
     "Fremont",
-    "join this community of faith",
+    "One Shepherd",
+    "Many Languages",
+    "One Family",
+    "Welcome Home",
+    "Watch Sunday Worship Live",
+    "Plan Your Visit",
   ]);
   await mustContain("/about", ["Triune God", "Lutheran"]);
   await mustContain("/contact", ["4211 Carol Ave", "gssam2005@gmail.com"]);
@@ -75,6 +80,8 @@ async function main() {
   await mustRedirect("/about-us", "/about");
   await mustRedirect("/contact-us", "/contact");
   await mustRedirect("/donation", "/donate");
+  await mustRedirect("/give", "/donate");
+  await mustRedirect("/sermons", "/messages");
   await mustRedirect("/privacy-policy", "/privacy");
 
   const admin = await fetchText("/admin");

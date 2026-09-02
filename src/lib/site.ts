@@ -1,37 +1,53 @@
 export const site = {
   name: "Good Shepherd South Asian Ministry",
   shortName: "GSSAM",
-  tagline: "A Lutheran congregation in Fremont, CA",
+  city: "Fremont",
+  tagline: "Worshipping the Good Shepherd in the languages of our hearts",
   description:
-    "Good Shepherd South Asian Ministry (GSSAM) is a Lutheran congregation in Fremont, California. We worship the Lord Jesus Christ through traditional Lutheran hymns from our South Asian congregation in Telugu, Hindi, Tamil, and English.",
+    "Join our South Asian Lutheran family as we worship the Lord Jesus Christ with traditional hymns in Telugu, Hindi, Tamil, and English — in person in Fremont and live online every Sunday.",
   address: "4211 Carol Ave, Fremont, CA 94538",
   addressLines: ["4211 Carol Ave", "Fremont, CA 94538"],
+  addressMapsQuery: "4211+Carol+Ave,+Fremont,+CA+94538",
   phone: "(510) 688-8241",
   phoneHref: "tel:+15106888241",
   email: "gssam2005@gmail.com",
   ein: "20-5071191",
   pastor: "Ps. Anand Darla",
   denomination: "Lutheran (ELCA)",
-  worship: "Sunday School & Worship 11:30 AM–1:00 PM",
+  worship: "Sundays · 11:30 AM – 1:00 PM PT",
   languages: ["Telugu", "Hindi", "Tamil", "English"],
   mapUrl:
     "https://www.google.com/maps/search/?api=1&query=4211+Carol+Ave+Fremont+CA+94538",
   mapEmbed:
     "https://maps.google.com/maps?q=4211%20Carol%20Ave%20Fremont%20CA%2094538&t=&z=15&ie=UTF8&iwloc=&output=embed",
   youtube: "https://www.youtube.com/@GSSAMFremont",
+  youtubeHandle: "@GSSAMFremont",
+  youtubeLive: "https://www.youtube.com/@GSSAMFremont/live",
+  youtubeSubscribe: "https://www.youtube.com/@GSSAMFremont?sub_confirmation=1",
+  youtubeChannelId: "UCIdiSqp8RumBCxVA_HQYqmg",
+  youtubeLiveEmbed:
+    "https://www.youtube-nocookie.com/embed/live_stream?channel=UCIdiSqp8RumBCxVA_HQYqmg",
   facebook: "https://www.facebook.com/gssam.fremontca/",
   paypalEmail: "gssam2005@gmail.com",
   zelleEmail: "gssam2005@gmail.com",
 };
 
+export const WORSHIP = {
+  dayOfWeek: 0,
+  startHour: 11,
+  startMinute: 30,
+  endHour: 13,
+  endMinute: 0,
+  label: site.worship,
+};
+
 export const nav = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
-  { href: "/ministries", label: "Ministries" },
+  { href: "/messages", label: "Sermons" },
   { href: "/events", label: "Events" },
-  { href: "/messages", label: "Messages" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/donate", label: "Giving" },
+  { href: "/ministries", label: "Ministries" },
+  { href: "/donate", label: "Give" },
   { href: "/contact", label: "Contact" },
 ];
 

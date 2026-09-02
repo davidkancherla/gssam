@@ -252,9 +252,12 @@ async function main() {
   if (!aboutWithPhoto?.imageUrl.startsWith("/uploads/")) {
     throw new Error("About photo was not stored on the page");
   }
-  const homeHtml = await (await fetch(`${BASE}/`)).text();
-  if (!homeHtml.includes(aboutWithPhoto.imageUrl) || !homeHtml.includes(original.excerpt.slice(0, 40))) {
-    throw new Error("Homepage did not use the About excerpt and photo");
+  const aboutAfterPhoto = await (await fetch(`${BASE}/about`)).text();
+  if (
+    !aboutAfterPhoto.includes(aboutWithPhoto.imageUrl) ||
+    !aboutAfterPhoto.includes(original.excerpt.slice(0, 40))
+  ) {
+    throw new Error("Public /about did not show the saved About excerpt and photo");
   }
   await json("/api/admin/pages", {
     method: "POST",
