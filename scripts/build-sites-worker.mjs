@@ -23,7 +23,8 @@ const site = {
   shortName: "GSSAM",
   address: "4211 Carol Ave, Fremont, CA 94538",
   phone: "(510) 688-8241",
-  email: "gssam2005@gmail.com",
+  email: "gssamfremont@gmail.com",
+  paymentEmail: "gssam2005@gmail.com",
   worship: "Sundays | 11:30 AM - 1:00 PM PT",
   youtube: "https://www.youtube.com/@GSSAMFremont",
   facebook: "https://www.facebook.com/gssam.fremontca/",
@@ -438,8 +439,8 @@ const routes = {
     "Giving",
     "Thank you for supporting the ministry of GSSAM through tithes, offerings, and special gifts.",
     `<div class="grid">
-      <article class="card"><h3>Zelle</h3><p>${site.email}</p></article>
-      <article class="card"><h3>PayPal</h3><p>${site.email}</p></article>
+      <article class="card"><h3>Zelle</h3><p>${site.paymentEmail}</p></article>
+      <article class="card"><h3>PayPal</h3><p>${site.paymentEmail}</p></article>
       <article class="card"><h3>Checks</h3><p>Mail to ${site.address}</p></article>
     </div>
     <div class="notice">GSSAM is a church recognized as a religious organization, EIN 20-5071191. Please keep receipts and consult a tax professional for your situation.</div>`,

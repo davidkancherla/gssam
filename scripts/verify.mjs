@@ -41,7 +41,7 @@ async function main() {
     "Pastor Anand Darla's ordination",
   ]);
   await mustContain("/about", ["Triune God", "Lutheran"]);
-  await mustContain("/contact", ["4211 Carol Ave", "gssam2005@gmail.com"]);
+  await mustContain("/contact", ["4211 Carol Ave", "gssamfremont@gmail.com"]);
   await mustContain("/donate", ["Zelle", "PayPal"]);
   await mustContain("/gallery", ["Gallery"]);
   await mustContain("/messages", [

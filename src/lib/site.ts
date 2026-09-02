@@ -10,7 +10,7 @@ export const site = {
   addressMapsQuery: "4211+Carol+Ave,+Fremont,+CA+94538",
   phone: "(510) 688-8241",
   phoneHref: "tel:+15106888241",
-  email: "gssam2005@gmail.com",
+  email: "gssamfremont@gmail.com",
   ein: "20-5071191",
   pastor: "Ps. Anand Darla",
   denomination: "Lutheran (ELCA)",

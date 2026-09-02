@@ -108,7 +108,7 @@ The word “disciple” can be used by all Christians. “A ‘disciple’ was n
         excerpt: "We would be glad to welcome you on Sunday or answer a question during the week.",
         body: `Our location is 4211 Carol Ave, Fremont, California 94538. Sunday School and worship are 11:30 AM–1:00 PM.
 
-You can reach the church office at (510) 688-8241 or gssam2005@gmail.com.`,
+You can reach the church office at (510) 688-8241 or gssamfremont@gmail.com.`,
       },
       {
         slug: "donate",
@@ -160,7 +160,7 @@ We implement a variety of security measures to maintain the safety of your perso
 Changes
 We reserve the right to modify this Privacy Policy at any time. Changes take effect when posted on this page.
 
-If you have questions about our privacy practices, please contact us at gssam2005@gmail.com.`,
+If you have questions about our privacy practices, please contact us at gssamfremont@gmail.com.`,
       },
     ],
   });
