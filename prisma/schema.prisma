@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  passwordHash   String
+  role           String
+  household      String          @default("")
+  createdAt      DateTime        @default(now())
+  financeEntries FinanceEntry[]
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  excerpt   String   @default("")
+  body      String   @default("")
+  imageUrl  String   @default("")
+  updatedAt DateTime @updatedAt
+}
+
+model Ministry {
+  id        String @id @default(cuid())
+  slug      String @unique
+  name      String
+  summary   String @default("")
+  body      String @default("")
+  imageUrl  String @default("")
+  sortOrder Int    @default(0)
+}
+
+model ChurchEvent {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  title     String
+  summary   String    @default("")
+  body      String    @default("")
+  location  String    @default("4211 Carol Ave, Fremont, CA 94538")
+  startsAt  DateTime
+  endsAt    DateTime?
+  imageUrl  String    @default("")
+  published Boolean   @default(true)
+  createdAt DateTime  @default(now())
+}
+
+model Sermon {
+  id          String   @id @default(cuid())
+  title       String
+  youtubeId   String
+  preacher    String   @default("GSSAM Fremont")
+  language    String   @default("Telugu, Hindi, Tamil, English")
+  preachedAt  DateTime
+  description String   @default("")
+  published   Boolean  @default(true)
+}
+
+model GalleryImage {
+  id         String   @id @default(cuid())
+  title      String
+  caption    String   @default("")
+  url        String
+  album      String   @default("Congregation")
+  placement  String   @default("gallery")
+  createdAt  DateTime @default(now())
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String   @default("")
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model FinanceEntry {
+  id          String   @id @default(cuid())
+  memberId    String?
+  member      User?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  kind        String
+  amountCents Int
+  occurredOn  DateTime
+  category    String
+  memo        String   @default("")
+  scope       String
+  isDemo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model WeeklyBulletin {
+  id                 String   @id @default(cuid())
+  weekOf             DateTime
+  title              String
+  scripture          String   @default("")
+  worshipNotes       String   @default("")
+  announcements      String   @default("")
+  offeringTotalCents Int      @default(0)
+  published          Boolean  @default(true)
+  createdAt          DateTime @default(now())
+}

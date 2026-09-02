@@ -1,20 +1,17 @@
-import { WORSHIP } from '@/data/site';
+import { WORSHIP } from "@/lib/site";
 
-/** Current time in America/Los_Angeles */
 export function nowPacific(): Date {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+  return new Date(new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }));
 }
 
-/** True during the Sunday worship window (with a small grace margin). */
 export function isLiveNow(now: Date = nowPacific()): boolean {
   if (now.getDay() !== WORSHIP.dayOfWeek) return false;
   const minutes = now.getHours() * 60 + now.getMinutes();
-  const start = WORSHIP.startHour * 60 + WORSHIP.startMinute - 10; // open 10 min early
-  const end = WORSHIP.endHour * 60 + WORSHIP.endMinute + 15; // stay a little after
+  const start = WORSHIP.startHour * 60 + WORSHIP.startMinute - 10;
+  const end = WORSHIP.endHour * 60 + WORSHIP.endMinute + 15;
   return minutes >= start && minutes <= end;
 }
 
-/** Next Sunday 11:30 AM PT as a real Date (computed in PT wall-clock terms). */
 export function nextWorshipDate(now: Date = nowPacific()): Date {
   const d = new Date(now);
   let add = (WORSHIP.dayOfWeek - d.getDay() + 7) % 7;
@@ -26,12 +23,12 @@ export function nextWorshipDate(now: Date = nowPacific()): Date {
   return d;
 }
 
-export interface Countdown {
+export type Countdown = {
   days: number;
   hours: number;
   minutes: number;
   seconds: number;
-}
+};
 
 export function countdownTo(target: Date, now: Date = nowPacific()): Countdown {
   let diff = Math.max(0, target.getTime() - now.getTime());
@@ -43,23 +40,4 @@ export function countdownTo(target: Date, now: Date = nowPacific()): Countdown {
   diff -= minutes * 60_000;
   const seconds = Math.floor(diff / 1000);
   return { days, hours, minutes, seconds };
-}
-
-/** Format an ISO date string like '2026-07-26' → 'Sunday, July 26, 2026' */
-export function formatDate(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
-/** 'HH:MM' 24h → 'h:MM AM/PM' */
-export function formatTime(hhmm: string): string {
-  const [h, m] = hhmm.split(':').map(Number);
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 === 0 ? 12 : h % 12;
-  return `${hour}:${String(m).padStart(2, '0')} ${suffix}`;
 }

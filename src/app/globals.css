@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: hsl(40 33% 98%);
+  --color-foreground: hsl(24 20% 12%);
+  --color-card: #ffffff;
+  --color-secondary: hsl(36 30% 94%);
+  --color-muted-foreground: hsl(24 10% 42%);
+  --color-border: hsl(30 18% 88%);
+  --color-input: hsl(30 18% 88%);
+  --color-maroon: hsl(351 72% 36%);
+  --color-maroon-deep: hsl(24 16% 12%);
+  --color-saffron: hsl(38 90% 55%);
+  --color-gold: hsl(33 80% 36%);
+  --color-gold-soft: hsl(38 80% 88%);
+  --color-shepherd: hsl(351 72% 36%);
+  --color-shepherd-deep: hsl(24 16% 12%);
+  --color-shepherd-soft: hsl(351 62% 28%);
+  --color-cream: hsl(40 33% 98%);
+  --color-parchment: hsl(40 33% 98%);
+  --color-burgundy: hsl(351 72% 36%);
+  --color-ink: hsl(24 20% 12%);
+  --color-muted: hsl(24 10% 42%);
+  --color-line: hsl(30 18% 88%);
+  --font-display: var(--font-jakarta);
+  --font-sans: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-jakarta), "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+::selection {
+  background: hsl(38 90% 80%);
+  color: hsl(24 16% 12%);
+}
+
+.hero-veil {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.85));
+}
+
+.pattern-dots {
+  background-image: radial-gradient(hsl(351 72% 36% / 0.1) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.ornament-divider::before,
+.ornament-divider::after {
+  content: "";
+  height: 1px;
+  width: 4rem;
+  background: linear-gradient(to right, transparent, hsl(33 80% 36%));
+}
+
+.ornament-divider::after {
+  background: linear-gradient(to left, transparent, hsl(33 80% 36%));
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  background: white;
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(166, 92, 18, 0.2);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: 0.15s ease;
+}
+
+.btn-gold {
+  background: var(--color-saffron);
+  color: var(--color-maroon-deep);
+}
+
+.btn-gold:hover {
+  filter: brightness(1.08);
+}
+
+.btn-dark {
+  background: var(--color-maroon);
+  color: white;
+}
+
+.btn-dark:hover {
+  background: var(--color-shepherd-soft);
+}
+
+.btn-outline {
+  border: 1px solid var(--color-gold);
+  color: var(--color-maroon);
+  background: transparent;
+}
+
+.btn-outline-light {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  background: transparent;
+}
+
+.btn-outline-light:hover {
+  background: white;
+  color: black;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
