@@ -329,6 +329,163 @@ async function main() {
     data: { imageUrl: ministry.imageUrl },
   });
 
+  const stillAdmin = await fetch(`${BASE}/admin/pages?slug=about`, {
+    headers: { cookie: cookieHeader(adminToken) },
+    redirect: "manual",
+  });
+  if (stillAdmin.status !== 200) {
+    throw new Error(`About save dropped the admin session, got ${stillAdmin.status}`);
+  }
+
+  function formatMoney(cents: number) {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+      cents / 100,
+    );
+  }
+  function churchWideCardTotals(
+    entries: { kind: string; scope: string; memberId: string | null; amountCents: number }[],
+  ) {
+    let income = 0;
+    let expenses = 0;
+    for (const entry of entries) {
+      const privateHousehold =
+        (entry.kind === "INCOME" || entry.kind === "EXPENSE") &&
+        (entry.scope === "MEMBER" || entry.memberId != null);
+      if (privateHousehold || entry.memberId != null || entry.scope !== "CHURCH") continue;
+      if (entry.kind === "EXPENSE") expenses += entry.amountCents;
+      else income += entry.amountCents;
+    }
+    return { income, expenses };
+  }
+  function churchWideAttr(html: string, name: string) {
+    const match = html.match(new RegExp(`data-church-wide="${name}"[\\s\\S]*?>\\s*([^<]+)`));
+    if (!match) throw new Error(`/admin/finance is missing data-church-wide="${name}"`);
+    return match[1].replace(/&amp;/g, "&").trim();
+  }
+
+  const member2 = await db.user.findUnique({ where: { email: "member2@gssam.demo" } });
+  if (!member2) throw new Error("Second demo member is missing");
+  const member2Token = await signSession({
+    id: member2.id,
+    name: member2.name,
+    email: member2.email,
+    role: member2.role as Role,
+  });
+
+  const adminFinance = await fetch(`${BASE}/admin/finance`, {
+    headers: { cookie: cookieHeader(adminToken) },
+    redirect: "manual",
+  });
+  const adminFinanceHtml = await adminFinance.text();
+  if (adminFinance.status !== 200) {
+    throw new Error(`/admin/finance returned ${adminFinance.status}`);
+  }
+  const ledger = await db.financeEntry.findMany();
+  const churchTotals = churchWideCardTotals(ledger);
+  const mixedIncome = ledger
+    .filter((entry) => entry.kind !== "EXPENSE")
+    .reduce((sum, entry) => sum + entry.amountCents, 0);
+  if (churchWideAttr(adminFinanceHtml, "income") !== formatMoney(churchTotals.income)) {
+    throw new Error(
+      `/admin/finance income card is ${churchWideAttr(adminFinanceHtml, "income")}, expected ${formatMoney(churchTotals.income)}`,
+    );
+  }
+  if (churchWideAttr(adminFinanceHtml, "expenses") !== formatMoney(churchTotals.expenses)) {
+    throw new Error(
+      `/admin/finance expense card is ${churchWideAttr(adminFinanceHtml, "expenses")}, expected ${formatMoney(churchTotals.expenses)}`,
+    );
+  }
+  if (mixedIncome === churchTotals.income) {
+    throw new Error("Seed ledger has no household income to prove church-wide cards exclude it");
+  }
+  if (adminFinanceHtml.includes(formatMoney(mixedIncome))) {
+    throw new Error("Admin finance cards mixed private household income into church-wide totals");
+  }
+
+  const memberFinance = await (
+    await fetch(`${BASE}/member/finance`, {
+      headers: { cookie: cookieHeader(memberToken) },
+    })
+  ).text();
+  if (!memberFinance.includes("$1,200.00") || !memberFinance.includes("$150.00")) {
+    throw new Error("Member finance is missing Priya Sharma's demo rows");
+  }
+  if (memberFinance.includes("Arun Reddy") || memberFinance.includes("$1,850.00") || memberFinance.includes("Utilities")) {
+    throw new Error("Member finance leaked another household");
+  }
+
+  const member2Finance = await (
+    await fetch(`${BASE}/member/finance`, {
+      headers: { cookie: cookieHeader(member2Token) },
+    })
+  ).text();
+  if (!member2Finance.includes("$1,850.00") || !member2Finance.includes("$200.00")) {
+    throw new Error("Second member finance is missing Arun Reddy's demo rows");
+  }
+  if (member2Finance.includes("Priya Sharma") || member2Finance.includes("$1,200.00")) {
+    throw new Error("Second member finance leaked Priya Sharma's household");
+  }
+
+  const memberIncome = await (
+    await fetch(`${BASE}/member/income`, {
+      headers: { cookie: cookieHeader(memberToken) },
+    })
+  ).text();
+  if (
+    !memberIncome.includes('action="/api/member/income"') ||
+    !memberIncome.includes('method="post"') ||
+    !memberIncome.includes("Save income") ||
+    !memberIncome.includes('step="0.01"')
+  ) {
+    throw new Error("Income page must POST on this page so Save income does not leave Income");
+  }
+  if (memberIncome.includes("Arun Reddy") || memberIncome.includes("$1,850.00")) {
+    throw new Error("Member income leaked another household");
+  }
+
+  const incomeSave = await fetch(`${BASE}/api/member/income`, {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      cookie: cookieHeader(memberToken),
+      accept: "text/html,application/xhtml+xml",
+      "sec-fetch-dest": "document",
+      "sec-fetch-mode": "navigate",
+    },
+    body: (() => {
+      const data = new FormData();
+      data.set("amount", "12.34");
+      data.set("occurredOn", "2026-08-28");
+      data.set("category", "QA household income");
+      data.set("memo", "DEMO SAMPLE DATA — QA income stay-on-page");
+      return data;
+    })(),
+  });
+  const incomeLocation = incomeSave.headers.get("location") || "";
+  if (![303, 302, 307, 308].includes(incomeSave.status) || !incomeLocation.includes("/member/income")) {
+    throw new Error(`Income save must stay on Income, got ${incomeSave.status} ${incomeLocation}`);
+  }
+  const qaIncome = await db.financeEntry.findFirst({
+    where: { memberId: member.id, memo: "DEMO SAMPLE DATA — QA income stay-on-page" },
+  });
+  if (!qaIncome || qaIncome.amountCents !== 1234 || qaIncome.kind !== "INCOME" || qaIncome.scope !== "MEMBER") {
+    throw new Error("Income save did not write a private household INCOME row");
+  }
+  await db.financeEntry.delete({ where: { id: qaIncome.id } });
+
+  const adminAsMember = await (
+    await fetch(`${BASE}/member/finance`, {
+      headers: { cookie: cookieHeader(adminToken) },
+    })
+  ).text();
+  if (
+    adminAsMember.includes("Priya Sharma") ||
+    adminAsMember.includes("Arun Reddy") ||
+    adminAsMember.includes("$1,200.00")
+  ) {
+    throw new Error("Admin browsing /member/finance must only see the admin household");
+  }
+
   const memberSession = await json("/api/session", {
     headers: { cookie: cookieHeader(memberToken) },
   });
@@ -363,7 +520,7 @@ async function main() {
     throw new Error(`Logout should send members home, got ${location}`);
   }
 
-  console.log("Admin page save, gallery upload, and one-click logout look good.");
+  console.log("Admin CMS, church-wide finance cards, household isolation, income save, and logout look good.");
 }
 
 main()

@@ -34,6 +34,9 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
   applySessionCookie(await cookies(), token);
 
   if (next.startsWith("/") && !next.startsWith("//")) {
+    if (user.role !== "ADMIN" && next.startsWith("/admin")) {
+      redirect("/member");
+    }
     redirect(next);
   }
   redirect(user.role === "ADMIN" ? "/admin" : "/member");

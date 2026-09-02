@@ -1,6 +1,7 @@
 import { requireMemberArea } from "@/lib/auth";
 import { DemoBanner } from "@/components/ui";
 import { db } from "@/lib/db";
+import { financeWhereFor } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
 export const metadata = { title: "Weekly" };
@@ -13,10 +14,7 @@ export default async function MemberWeekly() {
   });
 
   const myOfferings = await db.financeEntry.findMany({
-    where:
-      user.role === "ADMIN"
-        ? { kind: { in: ["TITHE", "OFFERING"] } }
-        : { memberId: user.id, kind: { in: ["TITHE", "OFFERING"] } },
+    where: financeWhereFor(user, { kind: { in: ["TITHE", "OFFERING"] } }),
     orderBy: { occurredOn: "desc" },
     take: 8,
   });
@@ -25,8 +23,9 @@ export default async function MemberWeekly() {
     <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="font-display text-4xl text-shepherd">Weekly</h1>
       <p className="text-ink/80">
-        The congregation bulletin is shared with every member. Your weekly
-        giving list below is only your household.
+        The congregation bulletin is shared with every member. Unnamed offering
+        totals below are bulletin figures; they do not list who gave. Your
+        weekly giving list is only your household.
       </p>
       <DemoBanner />
       {weeks.map((week) => (

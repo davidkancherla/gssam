@@ -54,7 +54,7 @@ export function PageEditor({
           <p className="text-xs text-muted">
             {page.slug === "home"
               ? "This is the large picture behind the welcome heading. A chosen file is saved on the server and used as the public hero."
-              : "This picture appears on the About page and in the About section of the homepage."}
+              : "This picture appears in the About page header."}
           </p>
         </div>
       ) : null}
