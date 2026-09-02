@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -6,19 +6,16 @@ const root = dirname(fileURLToPath(new URL("../package.json", import.meta.url)))
 const dist = join(root, "dist");
 const distServer = join(root, "dist", "server");
 
-async function dataUrl(path, type) {
-  const data = await readFile(join(root, "public", path));
-  return `data:${type};base64,${data.toString("base64")}`;
-}
+const assetBase = "https://raw.githubusercontent.com/davidkancherla/gssam/main/public/";
 
 const images = {
-  logo: await dataUrl("brand/logo.png", "image/png"),
-  hero: await dataUrl("images/real-bishop-visit.jpg", "image/jpeg"),
-  congregation: await dataUrl("images/real-congregation.jpg", "image/jpeg"),
-  altar: await dataUrl("images/real-altar-candles.jpg", "image/jpeg"),
-  youth: await dataUrl("images/ministries/youth.jpg", "image/jpeg"),
-  sundaySchool: await dataUrl("images/ministries/sunday-school.jpg", "image/jpeg"),
-  outreach: await dataUrl("images/events/food.jpg", "image/jpeg"),
+  logo: `${assetBase}brand/logo.png`,
+  hero: `${assetBase}images/real-bishop-visit.jpg`,
+  congregation: `${assetBase}images/real-congregation.jpg`,
+  altar: `${assetBase}images/real-altar-candles.jpg`,
+  youth: `${assetBase}images/ministries/youth.jpg`,
+  sundaySchool: `${assetBase}images/ministries/sunday-school.jpg`,
+  outreach: `${assetBase}images/events/food.jpg`,
 };
 
 const site = {
