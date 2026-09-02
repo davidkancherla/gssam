@@ -39,6 +39,13 @@ export const WORSHIP = {
   endHour: 13,
   endMinute: 0,
   label: site.worship,
+  image: "/images/real-bishop-visit.jpg",
+};
+
+/** Gallery source of truth from the Vite site — no invented bishop name or date. */
+export const BISHOP_VISIT = {
+  image: "/images/real-bishop-visit.jpg",
+  caption: "Bishop's visit — worship with our clergy",
 };
 
 export const nav = [

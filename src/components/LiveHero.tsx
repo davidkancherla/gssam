@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { CalendarClock, MapPin, Radio } from "lucide-react";
 import { YoutubeIcon } from "@/components/brand-icons";
 import { countdownTo, isLiveNow, nextWorshipDate, nowPacific } from "@/lib/live";
-import { site } from "@/lib/site";
+import { BISHOP_VISIT, site } from "@/lib/site";
 
-export function LiveHero({ imageUrl }: { imageUrl?: string }) {
+export function LiveHero({ imageUrl, caption }: { imageUrl?: string; caption?: string }) {
   const [live, setLive] = useState(false);
   const [cd, setCd] = useState(() => countdownTo(nextWorshipDate()));
 
@@ -21,7 +21,8 @@ export function LiveHero({ imageUrl }: { imageUrl?: string }) {
     return () => clearInterval(timer);
   }, []);
 
-  const hero = imageUrl || "/images/real-congregation.jpg";
+  const hero = imageUrl || BISHOP_VISIT.image;
+  const kicker = caption || (hero === BISHOP_VISIT.image ? BISHOP_VISIT.caption : site.name);
 
   return (
     <section className="relative overflow-hidden bg-maroon-deep text-white">
@@ -35,7 +36,7 @@ export function LiveHero({ imageUrl }: { imageUrl?: string }) {
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-2">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300 sm:text-sm">
-            {site.name}
+            {kicker}
           </p>
           <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
             One Shepherd.

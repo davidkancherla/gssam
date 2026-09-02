@@ -76,7 +76,7 @@ export function PageEditor({
           currentUrl={page.imageUrl}
           help={
             isHome
-              ? "This is the large picture behind the welcome heading. A chosen file is saved on the server and used as the public hero."
+              ? "This is the homepage hero. The default is Bishop's visit — worship with our clergy. A chosen file or gallery pick is saved and used on /."
               : "This picture appears in the About page header."
           }
           gallery={gallery}

@@ -12,7 +12,7 @@ import { LiveHero } from "@/components/LiveHero";
 import { PublicShell } from "@/components/PublicShell";
 import { db } from "@/lib/db";
 import { applySermonCatalog } from "@/lib/sermon-catalog";
-import { formatDate, formatShortDate, site } from "@/lib/site";
+import { BISHOP_VISIT, formatDate, formatShortDate, site } from "@/lib/site";
 import { WELCOME_HOME_DEFAULTS } from "@/lib/gallery-placement";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
@@ -51,10 +51,12 @@ export default async function HomePage() {
   ]);
 
   const latestSermon = applySermonCatalog(sermons)[0];
+  const heroImage = page?.imageUrl || BISHOP_VISIT.image;
+  const heroCaption = heroImage === BISHOP_VISIT.image ? BISHOP_VISIT.caption : undefined;
 
   return (
     <PublicShell>
-      <LiveHero imageUrl={page?.imageUrl} />
+      <LiveHero imageUrl={heroImage} caption={heroCaption} />
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <div className="grid items-center gap-10 md:grid-cols-2">

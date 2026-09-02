@@ -53,7 +53,7 @@ async function main() {
       {
         slug: "home",
         title: "Welcome to GSSAM",
-        imageUrl: "/images/real-congregation.jpg",
+        imageUrl: "/images/real-bishop-visit.jpg",
         excerpt:
           "Please come and join our vibrant, welcoming and engaging community at our worship service on Sundays and/or join our ministries.",
         body: `Good Shepherd South Asian Ministry in Fremont, CA welcomes you to join this community of faith. If you’re unfamiliar with our church, some of what you learn may surprise you.
@@ -395,16 +395,16 @@ Come early for carol singing. A light reception follows worship.`,
         url: `/images/gallery/${n}.jpg`,
       })),
       {
-        title: "Bishop’s visit",
+        title: "Bishop's visit",
         album: "Worship",
-        placement: "home",
-        caption: "Worship with visiting clergy at GSSAM Fremont.",
+        placement: "hero",
+        caption: "Bishop's visit — worship with our clergy",
         url: "/images/real-bishop-visit.jpg",
       },
       {
         title: "Palm Sunday family",
         album: "Congregation",
-        placement: "hero",
+        placement: "home",
         caption: "The GSSAM family on Palm Sunday.",
         url: "/images/real-congregation.jpg",
       },
