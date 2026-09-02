@@ -110,7 +110,10 @@ export async function takeUploadedFile(formData: FormData, key = "file"): Promis
     }
 
     const type = value.type || "";
-    const file = value instanceof File ? value : new File([buffer], name || "photo.jpg", { type });
+    const file =
+      value instanceof File
+        ? value
+        : new File([Uint8Array.from(buffer)], name || "photo.jpg", { type });
     return { ok: true, file, buffer, name: name || file.name };
   }
   return { ok: false, empty: true };

@@ -7,6 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "build:sites": "node scripts/build-sites-worker.mjs",
+    "build:managed": "npm run build && npm run build:sites",
     "setup": "prisma generate && prisma db push && prisma db seed",
     "db:seed": "prisma db seed",
     "db:reset": "prisma db push --force-reset && prisma db seed",
