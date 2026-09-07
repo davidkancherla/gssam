@@ -540,9 +540,7 @@ const routes = {
 const worker = `const ROUTES = ${JSON.stringify(routes)};
 const REVIEW_PAGES = ${JSON.stringify(reviewPages)};
 const SITE = ${JSON.stringify(site)};
-const POC_PASSWORD_HASH_FALLBACK = "039160b47939f2176f7695804f4db16157eda4aa3ad5cc31602e7f8c7b974515";
-const SESSION_SECRET_FALLBACK = "019e1495d87cd5a196f81c443265490e000fd0a4e30391f3c31bd3c3dfdfabe9";
-const ADMIN_EMAIL_FALLBACK = "admin@gssam.demo";
+const ADMIN_EMAIL_DEFAULT = "admin@gssam.demo";
 const SESSION_COOKIE = "gssam_poc_admin";
 
 function escapeHtml(value) {
@@ -640,7 +638,8 @@ async function hmac(text, secret) {
 async function createSession(email, env) {
   const expires = Date.now() + 7 * 24 * 60 * 60 * 1000;
   const payload = base64UrlEncode(JSON.stringify({ email, expires }));
-  const sig = await hmac(payload, env.POC_SESSION_SECRET || SESSION_SECRET_FALLBACK);
+  const sessionSecret = getRequiredSecret(env, "POC_SESSION_SECRET");
+  const sig = await hmac(payload, sessionSecret);
   return payload + "." + sig;
 }
 
@@ -648,7 +647,8 @@ async function getSession(request, env) {
   const token = parseCookies(request)[SESSION_COOKIE];
   if (!token || !token.includes(".")) return null;
   const parts = token.split(".");
-  const expected = await hmac(parts[0], env.POC_SESSION_SECRET || SESSION_SECRET_FALLBACK);
+  const sessionSecret = getRequiredSecret(env, "POC_SESSION_SECRET");
+  const expected = await hmac(parts[0], sessionSecret);
   if (parts[1] !== expected) return null;
   try {
     const payload = JSON.parse(base64UrlDecode(parts[0]));
@@ -674,13 +674,19 @@ function loginPage(error, next) {
     '<div class="toolbar"><button class="button dark" type="submit">Sign in</button><a class="button light" href="/">Back to public site</a></div></form></main>', "/login");
 }
 
+function getRequiredSecret(env, key) {
+  const value = env[key];
+  if (!value) throw new Error(key + " is not configured.");
+  return String(value);
+}
+
 async function handleLogin(request, env) {
   const form = await request.formData();
   const email = String(form.get("email") || "").trim().toLowerCase();
   const password = String(form.get("password") || "");
   const next = String(form.get("next") || "/admin");
-  const allowedEmail = String(env.POC_ADMIN_EMAIL || ADMIN_EMAIL_FALLBACK).toLowerCase();
-  const expectedHash = String(env.POC_ADMIN_PASSWORD_SHA256 || POC_PASSWORD_HASH_FALLBACK);
+  const allowedEmail = String(env.POC_ADMIN_EMAIL || ADMIN_EMAIL_DEFAULT).toLowerCase();
+  const expectedHash = getRequiredSecret(env, "POC_ADMIN_PASSWORD_SHA256");
   if (email !== allowedEmail || (await sha256Hex(password)) !== expectedHash) {
     return html(loginPage("That email or password is not right.", next), 401);
   }
@@ -878,19 +884,19 @@ export default {
         if (existing) return redirectTo("/admin");
         return html(loginPage("", url.searchParams.get("next") || "/admin"));
       }
-      if (pathname === "/login" && request.method === "POST") return handleLogin(request, env);
+      if (pathname === "/login" && request.method === "POST") return await handleLogin(request, env);
       if (pathname === "/logout" && request.method === "POST") return signOut();
 
       if (pathname.startsWith("/admin")) {
         const user = await requireAdmin(request, env);
         if (!user) return redirectTo("/login?next=" + encodeURIComponent(pathname), 307);
-        if (pathname === "/admin" && request.method === "GET") return adminHome(request, env, user);
-        if (pathname === "/admin/members" && request.method === "GET") return membersPage(request, env, user);
-        if (pathname === "/admin/members" && request.method === "POST") return saveMember(request, env);
-        if (pathname === "/admin/members/delete" && request.method === "POST") return deleteMember(request, env);
-        if (pathname === "/admin/review" && request.method === "GET") return reviewPage(request, env, user);
-        if (pathname === "/admin/review" && request.method === "POST") return saveReviewNote(request, env);
-        if (pathname === "/admin/review/delete" && request.method === "POST") return deleteReviewNote(request, env);
+        if (pathname === "/admin" && request.method === "GET") return await adminHome(request, env, user);
+        if (pathname === "/admin/members" && request.method === "GET") return await membersPage(request, env, user);
+        if (pathname === "/admin/members" && request.method === "POST") return await saveMember(request, env);
+        if (pathname === "/admin/members/delete" && request.method === "POST") return await deleteMember(request, env);
+        if (pathname === "/admin/review" && request.method === "GET") return await reviewPage(request, env, user);
+        if (pathname === "/admin/review" && request.method === "POST") return await saveReviewNote(request, env);
+        if (pathname === "/admin/review/delete" && request.method === "POST") return await deleteReviewNote(request, env);
       }
 
       const route = ROUTES[pathname];
