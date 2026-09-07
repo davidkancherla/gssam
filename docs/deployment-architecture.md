@@ -7,8 +7,9 @@ This repository remains the source of truth for the church website, admin CMS, m
 - Platform: OpenAI Sites managed hosting.
 - Runtime: Cloudflare-compatible worker generated from `scripts/build-sites-worker.mjs`.
 - Source metadata: `.openai/hosting.json`.
-- Public scope: home, about, ministries, events, messages, giving, contact, privacy, and portal placeholder routes.
-- Persistence: none in the validation worker. Contact links use email and map links instead of storing submissions.
+- Public scope: home, about, ministries, events, messages, giving, contact, privacy, and an admin login link.
+- POC admin scope: password-protected `/login`, `/admin`, `/admin/review`, and `/admin/members` routes for reviewer validation.
+- Persistence: Cloudflare D1 through the logical `DB` binding in `.openai/hosting.json`. The POC stores private member-directory rows and content review notes.
 
 This keeps hosting low-ops: the platform handles the production worker runtime, TLS, deployment URL, and platform operations. ChatGPT can help maintain the site through future requested code/content changes, but it does not continuously monitor, operate, or administer the site unless asked in a new task.
 
@@ -19,6 +20,7 @@ The existing Next.js app builds successfully after the upload type fix. It inclu
 Before using the CMS/member portal with real congregation data:
 
 - Replace SQLite with managed Postgres, Neon, Supabase, PlanetScale, or a D1-backed data access layer.
+- Replace the shared POC admin login with individual named admin accounts or a managed identity provider.
 - Move uploads from `public/uploads` to managed object storage such as Cloudflare R2, S3, or Supabase Storage.
 - Set a production `AUTH_SECRET` in the hosting platform, not in source control.
 - Remove demo users and demo finance records.
