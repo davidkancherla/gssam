@@ -710,17 +710,6 @@ function assertDb(env) {
   return env.DB;
 }
 
-async function maybeSeedMembers(db) {
-  const row = await db.prepare("SELECT COUNT(*) AS count FROM member_profiles").first();
-  if (Number(row?.count || 0) > 0) return;
-  await db.batch([
-    db.prepare("INSERT INTO member_profiles (id, first_name, last_name, email, phone, household, address, birthday, anniversary, notes, is_active, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)")
-      .bind(crypto.randomUUID(), "Priya", "Sharma", "member@gssam.demo", "", "Sharma household (demo)", "Fremont, CA", "1988-03-14", "2012-06-09", "POC sample profile. Replace with real member information."),
-    db.prepare("INSERT INTO member_profiles (id, first_name, last_name, email, phone, household, address, birthday, anniversary, notes, is_active, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)")
-      .bind(crypto.randomUUID(), "Arun", "Reddy", "member2@gssam.demo", "", "Reddy household (demo)", "Fremont, CA", "1981-11-22", "2008-08-16", "POC sample profile. Replace with real member information.")
-  ]);
-}
-
 function dateLabel(value) {
   if (!value) return "Not set";
   const date = new Date(value + "T12:00:00");
@@ -734,7 +723,6 @@ function shortDate(value) {
 
 async function adminHome(request, env, user) {
   const db = assertDb(env);
-  await maybeSeedMembers(db);
   const members = await db.prepare("SELECT COUNT(*) AS count FROM member_profiles").first();
   const notes = await db.prepare("SELECT COUNT(*) AS count FROM content_review_notes").first();
   return html(adminShell("Admin", "/admin", '<p class="eyebrow">Church office</p><h1 style="color:var(--red-dark);font-size:clamp(2.5rem,5vw,4.8rem)">POC admin portal</h1>' +
@@ -776,7 +764,6 @@ function membersTable(members) {
 
 async function membersPage(request, env, user) {
   const db = assertDb(env);
-  await maybeSeedMembers(db);
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
   const selected = id ? await db.prepare("SELECT * FROM member_profiles WHERE id = ?").bind(id).first() : null;
