@@ -8,6 +8,7 @@ async function main() {
   await db.financeEntry.deleteMany();
   await db.weeklyBulletin.deleteMany();
   await db.inquiry.deleteMany();
+  await db.memberProfile.deleteMany();
   await db.galleryImage.deleteMany();
   await db.sermon.deleteMany();
   await db.churchEvent.deleteMany();
@@ -46,6 +47,33 @@ async function main() {
       role: "MEMBER",
       household: "Reddy household (demo)",
     },
+  });
+
+  await db.memberProfile.createMany({
+    data: [
+      {
+        firstName: "Priya",
+        lastName: "Sharma",
+        email: "priya.sharma@example.com",
+        phone: "(510) 555-0148",
+        household: "Sharma household (demo)",
+        address: "Fremont, CA",
+        birthday: new Date("1988-03-14T12:00:00"),
+        anniversary: new Date("2012-06-09T12:00:00"),
+        notes: "Demo member profile for private admin directory.",
+      },
+      {
+        firstName: "Arun",
+        lastName: "Reddy",
+        email: "arun.reddy@example.com",
+        phone: "(510) 555-0162",
+        household: "Reddy household (demo)",
+        address: "Fremont, CA",
+        birthday: new Date("1981-11-22T12:00:00"),
+        anniversary: new Date("2008-08-16T12:00:00"),
+        notes: "Demo member profile for private admin directory.",
+      },
+    ],
   });
 
   await db.page.createMany({

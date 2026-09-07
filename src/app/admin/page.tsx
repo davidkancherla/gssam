@@ -10,7 +10,7 @@ export default async function AdminHomePage() {
     db.sermon.count(),
     db.galleryImage.count(),
     db.inquiry.count(),
-    db.user.count({ where: { role: "MEMBER" } }),
+    db.memberProfile.count(),
   ]);
 
   const cards = [

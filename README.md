@@ -1,6 +1,6 @@
 # Good Shepherd South Asian Ministry (GSSAM)
 
-Public website, volunteer CMS (admin portal), and member portal for **Good Shepherd South Asian Ministry**, a Lutheran congregation in Fremont, California.
+Public website, volunteer CMS (admin portal), private member directory, and member portal for **Good Shepherd South Asian Ministry**, a Lutheran congregation in Fremont, California.
 
 Public **copy** follows the live WordPress site at [gssam-iccfremont.com](https://gssam-iccfremont.com). The public **visual design** is the red/gold Vite homepage (circular church logo, cream header, hero countdown), not the WordPress cream/green theme. It does **not** clone Hostinger or WordPress files. Signed-in admin CMS and member finance portals are included.
 
@@ -85,7 +85,7 @@ Volunteer CMS (forms, not a database console):
 - **Weekly** — bulletin / worship notes plus that household’s giving
 - **Income** — private income tracking
 
-Members see only their own financial rows. Admins see congregation totals and every demo household.
+Members see only their own financial rows. Admins see congregation totals, every demo household, and the private member directory with birthdays, anniversaries, contact details, and internal notes. The private directory is not rendered on public website routes.
 
 ## Deploy later
 

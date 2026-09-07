@@ -18,6 +18,22 @@ model User {
   financeEntries FinanceEntry[]
 }
 
+model MemberProfile {
+  id          String    @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String    @default("")
+  phone       String    @default("")
+  household   String    @default("")
+  address     String    @default("")
+  birthday    DateTime?
+  anniversary DateTime?
+  notes       String    @default("")
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model Page {
   id        String   @id @default(cuid())
   slug      String   @unique

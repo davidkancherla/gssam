@@ -47,6 +47,21 @@ const statements = [
     createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS User_email_key ON User(email)`,
+  `CREATE TABLE IF NOT EXISTS MemberProfile (
+    id TEXT PRIMARY KEY NOT NULL,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    email TEXT NOT NULL DEFAULT '',
+    phone TEXT NOT NULL DEFAULT '',
+    household TEXT NOT NULL DEFAULT '',
+    address TEXT NOT NULL DEFAULT '',
+    birthday DATETIME,
+    anniversary DATETIME,
+    notes TEXT NOT NULL DEFAULT '',
+    isActive BOOLEAN NOT NULL DEFAULT 1,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME NOT NULL
+  )`,
   `CREATE TABLE IF NOT EXISTS Page (
     id TEXT PRIMARY KEY NOT NULL,
     slug TEXT NOT NULL,
