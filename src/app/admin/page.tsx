@@ -19,7 +19,7 @@ export default async function AdminHomePage() {
     { href: "/admin/messages", label: "Messages", value: sermons, hint: "YouTube worship recordings" },
     { href: "/admin/gallery", label: "Photos", value: photos, hint: "Upload congregation pictures" },
     { href: "/admin/inquiries", label: "Inbox", value: inquiries, hint: "Notes from the contact form" },
-    { href: "/admin/finance", label: "Members", value: members, hint: "Demo households in the portal" },
+    { href: "/admin/members", label: "Members", value: members, hint: "Households in the portal" },
   ];
 
   return (

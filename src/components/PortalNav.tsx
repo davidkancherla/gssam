@@ -9,6 +9,7 @@ const adminLinks = [
   { href: "/admin/events", label: "Events" },
   { href: "/admin/messages", label: "Messages" },
   { href: "/admin/gallery", label: "Gallery" },
+  { href: "/admin/members", label: "Members" },
   { href: "/admin/weekly", label: "Weekly bulletin" },
   { href: "/admin/finance", label: "Church finance" },
   { href: "/admin/inquiries", label: "Contact inbox" },
