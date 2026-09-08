@@ -95,6 +95,10 @@ function style() {
       --line: rgba(29, 26, 22, 0.14);
     }
     * { box-sizing: border-box; }
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -103,6 +107,7 @@ function style() {
       line-height: 1.55;
     }
     a { color: inherit; }
+    img { max-width: 100%; }
     input, textarea, select, button { font: inherit; }
     .topbar {
       background: var(--red-dark);
@@ -151,7 +156,8 @@ function style() {
       padding: 7px;
       box-shadow: 0 8px 22px rgba(100, 20, 20, 0.2);
     }
-    .brand strong { display: block; color: var(--red-dark); font-size: 1.08rem; line-height: 1.1; }
+    .brand > span { min-width: 0; }
+    .brand strong { display: block; color: var(--red-dark); font-size: 1.08rem; line-height: 1.1; overflow-wrap: break-word; }
     .brand span { display: block; color: var(--muted); font-size: 0.86rem; }
     .links {
       display: flex;
@@ -353,13 +359,35 @@ function style() {
     @media (max-width: 820px) {
       .topbar-inner, .nav-inner { align-items: flex-start; flex-direction: column; padding: 10px 0; }
       .nav-inner { gap: 12px; }
-      .links { justify-content: flex-start; }
-      .hero { min-height: 580px; }
+      .brand { width: 100%; }
+      .brand img { flex: 0 0 auto; width: 88px; }
+      .brand strong { font-size: 1rem; }
+      .links { width: 100%; justify-content: flex-start; gap: 6px; }
+      .links a { padding: 8px 10px; font-size: 0.9rem; }
+      .hero { min-height: 580px; background-position: 56% center; }
+      .hero .section { padding: 68px 0 56px; }
+      h1 { font-size: clamp(2.6rem, 12vw, 4rem); line-height: 1.02; }
+      h2 { font-size: clamp(2rem, 9vw, 2.8rem); }
+      .lead, .intro { max-width: 100%; overflow-wrap: break-word; }
       .split, .grid, .feature-row, .footer-inner, .portal, .form-grid { grid-template-columns: 1fr; }
       .section { padding: 52px 0; }
       .brand { min-width: 0; }
       .portal-main { padding: 24px 16px; }
       .portal aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      .card, .login-card { min-width: 0; width: 100%; max-width: 460px; }
+    }
+    @media (max-width: 460px) {
+      .topbar-inner, .nav-inner, .section, .footer-inner { width: calc(100vw - 32px); }
+      .topbar-inner { gap: 8px; }
+      .brand { gap: 12px; }
+      .brand img { width: 96px; max-width: 28vw; }
+      .brand strong { font-size: 0.95rem; }
+      h1 { font-size: clamp(2.45rem, 12vw, 3.4rem); }
+      h2 { font-size: clamp(1.85rem, 9vw, 2.35rem); }
+      .lead { font-size: 1rem; }
+      .intro { font-size: 1rem; }
+      .button { min-height: 44px; padding: 10px 12px; }
+      .login-wrap { justify-items: center; }
     }
   `;
 }
