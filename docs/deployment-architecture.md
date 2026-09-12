@@ -8,8 +8,9 @@ This repository remains the source of truth for the church website, admin CMS, m
 - Runtime: Cloudflare-compatible worker generated from `scripts/build-sites-worker.mjs`.
 - Source metadata: `.openai/hosting.json`.
 - Public scope: home, about, ministries, events, messages, giving, contact, privacy, and an admin login link.
-- POC admin scope: password-protected `/login`, `/admin`, `/admin/review`, and `/admin/members` routes for reviewer validation.
-- Persistence: Cloudflare D1 through the logical `DB` binding in `.openai/hosting.json`. The POC stores private member-directory rows and content review notes.
+- POC admin scope: password-protected `/login`, `/admin`, `/admin/pictures`, `/admin/review`, and `/admin/members` routes for reviewer validation.
+- Persistence: Cloudflare D1 through the logical `DB` binding in `.openai/hosting.json`. The POC stores private member-directory rows, content review notes, and public-site picture URL overrides.
+- Picture updates: the POC Pictures tab stores `https://` image URLs for the existing public image slots. Direct browser uploads should be added with managed object storage, such as R2, before full production use.
 
 This keeps hosting low-ops: the platform handles the production worker runtime, TLS, deployment URL, and platform operations. ChatGPT can help maintain the site through future requested code/content changes, but it does not continuously monitor, operate, or administer the site unless asked in a new task.
 

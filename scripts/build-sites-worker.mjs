@@ -18,6 +18,16 @@ const images = {
   outreach: `${assetBase}images/events/food.jpg`,
 };
 
+const imageSlots = [
+  ["logo", "Logo", "Header logo shown at the top of every page.", images.logo],
+  ["hero", "Home hero", "Large worship photo at the top of the homepage.", images.hero],
+  ["congregation", "Congregation", "Photo beside the Sunday worship section.", images.congregation],
+  ["altar", "About page", "Altar photo on the About page.", images.altar],
+  ["youth", "Youth ministry", "Youth Fellowship ministry card.", images.youth],
+  ["sundaySchool", "Sunday School", "Sunday School ministry card.", images.sundaySchool],
+  ["outreach", "Community outreach", "Community Engagement ministry card.", images.outreach],
+];
+
 const site = {
   name: "Good Shepherd South Asian Ministry",
   shortName: "GSSAM",
@@ -568,6 +578,8 @@ const routes = {
 const worker = `const ROUTES = ${JSON.stringify(routes)};
 const REVIEW_PAGES = ${JSON.stringify(reviewPages)};
 const SITE = ${JSON.stringify(site)};
+const DEFAULT_IMAGES = ${JSON.stringify(images)};
+const IMAGE_SLOTS = ${JSON.stringify(imageSlots)};
 const ADMIN_EMAIL_DEFAULT = "admin@gssam.demo";
 const SESSION_COOKIE = "gssam_poc_admin";
 
@@ -592,6 +604,7 @@ function page(title, body, path) {
 function adminShell(title, activePath, inner, userEmail) {
   const links = [
     ["/admin", "Overview"],
+    ["/admin/pictures", "Pictures"],
     ["/admin/review", "Content Review"],
     ["/admin/members", "Members"],
     ["/", "Public Site"]
@@ -744,6 +757,52 @@ function assertDb(env) {
   return env.DB;
 }
 
+async function loadImageSettings(env) {
+  const db = assertDb(env);
+  const rows = await db.prepare("SELECT slot, image_url FROM site_image_settings").all();
+  const settings = {};
+  for (const row of rows.results || []) {
+    if (row.slot && row.image_url) settings[row.slot] = row.image_url;
+  }
+  return settings;
+}
+
+function imageUrlFor(settings, slot) {
+  return settings[slot] || DEFAULT_IMAGES[slot] || "";
+}
+
+function applyImageSettings(body, settings) {
+  let output = body;
+  for (const slot of IMAGE_SLOTS) {
+    const key = slot[0];
+    const fallback = DEFAULT_IMAGES[key];
+    const current = settings[key];
+    if (fallback && current && current !== fallback) output = output.replaceAll(fallback, current);
+  }
+  return output;
+}
+
+async function publicRoute(pathname, env) {
+  const route = ROUTES[pathname];
+  if (!route) return null;
+  const settings = await loadImageSettings(env);
+  return new Response(applyImageSettings(route, settings), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=60",
+    },
+  });
+}
+
+function normalizeImageUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const url = new URL(raw);
+  if (url.protocol !== "https:") throw new Error("Picture URLs must start with https://");
+  if (url.username || url.password) throw new Error("Picture URLs cannot contain usernames or passwords.");
+  return url.href;
+}
+
 function dateLabel(value) {
   if (!value) return "Not set";
   const date = new Date(value + "T12:00:00");
@@ -759,12 +818,54 @@ async function adminHome(request, env, user) {
   const db = assertDb(env);
   const members = await db.prepare("SELECT COUNT(*) AS count FROM member_profiles").first();
   const notes = await db.prepare("SELECT COUNT(*) AS count FROM content_review_notes").first();
+  const imageRows = await db.prepare("SELECT COUNT(*) AS count FROM site_image_settings").first();
   return html(adminShell("Admin", "/admin", '<p class="eyebrow">Church office</p><h1 style="color:var(--red-dark);font-size:clamp(2.5rem,5vw,4.8rem)">POC admin portal</h1>' +
     '<p class="intro">Use this shared proof-of-concept portal to review public content and test the private member directory. Member birthdays and anniversaries stay behind this login.</p>' +
-    '<div class="grid"><a class="card" href="/admin/review"><h3>Content Review</h3><p>' + Number(notes?.count || 0) + ' reviewer notes</p></a>' +
+    '<div class="grid"><a class="card" href="/admin/pictures"><h3>Pictures</h3><p>' + Number(imageRows?.count || 0) + ' saved picture changes</p></a>' +
+    '<a class="card" href="/admin/review"><h3>Content Review</h3><p>' + Number(notes?.count || 0) + ' reviewer notes</p></a>' +
     '<a class="card" href="/admin/members"><h3>Members</h3><p>' + Number(members?.count || 0) + ' people in the private directory</p></a>' +
     '<a class="card" href="/"><h3>Public Site</h3><p>Open the public website reviewers will validate.</p></a></div>' +
     '<div class="notice">This POC is hosted on managed infrastructure with a managed database. Replace the shared POC login with individual admin accounts before real production use.</div>', user.email));
+}
+
+function picturesForm(settings) {
+  return '<form class="card" method="post" action="/admin/pictures"><h3>Update public site pictures</h3>' +
+    '<p style="color:var(--muted);margin-top:0">Paste an https image URL for any picture you want to replace. Leave the current URL as-is to keep it unchanged.</p>' +
+    '<div class="grid">' + IMAGE_SLOTS.map(function(slot) {
+      const key = slot[0];
+      const label = slot[1];
+      const description = slot[2];
+      const current = imageUrlFor(settings, key);
+      return '<section class="card" style="min-height:0"><img src="' + escapeHtml(current) + '" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:7px;border:1px solid var(--line);background:var(--cream)">' +
+        '<h3 style="margin-top:14px">' + escapeHtml(label) + '</h3><p>' + escapeHtml(description) + '</p>' +
+        '<label class="field" style="margin-top:12px">Image URL<input class="input" name="' + escapeHtml(key) + '" value="' + escapeHtml(current) + '" inputmode="url" autocomplete="off"></label></section>';
+    }).join("") + '</div><div class="toolbar"><button class="button dark" type="submit">Save pictures</button><a class="button light" href="/">View public site</a></div></form>';
+}
+
+async function picturesPage(request, env, user) {
+  const url = new URL(request.url);
+  const settings = await loadImageSettings(env);
+  const saved = url.searchParams.get("saved") ? '<p class="notice">Saved. The public site now uses these picture URLs.</p>' : "";
+  const body = '<p class="eyebrow">Public website</p><h1 style="color:var(--red-dark);font-size:clamp(2.5rem,5vw,4.8rem)">Pictures</h1>' +
+    '<p class="intro">Update the images used on the public pages. This POC stores image links; direct upload from your computer is the next storage step.</p>' +
+    saved + picturesForm(settings);
+  return html(adminShell("Pictures", "/admin/pictures", body, user.email));
+}
+
+async function savePictures(request, env) {
+  const db = assertDb(env);
+  const form = await request.formData();
+  const statements = [];
+  for (const slot of IMAGE_SLOTS) {
+    const key = slot[0];
+    const label = slot[1];
+    const description = slot[2];
+    const value = normalizeImageUrl(form.get(key)) || DEFAULT_IMAGES[key];
+    statements.push(db.prepare("INSERT INTO site_image_settings (slot, label, description, image_url, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(slot) DO UPDATE SET label = excluded.label, description = excluded.description, image_url = excluded.image_url, updated_at = CURRENT_TIMESTAMP")
+      .bind(key, label, description, value));
+  }
+  await db.batch(statements);
+  return redirectTo("/admin/pictures?saved=1");
 }
 
 function memberForm(member) {
@@ -919,6 +1020,8 @@ export default {
         const user = await requireAdmin(request, env);
         if (!user) return redirectTo("/login?next=" + encodeURIComponent(pathname), 307);
         if (pathname === "/admin" && request.method === "GET") return await adminHome(request, env, user);
+        if (pathname === "/admin/pictures" && request.method === "GET") return await picturesPage(request, env, user);
+        if (pathname === "/admin/pictures" && request.method === "POST") return await savePictures(request, env);
         if (pathname === "/admin/members" && request.method === "GET") return await membersPage(request, env, user);
         if (pathname === "/admin/members" && request.method === "POST") return await saveMember(request, env);
         if (pathname === "/admin/members/delete" && request.method === "POST") return await deleteMember(request, env);
@@ -927,14 +1030,9 @@ export default {
         if (pathname === "/admin/review/delete" && request.method === "POST") return await deleteReviewNote(request, env);
       }
 
-      const route = ROUTES[pathname];
+      const route = await publicRoute(pathname, env);
       if (!route) return notFound();
-      return new Response(route, {
-        headers: {
-          "content-type": "text/html; charset=utf-8",
-          "cache-control": "public, max-age=300",
-        },
-      });
+      return route;
     } catch (error) {
       return html(page("Admin unavailable", '<main class="section"><h1 style="color:var(--red-dark)">Admin portal unavailable</h1><p class="intro">' + escapeHtml(error?.message || "Please try again.") + '</p><div class="toolbar"><a class="button light" href="/">Back to public site</a></div></main>', pathname), 500);
     }

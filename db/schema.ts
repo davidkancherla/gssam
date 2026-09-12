@@ -4,4 +4,5 @@
 export const tables = {
   memberProfiles: "member_profiles",
   contentReviewNotes: "content_review_notes",
+  siteImageSettings: "site_image_settings",
 } as const;
