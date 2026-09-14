@@ -1,0 +1,17 @@
+{
+  "name": "gssam",
+  "install": "npm ci --registry=https://registry.npmjs.org/ --replace-registry-host=always",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev",
+      "description": "Vite dev server for the gssam church website (http://localhost:3000)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "dev server",
+      "port": 3000
+    }
+  ]
+}
