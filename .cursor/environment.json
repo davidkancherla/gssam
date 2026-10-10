@@ -1,0 +1,17 @@
+{
+  "name": "gssam",
+  "install": "npm ci && ([ -f .env ] || cp .env.example .env) && npm run setup",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev",
+      "description": "Next.js dev server for the GSSAM church website, admin CMS, and member portal (http://localhost:3000). Demo logins are printed by npm run setup."
+    }
+  ],
+  "ports": [
+    {
+      "name": "dev server",
+      "port": 3000
+    }
+  ]
+}

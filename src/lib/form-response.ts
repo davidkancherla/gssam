@@ -8,8 +8,22 @@ export function isBrowserFormPost(request: Request) {
   return dest === "document" || mode === "navigate" || accept.includes("text/html");
 }
 
-export function formRedirect(request: Request, path: string) {
-  return NextResponse.redirect(new URL(path, request.url), 303);
+/**
+ * Same-origin redirect with a relative Location. Route handlers behind
+ * `next start` (or a proxy) can see request.url as http://localhost:PORT,
+ * so an absolute URL built from it can send the browser to a different
+ * origin where the session cookie does not exist.
+ */
+export function relativeRedirect(path: string, status = 303) {
+  const url = new URL(path, "http://gssam.local");
+  return new NextResponse(null, {
+    status,
+    headers: { Location: `${url.pathname}${url.search}` },
+  });
+}
+
+export function formRedirect(_request: Request, path: string) {
+  return relativeRedirect(path);
 }
 
 export function adminResult(
@@ -31,9 +45,9 @@ export function adminError(
   status = 400,
 ) {
   if (isBrowserFormPost(request)) {
-    const url = new URL(path, request.url);
+    const url = new URL(path, "http://gssam.local");
     url.searchParams.set("error", error);
-    return NextResponse.redirect(url, 303);
+    return relativeRedirect(`${url.pathname}${url.search}`);
   }
   return NextResponse.json({ error }, { status });
 }

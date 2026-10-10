@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
 
 export const metadata = { title: "Admin" };
 
 export default async function AdminHomePage() {
+  await requireAdmin();
   const [pages, events, sermons, photos, inquiries, members] = await Promise.all([
     db.page.count(),
     db.churchEvent.count(),

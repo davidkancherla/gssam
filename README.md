@@ -56,11 +56,29 @@ All money rows are tagged in the UI as **demo sample data**. They are fictional.
 3. **Member** — Sign in as `member@gssam.demo`. Open Finance, Weekly, and Income. Confirm the banner says the figures are sample data. Sign in as `member2@gssam.demo` and confirm you do **not** see Priya Sharma’s rows.
 4. **Privacy** — Visit `/admin` while signed in as a member; you should be sent to the member portal. Visit `/member` while logged out; you should land on sign-in.
 
+## Tests
+
+Playwright covers public pages (home, about, gallery, events, messages, giving, contact), admin sign-in / page edit / photo upload, member finance / weekly / income, role gating (members cannot see another household’s gifts), church-wide-only admin finance cards, and one-click sign-out. Demo logins and labeled sample finance data come from the seed.
+
+```bash
+cp .env.example .env
+npm install
+npx playwright install --with-deps chromium
+npm run setup
+npm test
+```
+
+`npm test` starts the Next.js dev server if it is not already running on port 3000. GitHub Actions (`.github/workflows/ci.yml`) seeds the demo SQLite database, builds, and runs the same suite against `npm run start` on pull requests, with a CI-only `AUTH_SECRET`.
+
+If the site is already running on port 3000, a lighter HTTP check is:
+
 ```bash
 npm run verify
 ```
 
-That script expects the app to already be running on port 3000. It checks public copy, login, and role gates.
+It checks public copy, demo passwords, role gates (including a forged admin JWT and a JWT for a user that no longer exists), member finance isolation, church-wide-only admin finance cards, the logout cookie attributes, and that `/uploads/` photo URLs are served.
+
+Production refuses to start signing sessions with a missing `AUTH_SECRET` or the example value from `.env.example`. Set a long random `AUTH_SECRET` in the hosting platform before `npm run start` in production.
 
 ## Portals
 

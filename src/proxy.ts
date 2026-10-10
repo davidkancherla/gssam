@@ -35,15 +35,12 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname === "/login" && user) {
-    return NextResponse.redirect(
-      new URL(user.role === "ADMIN" ? "/admin" : "/member", request.url),
-    );
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/member/:path*", "/login"],
+  // /login is not matched here: a JWT for a deleted user would bounce between
+  // /login (JWT looks valid) and the DB-backed portal layouts. The login page
+  // checks the live user itself.
+  matcher: ["/admin/:path*", "/member/:path*"],
 };

@@ -19,6 +19,18 @@ const EXTENSION_BY_MIME: Record<string, string> = {
   "image/gif": ".gif",
 };
 
+const SAFE_UPLOAD_NAME =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|jpeg|png|webp|gif)$/i;
+
+/** Only the random UUID names storePublicBuffer writes can be served back. */
+export function isSafeUploadFilename(name: string) {
+  return SAFE_UPLOAD_NAME.test(name);
+}
+
+export function mimeForUploadFilename(name: string) {
+  return MIME_BY_EXTENSION[extname(name).toLowerCase()] || "application/octet-stream";
+}
+
 export function uploadsDirectory() {
   return join(process.cwd(), "public", "uploads");
 }

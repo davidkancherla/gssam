@@ -4,8 +4,9 @@ import { unlink } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getAdminUser, requireAdmin } from "@/lib/auth";
+import { getAdminUser, requireAdminAction } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { persistSession } from "@/lib/session-cookie";
 import { demoteOtherUniquePlacements, normalizeGalleryPlacement } from "@/lib/gallery-placement";
 import { storePublicBuffer, takeUploadedFile } from "@/lib/uploads";
 import { extractYoutubeId } from "@/lib/youtube";
@@ -23,8 +24,7 @@ function slugify(value: string) {
 }
 
 export async function savePage(formData: FormData) {
-  const admin = await getAdminUser();
-  if (!admin) redirect("/login");
+  await requireAdminAction();
 
   const slug = text(formData, "slug");
   if (!slug) redirect("/admin/pages?error=This+page+could+not+be+saved.");
@@ -74,7 +74,7 @@ export async function savePage(formData: FormData) {
 }
 
 export async function saveMinistry(formData: FormData) {
-  await requireAdmin();
+  await requireAdminAction();
   const id = text(formData, "id");
   const name = text(formData, "name");
   const existing = id ? await db.ministry.findUnique({ where: { id } }) : null;
@@ -116,14 +116,14 @@ export async function saveMinistry(formData: FormData) {
 }
 
 export async function deleteMinistry(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.ministry.delete({ where: { id } });
   revalidatePath("/ministries");
   revalidatePath("/");
 }
 
 export async function saveEvent(formData: FormData) {
-  await requireAdmin();
+  await requireAdminAction();
   const id = text(formData, "id");
   const title = text(formData, "title");
   const data = {
@@ -148,14 +148,14 @@ export async function saveEvent(formData: FormData) {
 }
 
 export async function deleteEvent(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.churchEvent.delete({ where: { id } });
   revalidatePath("/events");
   revalidatePath("/");
 }
 
 export async function saveSermon(formData: FormData) {
-  await requireAdmin();
+  await requireAdminAction();
   const id = text(formData, "id");
   const data = {
     title: text(formData, "title"),
@@ -177,14 +177,14 @@ export async function saveSermon(formData: FormData) {
 }
 
 export async function deleteSermon(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.sermon.delete({ where: { id } });
   revalidatePath("/messages");
   revalidatePath("/");
 }
 
 export async function saveGalleryMeta(formData: FormData) {
-  await requireAdmin();
+  await requireAdminAction();
   const id = text(formData, "id");
   const placement = normalizeGalleryPlacement(text(formData, "placement"));
   await demoteOtherUniquePlacements(placement, id);
@@ -212,6 +212,7 @@ export async function uploadGalleryImage(
   if (!admin) {
     return { error: "Your session expired. Please sign in again, then upload." };
   }
+  await persistSession(admin);
 
   const uploaded = await takeUploadedFile(formData);
   if (!uploaded.ok) {
@@ -243,7 +244,7 @@ export async function uploadGalleryImage(
 }
 
 export async function deleteGalleryImage(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   const photo = await db.galleryImage.findUnique({ where: { id } });
   if (photo) {
     await db.galleryImage.delete({ where: { id } });
@@ -263,7 +264,7 @@ async function removeUploadedFile(url: string) {
 }
 
 export async function saveWeekly(formData: FormData) {
-  await requireAdmin();
+  await requireAdminAction();
   const id = text(formData, "id");
   const data = {
     weekOf: new Date(text(formData, "weekOf")),
@@ -284,7 +285,7 @@ export async function saveWeekly(formData: FormData) {
 }
 
 export async function deleteWeekly(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.weeklyBulletin.delete({ where: { id } });
   revalidatePath("/member/weekly");
 }

@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { churchWideCardTotals } from "@/lib/finance";
 import { formatMoney, formatShortDate } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Church finance" };
 
 export default async function AdminFinance({

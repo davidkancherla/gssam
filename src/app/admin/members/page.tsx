@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth";
 import Link from "next/link";
 import { deleteMemberProfile, saveMemberProfile } from "@/app/actions/members";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -24,6 +25,7 @@ export default async function AdminMembersPage({
 }: {
   searchParams: Promise<{ id?: string; saved?: string; error?: string }>;
 }) {
+  await requireAdmin();
   const params = await searchParams;
   const [members, selected] = await Promise.all([
     db.memberProfile.findMany({

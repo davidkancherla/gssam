@@ -25,9 +25,22 @@ type CookieWriter = {
 
 const EXAMPLE_AUTH_SECRET =
   "change-this-to-a-long-random-string-before-production";
+const DEV_FALLBACK_SECRET = "gssam-local-dev-secret-not-for-production";
 
+/**
+ * Production refuses a missing AUTH_SECRET or the example value from
+ * .env.example, so a public deployment can never sign sessions with a known key.
+ */
 function secretKey() {
-  const secret = process.env.AUTH_SECRET || EXAMPLE_AUTH_SECRET;
+  const secret = process.env.AUTH_SECRET;
+  if (!secret || secret === EXAMPLE_AUTH_SECRET) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "AUTH_SECRET must be set to a long random value before production.",
+      );
+    }
+    return new TextEncoder().encode(secret || DEV_FALLBACK_SECRET);
+  }
   return new TextEncoder().encode(secret);
 }
 
