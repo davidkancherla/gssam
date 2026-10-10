@@ -204,6 +204,10 @@ async function portalChecks() {
     await mustRedirect("/admin/finance", "/member", forgedAdmin);
     await mustRedirect("/admin", "/login", ghostAdmin);
     await mustRedirect("/member", "/login", ghostAdmin);
+    // A stale JWT must not bounce between /login and the portal layouts.
+    await mustContain("/login", ["Sign in"], ghostAdmin);
+    await mustRedirect("/login", "/admin", adminToken);
+    await mustRedirect("/login", "/member", memberToken);
 
     const session = await fetchText("/api/session", forgedAdmin);
     if (!session.text.includes('"role":"MEMBER"')) {

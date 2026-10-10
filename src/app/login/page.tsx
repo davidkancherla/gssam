@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { PublicShell } from "@/components/PublicShell";
+import { getSessionUser } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 
 export const metadata = { title: "Sign in" };
@@ -9,6 +11,9 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
+  // Already signed in (checked against the database, not just the JWT).
+  const user = await getSessionUser();
+  if (user) redirect(user.role === "ADMIN" ? "/admin" : "/member");
   return (
     <PublicShell>
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center">
