@@ -66,16 +66,16 @@ export function ContactForm() {
   const showThanks = sent || Boolean(state?.ok);
 
   return (
-    <div className="card min-h-80 space-y-4 p-6">
-      <h2 className="font-display text-2xl text-shepherd">Send a message</h2>
+    <div className="tile min-h-80 space-y-5 p-7 sm:p-9">
+      <h2 className="headline text-[clamp(1.75rem,4vw,2.5rem)] text-[#1d1d1f]">Send a message</h2>
       {showThanks ? (
-        <p className="rounded-lg bg-shepherd/10 p-3 text-sm text-shepherd">
+        <p className="rounded-2xl bg-[#f5f5f7] p-4 text-[15px] text-[#1d1d1f]">
           Thank you. The church office will see your note in the admin inbox.
         </p>
       ) : (
         <form action={action} className="space-y-4">
           {state?.error ? (
-            <p className="rounded-lg bg-burgundy/10 p-3 text-sm text-burgundy">{state.error}</p>
+            <p className="rounded-2xl bg-accent/10 p-4 text-[15px] text-accent" role="alert">{state.error}</p>
           ) : null}
           <Field label="Name" name="name" required>
             <input
@@ -113,7 +113,7 @@ export function ContactForm() {
               onChange={(event) => update("message", event.target.value)}
             />
           </Field>
-          <button className="btn btn-dark" disabled={pending} type="submit">
+          <button className="btn btn-primary w-full sm:w-auto" disabled={pending} type="submit">
             {pending ? "Sending…" : "Send to GSSAM"}
           </button>
         </form>

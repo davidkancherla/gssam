@@ -20,22 +20,29 @@ export default async function EventsPage() {
         lede="Worship feasts, fellowship, and neighbor-care gatherings at 4211 Carol Ave."
         image="/images/real-palm-sunday.jpg"
       />
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <div className="grid gap-6 md:grid-cols-2">
-          {events.map((event) => (
-            <Link key={event.id} href={`/events/${event.slug}`} className="card flex flex-col sm:flex-row">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={event.imageUrl}
-                alt=""
-                className="h-44 w-full object-cover sm:h-auto sm:w-52"
-              />
-              <div className="p-5">
-                <p className="text-xs uppercase tracking-wide text-gold">
+      <section className="bg-[#f5f5f7]">
+        <div className="mx-auto grid max-w-[1080px] gap-4 px-5 py-16 sm:px-6 md:grid-cols-2 md:py-24">
+          {events.map((event, i) => (
+            <Link
+              key={event.id}
+              href={`/events/${event.slug}`}
+              className="tile tile-link flex flex-col"
+              data-reveal
+              style={{ transitionDelay: `${(i % 2) * 90}ms` }}
+            >
+              <div className="overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={event.imageUrl} alt="" className="aspect-[16/9] w-full object-cover" />
+              </div>
+              <div className="flex flex-1 flex-col p-7 sm:p-8">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-accent">
                   {formatDate(event.startsAt)}
                 </p>
-                <h2 className="mt-2 font-display text-2xl text-shepherd">{event.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-muted">{event.summary}</p>
+                <h2 className="mt-2 text-[26px] font-semibold leading-tight tracking-tight text-[#1d1d1f] sm:text-[28px]">
+                  {event.title}
+                </h2>
+                <p className="mt-2 flex-1 text-[16px] leading-[1.55] text-[#6e6e73]">{event.summary}</p>
+                <span className="link-chevron mt-5 text-[16px]">Event details</span>
               </div>
             </Link>
           ))}

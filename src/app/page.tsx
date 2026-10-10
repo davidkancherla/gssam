@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  ArrowRight,
   BookOpen,
   Clock,
   HeartHandshake,
@@ -58,66 +57,91 @@ export default async function HomePage() {
     <PublicShell>
       <LiveHero imageUrl={heroImage} caption={heroCaption} />
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
-        <div className="grid items-center gap-10 md:grid-cols-2">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Welcome Home</p>
-            <h2 className="mt-2 font-display text-3xl font-bold text-maroon sm:text-4xl">
+      {/* Welcome — light gray band */}
+      <section className="bg-[#f5f5f7]">
+        <div className="mx-auto max-w-[1080px] px-5 py-20 sm:px-6 md:py-28">
+          <div className="mx-auto max-w-[760px] text-center" data-reveal>
+            <p className="eyebrow">Welcome Home</p>
+            <h2 className="headline mt-2 text-[clamp(2rem,5.5vw,3.5rem)] text-[#1d1d1f]">
               A South Asian family in the Lutheran tradition
             </h2>
-            <p className="mt-4 leading-relaxed text-foreground/85">
+            <p className="mt-6 text-[17px] leading-[1.6] text-[#1d1d1f]/80 sm:text-[19px]">
               Since 1988, Good Shepherd South Asian Ministry has gathered in Fremont to worship
               the Lord Jesus Christ through the timeless hymns of the Lutheran church — sung in the
               heart languages of our people: Telugu, Hindi, and English.
             </p>
-            <p className="mt-3 leading-relaxed text-foreground/85">
+            <p className="mt-4 text-[17px] leading-[1.6] text-[#1d1d1f]/80 sm:text-[19px]">
               Whether you are new to the Bay Area, exploring faith, or looking for a church that
               feels like home, there is a seat saved for you this Sunday.
             </p>
-            <Link
-              href="/about"
-              className="mt-6 inline-flex items-center gap-2 font-semibold text-maroon hover:gap-3"
-            >
-              Learn our story <ArrowRight className="h-4 w-4" />
+            <Link href="/about" className="link-chevron mt-6 text-[17px]">
+              Learn our story
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+
+          <div className="mt-14 grid gap-3 sm:grid-cols-2 sm:gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={welcomeLeft?.url || WELCOME_HOME_DEFAULTS.left.url}
               alt={welcomeLeft?.caption || welcomeLeft?.title || WELCOME_HOME_DEFAULTS.left.alt}
-              className="h-48 w-full rounded-xl object-cover shadow-md"
+              className="aspect-[4/3] w-full rounded-[1.75rem] object-cover"
+              data-reveal
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={welcomeRight?.url || WELCOME_HOME_DEFAULTS.right.url}
               alt={welcomeRight?.caption || welcomeRight?.title || WELCOME_HOME_DEFAULTS.right.alt}
-              className="mt-8 h-48 w-full rounded-xl object-cover shadow-md"
+              className="aspect-[4/3] w-full rounded-[1.75rem] object-cover"
+              data-reveal
+              style={{ transitionDelay: "120ms" }}
             />
           </div>
-        </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-3">
-          {[
-            { icon: Clock, title: "Sunday Worship", text: site.worship },
-            { icon: MapPin, title: "Find Us", text: site.address },
-            { icon: Languages, title: "We Worship In", text: site.languages.join(" · ") },
-          ].map(({ icon: Icon, title, text }) => (
-            <div key={title} className="rounded-xl bg-card p-6 text-center shadow-sm ring-1 ring-border">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-saffron/25 text-maroon">
-                <Icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-3 font-display text-lg font-bold">{title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{text}</p>
-            </div>
-          ))}
+          <div className="mt-3 grid gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-4">
+            {[
+              { icon: Clock, title: "Sunday Worship", text: site.worship },
+              { icon: MapPin, title: "Find Us", text: site.address, href: site.mapUrl },
+              { icon: Languages, title: "We Worship In", text: site.languages.join(" · ") },
+            ].map(({ icon: Icon, title, text, href }, i) => (
+              <div
+                key={title}
+                className="tile p-7 text-center sm:p-8"
+                data-reveal
+                style={{ transitionDelay: `${i * 90}ms` }}
+              >
+                <Icon className="mx-auto h-7 w-7 text-accent" strokeWidth={1.6} aria-hidden="true" />
+                <h3 className="mt-4 text-[19px] font-semibold text-[#1d1d1f]">{title}</h3>
+                {href ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 block text-[15px] text-[#6e6e73] hover:text-accent hover:underline"
+                  >
+                    {text}
+                  </a>
+                ) : (
+                  <p className="mt-1 text-[15px] text-[#6e6e73]">{text}</p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
+      {/* Latest service — the page's one dark band */}
       {latestSermon ? (
-        <section className="pattern-dots bg-secondary/60">
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2">
-            <div className="aspect-video overflow-hidden rounded-xl bg-black shadow-xl ring-1 ring-border">
+        <section className="bg-black text-white">
+          <div className="mx-auto max-w-[1080px] px-5 py-20 sm:px-6 md:py-28">
+            <div className="mx-auto max-w-[760px] text-center" data-reveal>
+              <p className="text-[13px] font-semibold text-gold-bright">Latest Service</p>
+              <h2 className="headline mt-2 text-[clamp(2rem,5vw,3.25rem)]">{latestSermon.title}</h2>
+              <p className="mt-3 text-[15px] text-white/60">{formatDate(latestSermon.preachedAt)}</p>
+            </div>
+            <div
+              className="mt-10 aspect-video overflow-hidden rounded-[1.5rem] bg-[#1d1d1f] ring-1 ring-white/10 sm:rounded-[2rem]"
+              data-reveal="zoom"
+            >
               <iframe
                 src={youtubeEmbedUrl(latestSermon.youtubeId)}
                 title={latestSermon.title}
@@ -126,26 +150,20 @@ export default async function HomePage() {
                 allowFullScreen
               />
             </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Latest Service</p>
-              <h2 className="mt-2 font-display text-3xl font-bold text-maroon">{latestSermon.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{formatDate(latestSermon.preachedAt)}</p>
-              <p className="mt-4 leading-relaxed text-foreground/85">
+            <div className="mx-auto mt-10 max-w-[640px] text-center" data-reveal>
+              <p className="text-[17px] leading-[1.6] text-white/75">
                 Missed a Sunday? Every service is streamed and archived on our YouTube channel,
                 {` ${site.youtubeHandle}`} — worship with us anytime, anywhere.
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/messages"
-                  className="inline-flex items-center gap-2 rounded-md bg-maroon px-5 py-2.5 font-semibold text-white hover:bg-maroon-deep"
-                >
-                  <BookOpen className="h-4 w-4" /> Browse Sermon Archive
+              <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Link href="/messages" className="btn btn-light w-full max-w-xs sm:w-auto">
+                  <BookOpen className="h-4 w-4" aria-hidden="true" /> Browse Sermon Archive
                 </Link>
                 <a
                   href={site.youtubeSubscribe}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md bg-red-600 px-5 py-2.5 font-semibold text-white hover:bg-red-700"
+                  className="btn btn-outline-light w-full max-w-xs sm:w-auto"
                 >
                   <YoutubeIcon className="h-4 w-4" /> Subscribe
                 </a>
@@ -155,58 +173,82 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">This Week &amp; Beyond</p>
-            <h2 className="mt-2 font-display text-3xl font-bold text-maroon sm:text-4xl">Upcoming at GSSAM</h2>
-          </div>
-          <Link href="/events" className="inline-flex items-center gap-2 font-semibold text-maroon hover:gap-3">
-            Full calendar <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {events.map((event) => (
-            <Link key={event.id} href={`/events/${event.slug}`} className="card">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={event.imageUrl} alt="" className="h-40 w-full object-cover" />
-              <div className="p-4">
-                <p className="text-xs uppercase tracking-wide text-gold">{formatShortDate(event.startsAt)}</p>
-                <h3 className="mt-1 font-display text-xl font-bold text-maroon">{event.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{event.summary}</p>
-              </div>
+      {/* Upcoming events — white band */}
+      <section className="bg-white">
+        <div className="mx-auto max-w-[1080px] px-5 py-20 sm:px-6 md:py-28">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" data-reveal>
+            <div>
+              <p className="eyebrow">This Week &amp; Beyond</p>
+              <h2 className="headline mt-2 text-[clamp(2rem,5vw,3.25rem)] text-[#1d1d1f]">Upcoming at GSSAM</h2>
+            </div>
+            <Link href="/events" className="link-chevron text-[17px]">
+              Full calendar
             </Link>
-          ))}
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {events.map((event, i) => (
+              <Link
+                key={event.id}
+                href={`/events/${event.slug}`}
+                className="tile tile-link group flex flex-col bg-[#f5f5f7]"
+                data-reveal
+                style={{ transitionDelay: `${i * 90}ms` }}
+              >
+                <div className="overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={event.imageUrl} alt="" className="aspect-[16/10] w-full object-cover" />
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-accent">
+                    {formatShortDate(event.startsAt)}
+                  </p>
+                  <h3 className="mt-2 text-[21px] font-semibold leading-tight tracking-tight text-[#1d1d1f]">
+                    {event.title}
+                  </h3>
+                  <p className="mt-2 flex-1 text-[15px] leading-[1.5] text-[#6e6e73]">{event.summary}</p>
+                  <span className="link-chevron mt-4 text-[15px]">Learn more</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="bg-maroon-deep py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center text-white">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Life Together</p>
-            <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Our Community in Pictures</h2>
+      {/* Community in pictures — gray band */}
+      <section className="bg-[#f5f5f7]">
+        <div className="mx-auto max-w-[1080px] px-5 py-20 sm:px-6 md:py-28">
+          <div className="text-center" data-reveal>
+            <p className="eyebrow">Life Together</p>
+            <h2 className="headline mt-2 text-[clamp(2rem,5vw,3.25rem)] text-[#1d1d1f]">
+              Our Community in Pictures
+            </h2>
+            <Link href="/gallery" className="link-chevron mt-4 text-[17px]">
+              See the gallery
+            </Link>
           </div>
-          <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {photos.map((photo) => (
-              <figure key={photo.id} className="group relative overflow-hidden rounded-xl ring-1 ring-white/10">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+            {photos.map((photo, i) => (
+              <figure
+                key={photo.id}
+                className="group relative overflow-hidden rounded-[1.25rem] sm:rounded-[1.5rem]"
+                data-reveal
+                style={{ transitionDelay: `${i * 80}ms` }}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo.url}
                   alt={photo.title}
-                  className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105 md:h-52"
+                  className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] md:min-h-52"
                 />
-                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2.5 text-xs text-white">
+                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent px-4 pb-3 pt-10 text-[13px] font-medium text-white">
                   {photo.title}
                 </figcaption>
               </figure>
             ))}
           </div>
-          <div className="mt-10 text-center">
-            <Link
-              href="/donate"
-              className="inline-flex items-center gap-2 rounded-md bg-saffron px-6 py-3 font-bold text-maroon-deep hover:brightness-110"
-            >
-              <HeartHandshake className="h-5 w-5" /> Support Our Ministry
+          <div className="mt-14 text-center" data-reveal>
+            <Link href="/donate" className="btn btn-primary">
+              <HeartHandshake className="h-[18px] w-[18px]" aria-hidden="true" /> Support Our Ministry
             </Link>
           </div>
         </div>

@@ -1,7 +1,8 @@
 import { PublicShell } from "@/components/PublicShell";
 import { PageHero, Prose } from "@/components/ui";
 import { db } from "@/lib/db";
-import { formatDate } from "@/lib/site";
+import { formatDate, site } from "@/lib/site";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function EventDetailPage({
@@ -21,22 +22,39 @@ export default async function EventDetailPage({
         lede={event.summary}
         image={event.imageUrl}
       />
-      <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 lg:grid-cols-[1.2fr_0.8fr]">
-        <Prose text={event.body} />
-        <aside className="card overflow-hidden">
-          {event.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={event.imageUrl} alt="" className="h-56 w-full object-cover" />
-          ) : null}
-          <div className="p-5 text-sm leading-7">
-            <p>
-              <strong>When.</strong> {formatDate(event.startsAt)}
-            </p>
-            <p>
-              <strong>Where.</strong> {event.location}
-            </p>
+      <section className="bg-white">
+        <div className="mx-auto grid max-w-[1080px] gap-10 px-5 py-16 sm:px-6 md:py-24 lg:grid-cols-[1fr_340px] lg:gap-16">
+          <div data-reveal>
+            <Prose text={event.body} />
+            <Link href="/events" className="link-chevron mt-12 text-[17px]">
+              All events
+            </Link>
           </div>
-        </aside>
+          <aside className="lg:sticky lg:top-24 lg:self-start" data-reveal>
+            <div className="rounded-[1.75rem] bg-[#f5f5f7] p-7">
+              <dl className="divide-y divide-black/10 text-[15px]">
+                <div className="pb-4">
+                  <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#6e6e73]">When</dt>
+                  <dd className="mt-1 text-[17px] font-medium text-[#1d1d1f]">{formatDate(event.startsAt)}</dd>
+                </div>
+                <div className="pt-4">
+                  <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#6e6e73]">Where</dt>
+                  <dd className="mt-1 text-[17px] font-medium text-[#1d1d1f]">{event.location}</dd>
+                  <dd className="mt-3">
+                    <a
+                      href={site.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-chevron text-[15px]"
+                    >
+                      Get directions
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </aside>
+        </div>
       </section>
     </PublicShell>
   );

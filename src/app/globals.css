@@ -1,152 +1,322 @@
 @import "tailwindcss";
 
+/*
+ * GSSAM design tokens — Apple-inspired: system type, near-black ink,
+ * white / #f5f5f7 surfaces, hairline borders, and the church's red & gold
+ * kept only as a restrained accent.
+ */
 @theme inline {
-  --color-background: hsl(40 33% 98%);
-  --color-foreground: hsl(24 20% 12%);
+  --color-background: #ffffff;
+  --color-foreground: #1d1d1f;
   --color-card: #ffffff;
-  --color-secondary: hsl(36 30% 94%);
-  --color-muted-foreground: hsl(24 10% 42%);
-  --color-border: hsl(30 18% 88%);
-  --color-input: hsl(30 18% 88%);
-  --color-maroon: hsl(351 72% 36%);
-  --color-maroon-deep: hsl(24 16% 12%);
-  --color-saffron: hsl(38 90% 55%);
-  --color-gold: hsl(33 80% 36%);
-  --color-gold-soft: hsl(38 80% 88%);
-  --color-shepherd: hsl(351 72% 36%);
-  --color-shepherd-deep: hsl(24 16% 12%);
-  --color-shepherd-soft: hsl(351 62% 28%);
-  --color-cream: hsl(40 33% 98%);
-  --color-parchment: hsl(40 33% 98%);
-  --color-burgundy: hsl(351 72% 36%);
-  --color-ink: hsl(24 20% 12%);
-  --color-muted: hsl(24 10% 42%);
-  --color-line: hsl(30 18% 88%);
-  --font-display: var(--font-jakarta);
-  --font-sans: var(--font-inter);
+  --color-secondary: #f5f5f7;
+  --color-muted-foreground: #6e6e73;
+  --color-border: rgb(0 0 0 / 0.1);
+  --color-input: #d2d2d7;
+
+  /* Brand accents (restrained). */
+  --color-accent: #a1192d;
+  --color-accent-hover: #86121f;
+  --color-accent-gold: #8a5a12;
+  --color-gold-bright: #f0b23a;
+
+  /* Legacy names still used by portal pages — mapped onto the new palette. */
+  --color-maroon: #a1192d;
+  --color-maroon-deep: #1d1d1f;
+  --color-saffron: #f0b23a;
+  --color-gold: #8a5a12;
+  --color-gold-soft: #fbf1dc;
+  --color-shepherd: #1d1d1f;
+  --color-shepherd-deep: #1d1d1f;
+  --color-shepherd-soft: #86121f;
+  --color-cream: #ffffff;
+  --color-parchment: #f5f5f7;
+  --color-burgundy: #a1192d;
+  --color-ink: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-line: #d2d2d7;
+
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", Inter, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.011em;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.022em;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
+
+  :focus-visible {
+    outline: 2px solid #0071e3;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: #fbe3a8;
+    color: #1d1d1f;
+  }
 }
 
-body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+/* Component classes live in the components layer so Tailwind utilities can override them. */
+@layer components {
+  /* ───────── Typography helpers ───────── */
+
+  .eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--color-accent);
+  }
+
+  .headline {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+  }
+
+  .subhead {
+    font-size: clamp(1.125rem, 1.6vw + 0.75rem, 1.5rem);
+    line-height: 1.38;
+    letter-spacing: -0.012em;
+    color: var(--color-muted-foreground);
+  }
+
+  /* Text link with an Apple-style chevron. */
+  .link-chevron {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .link-chevron:hover {
+    text-decoration: underline;
+  }
+
+  .link-chevron::after {
+    content: "›";
+    font-size: 1.15em;
+    line-height: 1;
+    transform: translateY(-0.04em);
+  }
+
+  /* ───────── Forms ───────── */
+
+  .input {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    background: white;
+    border-radius: 0.875rem;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    color: var(--color-ink);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .input:focus {
+    border-color: #0071e3;
+    box-shadow: 0 0 0 4px rgb(0 113 227 / 0.18);
+  }
+
+  /* ───────── Buttons (pill-shaped) ───────── */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.75rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary,
+  .btn-dark {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .btn-primary:hover,
+  .btn-dark:hover {
+    background: var(--color-accent-hover);
+  }
+
+  .btn-gold {
+    background: var(--color-gold-bright);
+    color: #1d1d1f;
+  }
+
+  .btn-gold:hover {
+    filter: brightness(1.05);
+  }
+
+  .btn-secondary,
+  .btn-outline {
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    background: transparent;
+  }
+
+  .btn-secondary:hover,
+  .btn-outline:hover {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .btn-ink {
+    background: #1d1d1f;
+    color: white;
+  }
+
+  .btn-ink:hover {
+    background: #000;
+  }
+
+  .btn-light {
+    background: white;
+    color: #1d1d1f;
+  }
+
+  .btn-light:hover {
+    background: #e8e8ed;
+  }
+
+  .btn-outline-light {
+    border: 1px solid rgb(255 255 255 / 0.55);
+    color: white;
+    background: transparent;
+  }
+
+  .btn-outline-light:hover {
+    background: white;
+    color: black;
+  }
+
+  /* ───────── Surfaces ───────── */
+
+  .card {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+  }
+
+  /* A large, rounded Apple-style tile (no border on gray sections). */
+  .tile {
+    background: white;
+    border-radius: 1.75rem;
+    overflow: hidden;
+  }
+
+  .tile-link {
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.4s ease;
+  }
+
+  .tile-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.25);
+  }
+
+  .tile-link img {
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .tile-link:hover img {
+    transform: scale(1.03);
+  }
+
+  .hairline {
+    border-color: var(--color-border);
+  }
 }
 
-h1,
-h2,
-h3,
-.font-display {
-  font-family: var(--font-jakarta), "Segoe UI", system-ui, sans-serif;
-  letter-spacing: -0.015em;
+/* ───────── Scroll reveal ─────────
+ * Content is fully visible without JavaScript. The Reveal component adds
+ * .reveal-ready to <html> and fades [data-reveal] elements in as they enter
+ * the viewport. Reduced-motion users never get the transform/fade.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: opacity, transform;
+  }
+
+  .reveal-ready [data-reveal="fade"] {
+    transform: none;
+  }
+
+  .reveal-ready [data-reveal="zoom"] {
+    transform: scale(0.96);
+  }
+
+  .reveal-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-a {
-  text-underline-offset: 3px;
-}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 
-::selection {
-  background: hsl(38 90% 80%);
-  color: hsl(24 16% 12%);
-}
+  .tile-link,
+  .tile-link img {
+    transition: none;
+  }
 
-.hero-veil {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.85));
-}
-
-.pattern-dots {
-  background-image: radial-gradient(hsl(351 72% 36% / 0.1) 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
-}
-
-.ornament-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-.ornament-divider::before,
-.ornament-divider::after {
-  content: "";
-  height: 1px;
-  width: 4rem;
-  background: linear-gradient(to right, transparent, hsl(33 80% 36%));
-}
-
-.ornament-divider::after {
-  background: linear-gradient(to left, transparent, hsl(33 80% 36%));
-}
-
-.input {
-  width: 100%;
-  border: 1px solid var(--color-line);
-  background: white;
-  border-radius: 0.5rem;
-  padding: 0.7rem 0.85rem;
-  color: var(--color-ink);
-  outline: none;
-}
-
-.input:focus {
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 3px rgba(166, 92, 18, 0.2);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  border-radius: 0.5rem;
-  padding: 0.7rem 1.25rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: 0.15s ease;
-}
-
-.btn-gold {
-  background: var(--color-saffron);
-  color: var(--color-maroon-deep);
-}
-
-.btn-gold:hover {
-  filter: brightness(1.08);
-}
-
-.btn-dark {
-  background: var(--color-maroon);
-  color: white;
-}
-
-.btn-dark:hover {
-  background: var(--color-shepherd-soft);
-}
-
-.btn-outline {
-  border: 1px solid var(--color-gold);
-  color: var(--color-maroon);
-  background: transparent;
-}
-
-.btn-outline-light {
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  background: transparent;
-}
-
-.btn-outline-light:hover {
-  background: white;
-  color: black;
-}
-
-.card {
-  background: white;
-  border: 1px solid var(--color-line);
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  .tile-link:hover,
+  .tile-link:hover img {
+    transform: none;
+  }
 }
