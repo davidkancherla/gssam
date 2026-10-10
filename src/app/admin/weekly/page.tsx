@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth";
 import { deleteWeekly, saveWeekly } from "@/app/actions/content";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Field, SavedNotice } from "@/components/ui";
@@ -16,6 +17,7 @@ export default async function AdminWeekly({
 }: {
   searchParams: Promise<{ saved?: string; id?: string }>;
 }) {
+  await requireAdmin();
   const params = await searchParams;
   const weeks = await db.weeklyBulletin.findMany({ orderBy: { weekOf: "desc" } });
   const current = weeks.find((item) => item.id === params.id);
@@ -59,6 +61,8 @@ export default async function AdminWeekly({
             label="Congregation offering total (USD)"
             name="offeringTotal"
             type="number"
+            step="0.01"
+            min="0"
             defaultValue={current ? current.offeringTotalCents / 100 : 0}
           />
           <label className="flex items-center gap-2 text-sm">

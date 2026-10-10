@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth";
 import { deleteGalleryImage, saveGalleryMeta } from "@/app/actions/content";
 import { GalleryUploadForm } from "@/app/admin/gallery/upload-form";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -11,6 +12,7 @@ export default async function AdminGallery({
 }: {
   searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
+  await requireAdmin();
   const params = await searchParams;
   const photos = await db.galleryImage.findMany({ orderBy: { createdAt: "desc" } });
 

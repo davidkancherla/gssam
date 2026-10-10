@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminAction } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 function text(formData: FormData, key: string) {
@@ -15,7 +15,7 @@ function dateOrNull(formData: FormData, key: string) {
 }
 
 export async function saveMemberProfile(formData: FormData) {
-  await requireAdmin();
+  await requireAdminAction();
   const id = text(formData, "id");
   const firstName = text(formData, "firstName");
   const lastName = text(formData, "lastName");
@@ -48,7 +48,7 @@ export async function saveMemberProfile(formData: FormData) {
 }
 
 export async function deleteMemberProfile(id: string) {
-  await requireAdmin();
+  await requireAdminAction();
   await db.memberProfile.delete({ where: { id } });
   revalidatePath("/admin/members");
 }

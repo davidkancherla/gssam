@@ -1,8 +1,10 @@
+import { requireAdmin } from "@/lib/auth";
 import { PageEditor } from "@/app/admin/pages/page-editor";
 import { SavedNotice } from "@/components/ui";
 import { db } from "@/lib/db";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Edit pages" };
 
 export default async function AdminPages({
@@ -10,6 +12,7 @@ export default async function AdminPages({
 }: {
   searchParams: Promise<{ saved?: string; slug?: string; error?: string }>;
 }) {
+  await requireAdmin();
   const params = await searchParams;
   const [pages, gallery, welcomeLeft, welcomeRight] = await Promise.all([
     db.page.findMany({ orderBy: { title: "asc" } }),

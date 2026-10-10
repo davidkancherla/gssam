@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireAdmin, requireMemberArea } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { canAccessFinanceEntry } from "@/lib/finance";
-import { applySessionCookie, signSession, type SessionUser } from "@/lib/session";
+import type { SessionUser } from "@/lib/session";
+import { persistSession } from "@/lib/session-cookie";
 
 export type IncomeFormState = { error?: string; saved?: boolean } | null;
 
@@ -25,10 +25,6 @@ function revalidateFinance() {
   revalidatePath("/member/income");
   revalidatePath("/member");
   revalidatePath("/admin/finance");
-}
-
-async function persistSession(user: SessionUser) {
-  applySessionCookie(await cookies(), await signSession(user));
 }
 
 function redirectAfterSave(user: SessionUser, formData: FormData, kind: string): never {

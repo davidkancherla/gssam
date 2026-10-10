@@ -12,6 +12,7 @@
     "setup": "prisma generate && node scripts/setup-db.mjs --reset && prisma db seed",
     "db:seed": "prisma db seed",
     "db:reset": "node scripts/setup-db.mjs --reset && prisma db seed",
+    "test": "playwright test",
     "verify": "node scripts/verify.mjs",
     "thumbnail": "python3 scripts/generate-youtube-thumbnail.py"
   },
@@ -28,6 +29,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",

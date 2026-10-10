@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth";
 import { deleteEvent, saveEvent } from "@/app/actions/content";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Field, SavedNotice } from "@/components/ui";
@@ -18,6 +19,7 @@ export default async function AdminEvents({
 }: {
   searchParams: Promise<{ saved?: string; id?: string }>;
 }) {
+  await requireAdmin();
   const params = await searchParams;
   const events = await db.churchEvent.findMany({ orderBy: { startsAt: "asc" } });
   const current = events.find((item) => item.id === params.id);
