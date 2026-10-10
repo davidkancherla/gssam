@@ -11,9 +11,11 @@ export default async function PrivacyPage() {
 
   return (
     <PublicShell>
-      <PageHero title={page.title} lede={page.excerpt} />
-      <section className="mx-auto max-w-3xl px-4 py-14">
-        <Prose text={page.body} />
+      <PageHero eyebrow="Legal" title={page.title} lede={page.excerpt} />
+      <section className="border-t border-black/10 bg-white">
+        <div className="mx-auto max-w-[720px] px-5 py-14 sm:px-6 md:py-20">
+          <Prose text={page.body} />
+        </div>
       </section>
     </PublicShell>
   );

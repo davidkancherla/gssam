@@ -1,6 +1,7 @@
 import { PublicShell } from "@/components/PublicShell";
 import { PageHero, Prose } from "@/components/ui";
 import { db } from "@/lib/db";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function MinistryPage({
@@ -14,17 +15,14 @@ export default async function MinistryPage({
 
   return (
     <PublicShell>
-      <PageHero title={ministry.name} lede={ministry.summary} image={ministry.imageUrl} />
-      <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-        {ministry.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={ministry.imageUrl}
-            alt=""
-            className="w-full rounded-3xl object-cover"
-          />
-        ) : null}
-        <Prose text={ministry.body} />
+      <PageHero eyebrow="Ministries" title={ministry.name} lede={ministry.summary} image={ministry.imageUrl} />
+      <section className="bg-white">
+        <div className="mx-auto max-w-[720px] px-5 py-16 sm:px-6 md:py-24" data-reveal>
+          <Prose text={ministry.body} />
+          <Link href="/ministries" className="link-chevron mt-12 text-[17px]">
+            All ministries
+          </Link>
+        </div>
       </section>
     </PublicShell>
   );

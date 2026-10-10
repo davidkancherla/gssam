@@ -11,11 +11,11 @@ export function LoginForm({ next }: { next?: string }) {
     <form action={action} className="space-y-4">
       {next ? <input type="hidden" name="next" value={next} /> : null}
       {state?.error ? (
-        <p className="rounded-lg bg-burgundy/10 p-3 text-sm text-burgundy">{state.error}</p>
+        <p className="rounded-2xl bg-accent/10 p-4 text-[15px] text-accent" role="alert">{state.error}</p>
       ) : null}
       <Field label="Email" name="email" type="email" required />
       <Field label="Password" name="password" type="password" required />
-      <button className="btn btn-dark w-full" disabled={pending} type="submit">
+      <button className="btn btn-primary w-full" disabled={pending} type="submit">
         {pending ? "Signing in…" : "Sign in"}
       </button>
     </form>
